@@ -68,8 +68,13 @@
       })
     );
 
-    var searchText = [item.nr, item.name, item.beschreibung, kat.name]
+    // Drei Schreibweisen nebeneinander ablegen, damit die Suche mit und ohne
+    // Umlaut findet: "Döner" ist auch über "doener" und "doner" erreichbar.
+    // Auf dem Handy tippt kaum jemand Umlaute, und "doner" ist hier der mit
+    // Abstand häufigste Suchbegriff.
+    var roh = [item.nr, item.name, item.beschreibung, kat.name]
       .filter(Boolean).join(' ').toLowerCase();
+    var searchText = [roh, umlauteLang(roh), umlauteWeg(roh)].join(' ');
 
     return el('li', { class: 'item', 'data-search': searchText }, [
       item.nr ? el('span', { class: 'item__nr', text: item.nr }) : el('span', { class: 'item__nr' }),
@@ -360,6 +365,19 @@
     }
   }
 
+  /* -------------------------------------------------- Umlaut-Behandlung -- */
+
+  /** ä -> ae, ö -> oe, ü -> ue, ß -> ss (deutsche Umschreibung). */
+  function umlauteLang(s) {
+    return s.replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue')
+            .replace(/ß/g, 'ss');
+  }
+
+  /** ä -> a, ö -> o, ü -> u, ß -> s (Pünktchen einfach weg). */
+  function umlauteWeg(s) {
+    return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ß/g, 's');
+  }
+
   /* ------------------------------------------------------------ search -- */
 
   function initSearch() {
@@ -387,7 +405,10 @@
       sections.forEach(function (s) {
         var n = 0;
         $$('.item', s).forEach(function (i) {
-          var match = i.dataset.search.indexOf(q) !== -1;
+          var feld = i.dataset.search;
+          var match = feld.indexOf(q) !== -1
+                   || feld.indexOf(umlauteLang(q)) !== -1
+                   || feld.indexOf(umlauteWeg(q)) !== -1;
           i.hidden = !match;
           if (match) n++;
         });

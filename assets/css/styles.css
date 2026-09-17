@@ -159,6 +159,14 @@ a { color: var(--gold); }
   padding-inline: var(--gutter);
 }
 
+/* Das hidden-Attribut wirkt nur über die Regel [hidden] { display: none }
+   aus dem Browser-Stylesheet — und die verliert gegen jede eigene
+   display-Regel auf derselben Klasse. .item setzt display: grid und hat damit
+   sein eigenes hidden ausgehebelt: Bei der Suche blieben in Abschnitten mit
+   Treffern alle Gerichte stehen. Deshalb hier explizit und mit !important,
+   damit kein späteres display es wieder aushebelt. */
+[hidden] { display: none !important; }
+
 .visually-hidden {
   position: absolute !important;
   width: 1px; height: 1px;
