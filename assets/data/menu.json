@@ -1685,16 +1685,58 @@
   },
   "zusatzstoffe": {
     "titel": "Zusatzstoff-Kennzeichnung",
-    "hinweis": "Die mit hochgestellten Ziffern gekennzeichneten Speisen enthalten deklarationspflichtige Zusatzstoffe. Die vollständige Kennzeichnung entnehmen Sie bitte der gedruckten Speisekarte bzw. dem Aushang im Lokal oder fragen Sie unser Personal.",
+    "hinweis": "Die mit hochgestellten Ziffern gekennzeichneten Speisen enthalten deklarationspflichtige Zusatzstoffe:",
     "marker": [
-      "1",
-      "2",
-      "3",
-      "4",
-      "7",
-      "8",
-      "9"
+      {
+        "nr": "1",
+        "text": "mit Farbstoff(en)"
+      },
+      {
+        "nr": "2",
+        "text": "mit Konservierungsstoffen"
+      },
+      {
+        "nr": "3",
+        "text": "mit Antioxidationsmittel"
+      },
+      {
+        "nr": "4",
+        "text": "mit Geschmacksverstärker"
+      },
+      {
+        "nr": "5",
+        "text": "Schwefeldioxid"
+      },
+      {
+        "nr": "6",
+        "text": "Schwärzungsmittel"
+      },
+      {
+        "nr": "7",
+        "text": "Verdickungsmittel"
+      },
+      {
+        "nr": "8",
+        "text": "Stabilisator"
+      },
+      {
+        "nr": "9",
+        "text": "koffeinhaltig"
+      },
+      {
+        "nr": "10",
+        "text": "chininhaltig"
+      },
+      {
+        "nr": "11",
+        "text": "mit Süßungsmittel"
+      },
+      {
+        "nr": "12",
+        "text": "mit einer Phenylalaninquelle"
+      }
     ],
+    "sternSpeisen": "Schinken: * Dieser Pizzabelag ist aus Truthahnfleischstücken zusammengesetzt und gekocht.",
     "stern": "* zum Familienpizza-Preis"
   }
 }

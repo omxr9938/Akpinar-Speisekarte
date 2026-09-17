@@ -313,13 +313,30 @@
       ])
     ]));
 
-    box.appendChild(el('div', { class: 'legend' }, [
+    var legende = el('div', { class: 'legend' }, [
       el('b', { text: z.titel + ': ' }),
-      z.hinweis,
-      el('br'),
-      el('br'),
-      el('b', { text: z.stern })
-    ]));
+      z.hinweis
+    ]);
+
+    if (z.marker && z.marker.length) {
+      legende.appendChild(el('ul', { class: 'legend__list' },
+        z.marker.map(function (m) {
+          return el('li', {}, [
+            el('b', { text: m.nr + ') ' }),
+            m.text
+          ]);
+        })
+      ));
+    }
+
+    // Zwei verschiedene Sternchen in der Karte: an den Gerichten meint es den
+    // Schinken, im Extras-Block den Familienpizza-Preis. Beide getrennt nennen,
+    // sonst bezieht ein Gast die Preisangabe auf die Fleischzusammensetzung.
+    if (z.sternSpeisen) {
+      legende.appendChild(el('p', { class: 'legend__stern', text: z.sternSpeisen }));
+    }
+
+    box.appendChild(legende);
   }
 
   /* ------------------------------------------------------------- chips -- */
@@ -474,7 +491,7 @@
     }
   }
 
-  fetch('assets/data/menu.json?v=b1c17a0b')
+  fetch('assets/data/menu.json?v=23f34ef8')
     .then(function (r) {
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return r.json();

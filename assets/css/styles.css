@@ -644,6 +644,23 @@ main { padding-bottom: 40px; }
 }
 .extras__foot span { display: block; }
 
+.legend__list {
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 2px 18px;
+}
+.legend__list li { font-size: .84rem; color: var(--text-2); }
+.legend__list b { color: var(--gold-3); font-variant-numeric: tabular-nums; }
+.legend__stern {
+  margin: 12px 0 0;
+  font-size: .84rem;
+  font-weight: 700;
+  color: var(--text-2);
+}
+
 /* ------------------------------------------------------------ angebote -- */
 
 .offers {
