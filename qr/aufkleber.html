@@ -108,20 +108,28 @@
     box-shadow: 0 6px 34px rgba(0, 0, 0, .4);
   }
 
+  /* Feste Spaltenbreiten statt 1fr: eine Teilung von 194 mm durch 2 rundet je
+     nach Ausgabeauflösung ungleich, und jedes prozentual bemessene Kind erbt
+     diesen Fehler — die Karten sähen dann spaltenweise verschieden aus. */
   .grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 4mm;
+    grid-template-columns: repeat(2, 95mm);
+    justify-content: space-between;
+    gap: 4mm 0;
   }
 
   .card {
+    width: 95mm;
     height: 62mm;
     padding: 5mm;
     border: .3mm dashed #bbb;
     border-radius: 2mm;
-    background:
-      radial-gradient(120% 100% at 50% 0%, rgba(193, 32, 31, .3), transparent 62%),
-      linear-gradient(180deg, #1a1513, var(--bg));
+    /* Bewusst eine Volltonfläche statt eines Verlaufs: auf 95 x 62 mm bringt
+       ein Verlauf gestalterisch nichts, bandet aber auf einfachen Druckern,
+       fällt je nach Gerät anders aus und verbraucht mehr Toner. Volltonfarbe
+       sieht auf jedem Drucker und auf jedem Kärtchen gleich aus. */
+    background: #16110f;
+    box-shadow: inset 0 0 0 .4mm rgba(226, 179, 95, .30);
     color: #f4efe9;
     display: flex;
     align-items: center;
@@ -137,14 +145,13 @@
   }
   .card__qr img { display: block; width: 30mm; height: 30mm; }
 
-  .card__text { min-width: 0; flex: 1 1 auto; }
+  .card__text { width: 50mm; flex: none; }
 
   /* Das Logo ist fuer schwarzen Grund gezeichnet; `screen` macht sein
      Schwarz auf dem dunklen Kaertchen unsichtbar. */
   .brand {
     display: block;
-    width: 100%;
-    max-width: 52mm;
+    width: 46mm;
     height: auto;
     mix-blend-mode: screen;
   }

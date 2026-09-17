@@ -967,29 +967,61 @@ body.is-searching .no-results.show { display: block; }
 /* -------------------------------------------------------------- print -- */
 
 @media print {
-  :root { --text: #000; --text-2: #333; --text-3: #666; --gold: #8a6520; --gold-2: #8a6520; }
-  body { background: #fff; color: #000; font-size: 10pt; }
-  .toolbar, .to-top, .hero__actions, .hero__status, .hero__texture, .skip-link,
+  /* Gilt für beide Druckfassungen: Bedienelemente raus, saubere Umbrüche. */
+  .toolbar, .to-top, .hero__actions, .hero__status, .skip-link,
   .scroll-hint { display: none !important; }
-  .hero { border-bottom: 2px solid #000; background: #fff; }
-  .logo__img, .site-footer__logo {
-    mix-blend-mode: normal;
-    width: 62mm;
-  }
   .section { padding-top: 14pt; }
   .section__title { break-after: avoid; }
   .item, .card, .offer, .zone, .season, .stamp { break-inside: avoid; }
   .items, .panel { break-inside: auto; }
-  .items, .panel, .offers, .offer, details.acc,
-  .offers__grid, .offers__head, .banner, .stamp, .extras, .legend {
-    background: #fff !important; border-color: #999; box-shadow: none;
-  }
-  .offers__grid { gap: 0; }
-  .offer { border: 1px solid #999; }
-  .item { border-color: #ddd; }
-  .item:nth-child(even) { background: #f7f7f7; }
-  .card { background: #eee; color: #000; box-shadow: none; border: 1px solid #999; }
   details.acc[open] .acc__body { display: block; }
   table.allergens { min-width: 0; font-size: 7pt; }
-  a { color: #000; text-decoration: none; }
+  a { text-decoration: none; }
+
+  /* Standard: tintensparende Fassung — weißes Papier, dunkle Schrift.
+     Das ist der Alltagsdruck über Strg/Cmd + P. */
+  body:not(.druck-dunkel) {
+    --text: #000; --text-2: #333; --text-3: #666;
+    --gold: #8a6520; --gold-2: #8a6520;
+    background: #fff; color: #000; font-size: 10pt;
+  }
+  body:not(.druck-dunkel) .hero__texture { display: none !important; }
+  body:not(.druck-dunkel) .hero { border-bottom: 2px solid #000; background: #fff; }
+  body:not(.druck-dunkel) .logo__img,
+  body:not(.druck-dunkel) .site-footer__logo { mix-blend-mode: normal; width: 62mm; }
+  body:not(.druck-dunkel) .items,
+  body:not(.druck-dunkel) .panel,
+  body:not(.druck-dunkel) .offers,
+  body:not(.druck-dunkel) .offer,
+  body:not(.druck-dunkel) details.acc,
+  body:not(.druck-dunkel) .offers__grid,
+  body:not(.druck-dunkel) .offers__head,
+  body:not(.druck-dunkel) .banner,
+  body:not(.druck-dunkel) .stamp,
+  body:not(.druck-dunkel) .extras,
+  body:not(.druck-dunkel) .legend {
+    background: #fff !important; border-color: #999; box-shadow: none;
+  }
+  body:not(.druck-dunkel) .offers__grid { gap: 0; }
+  body:not(.druck-dunkel) .offer { border: 1px solid #999; }
+  body:not(.druck-dunkel) .item { border-color: #ddd; }
+  body:not(.druck-dunkel) .item:nth-child(even) { background: #f7f7f7; }
+  body:not(.druck-dunkel) .card { background: #eee; color: #000; box-shadow: none; border: 1px solid #999; }
+  body:not(.druck-dunkel) a { color: #000; }
+
+  /* Fassung im Marken-Design: dunkel wie die Website. Für die PDF-Datei, die
+     man herzeigt oder in der Druckerei ausgeben lässt — nicht für den
+     heimischen Tintenstrahler, das kostet viel Farbe. */
+  body.druck-dunkel {
+    background: var(--bg);
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  body.druck-dunkel .hero { min-height: auto; }
+  /* Randlos: die dunkle Fläche soll bis an die Blattkante laufen, der
+     Sicherheitsabstand kommt von innen. Erzeugt wird das PDF dafür ohne
+     Seitenrand. */
+  body.druck-dunkel .wrap { padding-inline: 12mm; }
+  body.druck-dunkel .hero__inner { padding-block: 14mm 10mm; }
+  body.druck-dunkel .site-footer { padding-block: 10mm 14mm; }
 }
