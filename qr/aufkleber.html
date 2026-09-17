@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QR-Kärtchen – Akpinar Speisekarte</title>
+<style>
+  @page { size: A4 portrait; margin: 8mm; }
+
+  :root {
+    --bg:   #0c0a09;
+    --gold: #e2b35f;
+    --gold-3: #b98a3c;
+    --red:  #c1201f;
+    --serif: "Playfair Display", "Iowan Old Style", Palatino, Georgia, serif;
+    --sans:  "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: #6b6b6b;
+    font-family: var(--sans);
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .sheet {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 12mm auto;
+    padding: 8mm;
+    background: #fff;
+    box-shadow: 0 6px 34px rgba(0, 0, 0, .4);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4mm;
+  }
+
+  .card {
+    height: 62mm;
+    padding: 5mm;
+    border: .3mm dashed #bbb;
+    border-radius: 2mm;
+    background:
+      radial-gradient(120% 100% at 50% 0%, rgba(193, 32, 31, .3), transparent 62%),
+      linear-gradient(180deg, #1a1513, var(--bg));
+    color: #f4efe9;
+    display: flex;
+    align-items: center;
+    gap: 5mm;
+  }
+
+  .card__qr {
+    flex: none;
+    padding: 2.4mm;
+    background: #fff;
+    border-radius: 1.6mm;
+  }
+  .card__qr img { display: block; width: 30mm; height: 30mm; }
+
+  .card__text { min-width: 0; }
+
+  .logo {
+    margin: 0;
+    font-family: var(--serif);
+    font-weight: 900;
+    font-size: 17pt;
+    line-height: 1.16;
+    letter-spacing: .05em;
+    background: linear-gradient(175deg, #fbeec4 6%, var(--gold) 38%, var(--gold-3) 62%, #f4dfa8 92%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .sub {
+    margin: 1mm 0 0;
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 7pt;
+    letter-spacing: .26em;
+    text-transform: uppercase;
+    color: #e8564f;
+  }
+
+  .lead {
+    margin: 3mm 0 0;
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 800;
+    font-size: 10.5pt;
+    color: #f6dea4;
+    line-height: 1.25;
+  }
+  .lead small {
+    display: block;
+    margin-top: .8mm;
+    font-family: var(--sans);
+    font-style: normal;
+    font-weight: 600;
+    font-size: 6.6pt;
+    letter-spacing: .03em;
+    color: #c3b7ab;
+  }
+
+  .phone {
+    margin-top: 3mm;
+    padding-top: 2.4mm;
+    border-top: .3mm solid rgba(226, 179, 95, .32);
+    font-family: var(--serif);
+    font-weight: 800;
+    font-size: 12pt;
+    color: var(--gold);
+  }
+  .addr { margin-top: .6mm; font-size: 6.6pt; color: #c3b7ab; }
+
+  .hint {
+    max-width: 180mm;
+    margin: 0 auto 10mm;
+    padding: 6mm 8mm;
+    background: #fff;
+    border-radius: 3mm;
+    color: #222;
+    font-size: 10pt;
+    line-height: 1.6;
+  }
+  .hint h1 { margin: 0 0 3mm; font-size: 13pt; }
+
+  @media print {
+    body { background: #fff; }
+    .sheet { margin: 0; padding: 0; box-shadow: none; min-height: 0; }
+    .hint { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hint">
+  <h1>QR-Kärtchen drucken</h1>
+  8 Kärtchen auf einer A4-Seite — für Theke, Lieferbeutel, Flyer oder als Aufkleber.
+  Auf <b>A4</b> drucken (Skalierung 100 %, Hintergrundgrafiken aktivieren) und an den
+  gestrichelten Linien ausschneiden. Auf Etikettenpapier werden daraus Aufkleber.
+</div>
+
+<div class="sheet">
+  <div class="grid" id="grid"></div>
+</div>
+
+<script>
+  var card =
+    '<div class="card">' +
+      '<div class="card__qr"><img src="speisekarte-qr.png" alt="QR-Code zur Online-Speisekarte"></div>' +
+      '<div class="card__text">' +
+        '<p class="logo">Akpinar</p>' +
+        '<p class="sub">Döner · Pizza</p>' +
+        '<p class="lead">Speisekarte online<small>Mit der Handy-Kamera scannen</small></p>' +
+        '<div class="phone">08671-9580145</div>' +
+        '<div class="addr">Neuöttinger Str. 20 · 84503 Altötting</div>' +
+      '</div>' +
+    '</div>';
+  document.getElementById('grid').innerHTML = new Array(8).fill(card).join('');
+</script>
+</body>
+</html>

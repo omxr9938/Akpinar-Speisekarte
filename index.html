@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Akpinar Döner &amp; Pizza – Speisekarte | Altötting</title>
+
+<meta name="description" content="Die Online-Speisekarte von Akpinar Döner &amp; Pizza, Neuöttinger Str. 20 in 84503 Altötting. Pizza, Döner, Dürüm, Burger, Nudeln und Salate – mit Special-Angeboten, Liefergebieten und Allergenliste. Bestellung: 08671-9580145.">
+<meta name="theme-color" content="#0c0a09">
+<link rel="canonical" href="https://omxr9938.github.io/akpinar-speisekarte/">
+
+<meta property="og:type" content="restaurant.menu">
+<meta property="og:title" content="Akpinar Döner &amp; Pizza – Speisekarte">
+<meta property="og:description" content="Pizza, Döner, Dürüm, Burger, Nudeln &amp; Salate in Altötting. Jetzt ansehen und telefonisch bestellen: 08671-9580145.">
+<meta property="og:locale" content="de_DE">
+<meta property="og:image" content="assets/img/doener-hero.jpg">
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230c0a09'/%3E%3Ctext x='50' y='70' font-family='Georgia,serif' font-size='58' font-weight='bold' text-anchor='middle' fill='%23e2b35f'%3EA%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="assets/img/doener-hero.jpg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700;1,800;1,900&display=swap">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+
+<body>
+<a class="skip-link" href="#speisekarte">Direkt zur Speisekarte</a>
+
+<!-- ============================================================ hero -- -->
+<header class="hero">
+  <div class="hero__texture" aria-hidden="true"></div>
+  <div class="wrap hero__inner">
+
+    <svg class="crown" viewBox="0 0 64 40" fill="currentColor" aria-hidden="true">
+      <path d="M4 36h56l4-28-16 10L32 2 16 18 0 8l4 28zm2-4 -2-14 11 7L32 8l17 17 11-7-2 14H6z"/>
+      <circle cx="32" cy="2" r="3"/><circle cx="2" cy="8" r="2.6"/><circle cx="62" cy="8" r="2.6"/>
+    </svg>
+
+    <h1 class="logo">Akpinar</h1>
+    <p class="logo__sub">Döner &middot; Pizza</p>
+    <p class="logo__claim">Qualität &middot; Frisch &middot; Lecker</p>
+
+    <p class="hero__status" id="status" hidden>
+      <span class="dot" aria-hidden="true"></span>
+      <span id="status-text"></span>
+    </p>
+
+    <div class="hero__actions">
+      <a class="btn btn--call" href="tel:+4986719580145">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.9.7a2 2 0 0 1 1.7 2z"/>
+        </svg>
+        08671-9580145
+      </a>
+      <a class="btn btn--ghost" href="https://www.google.com/maps/search/?api=1&amp;query=Neu%C3%B6ttinger+Str.+20%2C+84503+Alt%C3%B6tting" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+        </svg>
+        Route
+      </a>
+    </div>
+
+    <p class="hero__addr">
+      Inhaber: Familie Akpinar &nbsp;·&nbsp;
+      <a href="https://www.google.com/maps/search/?api=1&amp;query=Neu%C3%B6ttinger+Str.+20%2C+84503+Alt%C3%B6tting" target="_blank" rel="noopener">Neuöttinger Str. 20, 84503 Altötting</a>
+    </p>
+    <p class="hero__stand" id="stand"></p>
+  </div>
+</header>
+
+<!-- ========================================================= toolbar -- -->
+<nav class="toolbar" aria-label="Speisekarte durchsuchen und navigieren">
+  <div class="wrap toolbar__inner">
+    <div class="search" id="search-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+      </svg>
+      <label class="visually-hidden" for="search">Speisekarte durchsuchen</label>
+      <input id="search" type="search" placeholder="Suchen …" autocomplete="off" enterkeyhint="search">
+      <button class="search__clear" id="search-clear" type="button" aria-label="Suche zurücksetzen">&times;</button>
+    </div>
+    <div class="chips" id="chips"></div>
+  </div>
+</nav>
+
+<main id="speisekarte">
+
+  <!-- special offers -->
+  <section class="section" id="angebote" aria-labelledby="angebote-titel">
+    <div class="wrap">
+      <div class="offers" id="offers"></div>
+    </div>
+  </section>
+
+  <!-- menu categories are rendered here -->
+  <div id="kategorien"></div>
+
+  <p class="no-results" id="no-results">
+    Keine Treffer für <b id="no-results-term"></b>. Versuchen Sie es mit einem anderen Begriff.
+  </p>
+
+  <!-- delivery + hours -->
+  <section class="section" id="service" aria-labelledby="service-titel">
+    <div class="wrap">
+      <h2 class="section__title" id="service-titel">Lieferung &amp; Öffnungszeiten</h2>
+
+      <div class="info-grid" style="margin-top:20px">
+        <div class="panel" id="lieferung"></div>
+        <div class="panel" id="oeffnungszeiten"></div>
+      </div>
+
+      <div class="stamp" id="stempelkarte"></div>
+    </div>
+  </section>
+
+  <!-- allergens -->
+  <section class="section" id="allergene" aria-labelledby="allergene-titel">
+    <div class="wrap">
+      <h2 class="section__title" id="allergene-titel">Allergene &amp; Zusatzstoffe</h2>
+      <div id="allergen-block"></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="site-footer__name">Akpinar</div>
+    <p>Döner &amp; Pizza &nbsp;·&nbsp; Inhaber: Familie Akpinar</p>
+    <p>Neuöttinger Str. 20 &nbsp;·&nbsp; 84503 Altötting</p>
+    <a class="btn btn--call" href="tel:+4986719580145">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.9.7a2 2 0 0 1 1.7 2z"/>
+      </svg>
+      Jetzt bestellen
+    </a>
+    <small>Alle Preise in Euro inkl. MwSt. Änderungen und Irrtümer vorbehalten.</small>
+  </div>
+</footer>
+
+<button class="to-top" id="to-top" type="button" aria-label="Nach oben">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M12 19V5M5 12l7-7 7 7"/>
+  </svg>
+</button>
+
+<script src="assets/js/app.js"></script>
+</body>
+</html>

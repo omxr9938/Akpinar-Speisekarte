@@ -1,0 +1,1700 @@
+{
+  "betrieb": {
+    "name": "Akpinar",
+    "untertitel": "Döner · Pizza",
+    "claim": "Qualität · Frisch · Lecker",
+    "inhaber": "Familie Akpinar",
+    "strasse": "Neuöttinger Str. 20",
+    "plz": "84503",
+    "ort": "Altötting",
+    "telefon": "08671-9580145",
+    "telefonLink": "+4986719580145",
+    "stand": "Gültig ab September 2026"
+  },
+  "oeffnungszeiten": {
+    "titel": "Öffnungszeiten für Imbiss & Heimservice",
+    "saisons": [
+      {
+        "name": "Sommer",
+        "zeiten": [
+          {
+            "tage": "Mo – Sa",
+            "zeit": "11.00 – 22.00 Uhr"
+          },
+          {
+            "tage": "So, Feiertag",
+            "zeit": "11.00 – 22.00 Uhr"
+          }
+        ]
+      },
+      {
+        "name": "Winter",
+        "zeiten": [
+          {
+            "tage": "Mo – Sa",
+            "zeit": "11.00 – 21.00 Uhr"
+          },
+          {
+            "tage": "So, Feiertag",
+            "zeit": "11.00 – 21.00 Uhr"
+          }
+        ]
+      }
+    ],
+    "sommerVon": 4,
+    "sommerBis": 10,
+    "saisonHinweis": "Sommerzeiten gelten von April bis Oktober, Winterzeiten von November bis März."
+  },
+  "lieferung": {
+    "titel": "Liefergebiete",
+    "claim": "Lecker & frisch zu Ihnen nach Hause!",
+    "spalte": "Mindestbestellung",
+    "zonen": [
+      {
+        "zone": "Zone 1",
+        "orte": "Altötting, Neuötting …",
+        "mindestbestellung": "18,00 €"
+      },
+      {
+        "zone": "Zone 2",
+        "orte": "Winhöring, Eisenfelden, Steinhöring, Unterau …",
+        "mindestbestellung": "25,00 €"
+      },
+      {
+        "zone": "Zone 3",
+        "orte": "Tüßling, Teising, Kastl",
+        "mindestbestellung": "30,00 €"
+      },
+      {
+        "zone": "Zone 4",
+        "orte": "Unterneukirchen, Alzgern",
+        "mindestbestellung": "40,00 €"
+      }
+    ]
+  },
+  "stempelkarte": {
+    "titel": "Familien-Pizza GRATIS!",
+    "text": "Bei einem Einkauf ab 25 € gibt es einen Stempel. Bei 10 Stempeln bekommen Sie von uns eine Familien-Pizza gratis.",
+    "hinweis": "*nur bei Selbstabholung"
+  },
+  "angebote": {
+    "titel": "Unsere Special-Angebote",
+    "gueltigkeit": "Für Schüler, Firmen und Selbstabholer — Montag bis Freitag von 11:00–14:00 Uhr | außer Feiertage!",
+    "zusatz": "Angebote für Wacker/Gendorf jederzeit gültig!",
+    "gruppen": [
+      {
+        "titel": "Familien-Pizza",
+        "hinweis": "inkl. 1 großer gemischter Salat oder Cola/Fanta/Mezzo-Mix",
+        "karten": [
+          {
+            "titel": "Ø 50 cm",
+            "sub": "Nr. 1–8",
+            "preis": "29,00 €"
+          },
+          {
+            "titel": "Ø 50 cm",
+            "sub": "Nr. 9–13",
+            "preis": "30,00 €"
+          },
+          {
+            "titel": "Ø 50 cm",
+            "sub": "Nr. 14–26",
+            "preis": "31,00 €"
+          },
+          {
+            "titel": "Party-Pizza",
+            "sub": "60 × 40 cm",
+            "preis": "+3,00 €",
+            "breit": true
+          }
+        ]
+      },
+      {
+        "titel": "Döner | Dürüm | Boxen",
+        "hinweis": "inkl. 0,33 l Getränk: + 1,50 € Aufpreis",
+        "karten": [
+          {
+            "titel": "Döner",
+            "sub": "",
+            "preis": "6,50 €"
+          },
+          {
+            "titel": "Dürüm",
+            "sub": "normal",
+            "preis": "7,00 €"
+          },
+          {
+            "titel": "Dürüm",
+            "sub": "gross",
+            "preis": "8,00 €"
+          },
+          {
+            "titel": "Döner-Boxen",
+            "sub": "klein 7,00 € · groß 8,00 €",
+            "preis": "",
+            "breit": true
+          },
+          {
+            "titel": "Döner-Teller",
+            "sub": "",
+            "preis": "11,00 €",
+            "breit": true
+          }
+        ]
+      },
+      {
+        "titel": "Pizzen",
+        "hinweis": "",
+        "karten": [
+          {
+            "titel": "Ø 28 cm",
+            "sub": "Nr. 1–13",
+            "preis": "7,00 €"
+          },
+          {
+            "titel": "Ø 28 cm",
+            "sub": "Nr. 14–26",
+            "preis": "8,00 €"
+          },
+          {
+            "titel": "Ø 32 cm",
+            "sub": "nach Wahl",
+            "preis": "10,00 €"
+          }
+        ]
+      },
+      {
+        "titel": "Nudeln",
+        "hinweis": "inkl. überbacken: + 1,50 € Aufpreis",
+        "karten": [
+          {
+            "titel": "Jedes Nudelgericht",
+            "sub": "",
+            "preis": "7,50 €",
+            "breit": true
+          }
+        ]
+      }
+    ]
+  },
+  "kategorien": [
+    {
+      "id": "pizza",
+      "name": "Pizza",
+      "bild": "assets/img/pizza-hero.jpg",
+      "hinweis": "Alle Pizzen mit Tomaten- oder Sahnesoße und Käse",
+      "spalten": [
+        "Normal\nØ 28 cm",
+        "Groß\nØ 32 cm",
+        "Familie\nØ 50 cm"
+      ],
+      "spaltenKurz": [
+        "Ø 28",
+        "Ø 32",
+        "Ø 50"
+      ],
+      "items": [
+        {
+          "nr": "",
+          "name": "Pizzabrot",
+          "beschreibung": "mit Knoblauch",
+          "zusatz": [
+            "4"
+          ],
+          "preise": [
+            "5,50",
+            "7,50",
+            "14,00"
+          ]
+        },
+        {
+          "nr": "1",
+          "name": "Margherita",
+          "beschreibung": "",
+          "zusatz": [],
+          "preise": [
+            "8,00",
+            "11,00",
+            "19,50"
+          ]
+        },
+        {
+          "nr": "2",
+          "name": "Funghi",
+          "beschreibung": "Champignons",
+          "zusatz": [],
+          "preise": [
+            "8,00",
+            "11,00",
+            "19,50"
+          ]
+        },
+        {
+          "nr": "3",
+          "name": "Salami",
+          "beschreibung": "Rindersalami",
+          "zusatz": [
+            "1",
+            "2",
+            "3"
+          ],
+          "preise": [
+            "8,00",
+            "11,00",
+            "20,00"
+          ]
+        },
+        {
+          "nr": "4",
+          "name": "Prosciutto",
+          "beschreibung": "Truthahn-Fleischstücke",
+          "zusatz": [
+            "1",
+            "2",
+            "3",
+            "*"
+          ],
+          "preise": [
+            "8,00",
+            "11,00",
+            "20,00"
+          ]
+        },
+        {
+          "nr": "5",
+          "name": "Capri",
+          "beschreibung": "Salami und Truthahn-Fleischstücke",
+          "zusatz": [
+            "1",
+            "2",
+            "3"
+          ],
+          "preise": [
+            "8,50",
+            "11,50",
+            "21,50"
+          ]
+        },
+        {
+          "nr": "6",
+          "name": "Diavolo",
+          "beschreibung": "Salami und Peperoni",
+          "zusatz": [
+            "1",
+            "2",
+            "3"
+          ],
+          "preise": [
+            "8,50",
+            "11,50",
+            "21,50"
+          ]
+        },
+        {
+          "nr": "7",
+          "name": "Regina",
+          "beschreibung": "Truthahn-Fleischstücke, Champignons",
+          "zusatz": [
+            "1",
+            "2",
+            "3"
+          ],
+          "preise": [
+            "8,50",
+            "11,50",
+            "21,50"
+          ]
+        },
+        {
+          "nr": "8",
+          "name": "Americana",
+          "beschreibung": "Salami, Champignons, Peperoni",
+          "zusatz": [
+            "1",
+            "2",
+            "3"
+          ],
+          "preise": [
+            "9,00",
+            "12,00",
+            "22,50"
+          ]
+        },
+        {
+          "nr": "9",
+          "name": "Calzone",
+          "beschreibung": "Truthahn-Fleisch., Salami, Champ., Kapern",
+          "zusatz": [
+            "1",
+            "2",
+            "3",
+            "*"
+          ],
+          "preise": [
+            "9,00",
+            null,
+            null
+          ]
+        },
+        {
+          "nr": "10",
+          "name": "Mozzarella",
+          "beschreibung": "Mozzarella und Tomaten",
+          "zusatz": [],
+          "preise": [
+            "9,00",
+            "12,00",
+            "22,50"
+          ]
+        },
+        {
+          "nr": "11",
+          "name": "Tonno",
+          "beschreibung": "Thunfisch, Zwiebeln",
+          "zusatz": [],
+          "preise": [
+            "9,00",
+            "12,00",
+            "22,50"
+          ]
+        },
+        {
+          "nr": "12",
+          "name": "Quattro Formaggi",
+          "beschreibung": "4 Käsesorten",
+          "zusatz": [],
+          "preise": [
+            "9,00",
+            "12,00",
+            "22,50"
+          ]
+        },
+        {
+          "nr": "13",
+          "name": "Vegetarisch",
+          "beschreibung": "Champig., Peperoni, Paprika, Zwiebeln, schwarze Oliven, Mais, Spinat",
+          "zusatz": [
+            "2"
+          ],
+          "preise": [
+            "9,00",
+            "12,00",
+            "22,50"
+          ]
+        },
+        {
+          "nr": "14",
+          "name": "Döner-Pizza",
+          "beschreibung": "Dönerfleisch, Zwiebeln",
+          "zusatz": [],
+          "preise": [
+            "9,50",
+            "12,50",
+            "23,50"
+          ]
+        },
+        {
+          "nr": "14A",
+          "name": "Gyros-Pizza",
+          "beschreibung": "Dönerfl., Zwieb., Salat, Kraut, Soße",
+          "zusatz": [],
+          "preise": [
+            "10,50",
+            "14,50",
+            "26,50"
+          ]
+        },
+        {
+          "nr": "15",
+          "name": "Gamberoni",
+          "beschreibung": "Krabben, Knoblauch, Zwiebeln",
+          "zusatz": [],
+          "preise": [
+            "9,50",
+            "12,50",
+            "23,50"
+          ]
+        },
+        {
+          "nr": "16",
+          "name": "Frutti di Mare",
+          "beschreibung": "Meeresfrüchte, Knoblauch",
+          "zusatz": [],
+          "preise": [
+            "9,50",
+            "12,50",
+            "23,50"
+          ]
+        },
+        {
+          "nr": "17",
+          "name": "Sucuk Pizza",
+          "beschreibung": "Knoblauchwurst, Eier",
+          "zusatz": [
+            "1",
+            "2",
+            "3"
+          ],
+          "preise": [
+            "9,50",
+            "12,50",
+            "23,50"
+          ]
+        },
+        {
+          "nr": "18",
+          "name": "Quattro Stagioni",
+          "beschreibung": "Salami, Truthahn-Fleischstücke, Champignons, Peperoni",
+          "zusatz": [
+            "1",
+            "2",
+            "3"
+          ],
+          "preise": [
+            "9,50",
+            "12,50",
+            "23,50"
+          ]
+        },
+        {
+          "nr": "19",
+          "name": "Primavera",
+          "beschreibung": "Salami, Sardellen, Kapern, schw. Oliven",
+          "zusatz": [],
+          "preise": [
+            "9,50",
+            "12,50",
+            "23,50"
+          ]
+        },
+        {
+          "nr": "20",
+          "name": "Mexicana",
+          "beschreibung": "Truthahn-Fleischstücke, Salami, Champ., Peperoni, Artischocken, Zwiebeln (mittelscharf)",
+          "zusatz": [
+            "1",
+            "2",
+            "3"
+          ],
+          "preise": [
+            "10,00",
+            "13,00",
+            "24,50"
+          ]
+        },
+        {
+          "nr": "21",
+          "name": "Saray-Spezial",
+          "beschreibung": "Dönerfleisch, Champignons, Eier",
+          "zusatz": [],
+          "preise": [
+            "10,00",
+            "13,00",
+            "24,50"
+          ]
+        },
+        {
+          "nr": "22",
+          "name": "Carpriciosa",
+          "beschreibung": "Truthahn-Fleischstücke, Artischocken, Peperoni, Kapern und Oliven",
+          "zusatz": [
+            "1",
+            "2",
+            "3",
+            "*"
+          ],
+          "preise": [
+            "9,50",
+            "12,50",
+            "23,50"
+          ]
+        },
+        {
+          "nr": "23",
+          "name": "Allerlei",
+          "beschreibung": "mit Allem – außer Meeresfrüchte",
+          "zusatz": [
+            "1",
+            "2",
+            "3"
+          ],
+          "preise": [
+            "10,00",
+            "13,00",
+            "24,50"
+          ]
+        },
+        {
+          "nr": "24",
+          "name": "Scampi",
+          "beschreibung": "Tomaten, Käse, Krabben, Thunfisch, Knoblauch",
+          "zusatz": [
+            "1",
+            "2",
+            "3"
+          ],
+          "preise": [
+            "10,00",
+            "13,00",
+            "24,50"
+          ]
+        },
+        {
+          "nr": "25",
+          "name": "Pizza Sam",
+          "beschreibung": "Salami, Dönerfleisch, Champig.",
+          "zusatz": [
+            "1",
+            "2",
+            "3"
+          ],
+          "preise": [
+            "10,00",
+            "13,00",
+            "24,50"
+          ]
+        },
+        {
+          "nr": "26",
+          "name": "Spinat",
+          "beschreibung": "Spinat, Tomatensoße, Gorgonzola, Käse",
+          "zusatz": [],
+          "preise": [
+            "9,00",
+            "12,00",
+            "22,50"
+          ]
+        }
+      ],
+      "extras": {
+        "titel": "Jede Extra-Zutat",
+        "zeilen": [
+          {
+            "name": "Fleisch, Käse, Wurst, Meeresfrüchte",
+            "preise": [
+              "2,00",
+              "3,00",
+              "4,00"
+            ]
+          },
+          {
+            "name": "Gemüse",
+            "preise": [
+              "1,00",
+              "1,50",
+              "2,00"
+            ]
+          }
+        ],
+        "fussnoten": [
+          "Als Party-Pizza 60 × 40 cm: +3 Euro",
+          "* zum Familienpizza-Preis"
+        ]
+      }
+    },
+    {
+      "id": "tuerkisch",
+      "name": "Türkische Spezialitäten",
+      "kurz": "Türkisch",
+      "bild": "assets/img/doener.jpg",
+      "hinweis": "",
+      "banner": "Döner-Menü: inkl. Pommes + 0,33 l Getränk — +5 Euro zum Döner-Preis.",
+      "spalten": [
+        ""
+      ],
+      "spaltenKurz": [
+        ""
+      ],
+      "items": [
+        {
+          "nr": "",
+          "name": "Döner-Box",
+          "beschreibung": "mit Pommes, Reis oder Salat",
+          "zusatz": [],
+          "preise": [
+            "7,00"
+          ]
+        },
+        {
+          "nr": "",
+          "name": "Döner-Box groß",
+          "beschreibung": "mit Pommes, Reis oder Salat",
+          "zusatz": [],
+          "preise": [
+            "8,00"
+          ]
+        },
+        {
+          "nr": "",
+          "name": "Nudel-Box groß",
+          "beschreibung": "mit Nudeln, Sahne-Sauce, Dönerfleisch",
+          "zusatz": [],
+          "preise": [
+            "9,00"
+          ]
+        },
+        {
+          "nr": "",
+          "name": "Cup Salon",
+          "beschreibung": "mit Pommes, Dönerfleisch, Käse überbacken, Salat, Soße",
+          "zusatz": [],
+          "preise": [
+            "9,50"
+          ]
+        },
+        {
+          "nr": "",
+          "name": "Chip Cheese Bolognese",
+          "beschreibung": "mit Pommes, Hackfleisch und Cheddar-Käse überbacken",
+          "zusatz": [],
+          "preise": [
+            "9,50"
+          ]
+        },
+        {
+          "nr": "",
+          "name": "Döner Bowl",
+          "beschreibung": "mit Pommes, Fleisch, Salat, Soße",
+          "zusatz": [],
+          "preise": [
+            "13,00"
+          ]
+        },
+        {
+          "nr": "30",
+          "name": "Döner im Fladenbrot (Classic)",
+          "beschreibung": "Fleisch, Salat, Tomaten, Zwiebeln, Blaukraut, Soße",
+          "zusatz": [],
+          "preise": [
+            "7,50"
+          ]
+        },
+        {
+          "nr": "31",
+          "name": "Gemüsedöner",
+          "beschreibung": "Döner Classic, Grillgemüse, Weichkäse",
+          "zusatz": [],
+          "preise": [
+            "8,50"
+          ]
+        },
+        {
+          "nr": "32",
+          "name": "Döner Chili-Cheese",
+          "beschreibung": "Döner Classic, Jalapeños, Cheddar-Käse",
+          "zusatz": [],
+          "preise": [
+            "9,00"
+          ]
+        },
+        {
+          "nr": "33",
+          "name": "Döner Pomm",
+          "beschreibung": "Döner Classic mit Pommes",
+          "zusatz": [],
+          "preise": [
+            "9,00"
+          ]
+        },
+        {
+          "nr": "34",
+          "name": "Döner Saray",
+          "beschreibung": "Döner Classic mit Sucuk und Weichkäse",
+          "zusatz": [],
+          "preise": [
+            "9,00"
+          ]
+        },
+        {
+          "nr": "35",
+          "name": "Döner Weichkäse",
+          "beschreibung": "Döner Classic mit Weichkäse",
+          "zusatz": [],
+          "preise": [
+            "8,00"
+          ]
+        },
+        {
+          "nr": "36",
+          "name": "Vegetarischer Döner",
+          "beschreibung": "Salat, Tomaten, Zwiebeln, Blaukr., Soße",
+          "zusatz": [],
+          "preise": [
+            "5,00"
+          ]
+        },
+        {
+          "nr": "37",
+          "name": "Vegetarischer Döner mit Weichkäse",
+          "beschreibung": "Nr. 36 mit Weichkäse",
+          "zusatz": [],
+          "preise": [
+            "7,50"
+          ]
+        },
+        {
+          "nr": "38",
+          "name": "Falafel Döner",
+          "beschreibung": "Salat, Tomaten, Zwiebeln, Blaukraut, Soße",
+          "zusatz": [],
+          "preise": [
+            "7,50"
+          ]
+        },
+        {
+          "nr": "39",
+          "name": "Dürüm 28 cm – frisch & hausgemacht",
+          "beschreibung": "Dönerfleisch, Salat, Tomaten, Zwiebeln, Blaukraut, Soße",
+          "zusatz": [],
+          "preise": [
+            "8,00"
+          ]
+        },
+        {
+          "nr": "40",
+          "name": "Dürüm 32 cm – frisch & hausgemacht",
+          "beschreibung": "Inhalt wie Nr. 39",
+          "zusatz": [],
+          "preise": [
+            "9,00"
+          ]
+        },
+        {
+          "nr": "41",
+          "name": "Döner-Teller",
+          "beschreibung": "Fleisch, Pommes oder gem. Salat, Soße",
+          "zusatz": [],
+          "preise": [
+            "12,50"
+          ]
+        },
+        {
+          "nr": "42",
+          "name": "Döner-Teller mit Nudeln",
+          "beschreibung": "Fleisch, Nudeln, Soße",
+          "zusatz": [],
+          "preise": [
+            "13,00"
+          ]
+        },
+        {
+          "nr": "43",
+          "name": "Pide Weichkäse",
+          "beschreibung": "Salat, Tomaten, Zwiebeln, Blaukraut, Soße",
+          "zusatz": [],
+          "preise": [
+            "11,00"
+          ]
+        },
+        {
+          "nr": "44",
+          "name": "Pide „gemischt“",
+          "beschreibung": "Weichkäse, Dönerfleisch, Salat, Zwiebeln, Tomaten, Soße",
+          "zusatz": [],
+          "preise": [
+            "12,00"
+          ]
+        },
+        {
+          "nr": "45",
+          "name": "Pide Döner",
+          "beschreibung": "Dönerfleisch, Weichkäse, Salat, Zwieb., Tomat., Soße",
+          "zusatz": [],
+          "preise": [
+            "12,00"
+          ]
+        },
+        {
+          "nr": "46",
+          "name": "Sucuk Pide mit Ei",
+          "beschreibung": "Knoblauchwurst, Ei, Salat, Zwiebeln, Tomaten, Soße",
+          "zusatz": [],
+          "preise": [
+            "10,50"
+          ]
+        },
+        {
+          "nr": "47",
+          "name": "Spinat Pide mit Ei",
+          "beschreibung": "Weichkäse, Salat, Zwieb., Tomaten, Soße",
+          "zusatz": [],
+          "preise": [
+            "10,50"
+          ]
+        },
+        {
+          "nr": "48",
+          "name": "Käse Lahmacun",
+          "beschreibung": "Mozzar., Schafskäse, Edamer, Chilli, Salat, Soße",
+          "zusatz": [],
+          "preise": [
+            "11,00"
+          ]
+        },
+        {
+          "nr": "49",
+          "name": "Lahmacun Dürüm 32 cm",
+          "beschreibung": "Hackfleisch, Dönerfleisch, Salat, Tomaten, Zwiebeln, Blaukraut, Soße",
+          "zusatz": [],
+          "preise": [
+            "8,50"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "burger",
+      "name": "Burger",
+      "bild": "assets/img/burger.jpg",
+      "hinweis": "Menü = inkl. Pommes + 0,33 l Getränk",
+      "spalten": [
+        "Einzeln",
+        "Menü"
+      ],
+      "spaltenKurz": [
+        "Einzeln",
+        "Menü"
+      ],
+      "items": [
+        {
+          "nr": "85",
+          "name": "Hamburger groß",
+          "beschreibung": "",
+          "zusatz": [],
+          "preise": [
+            "6,00",
+            "11,00"
+          ]
+        },
+        {
+          "nr": "86",
+          "name": "Hamburger doppelt",
+          "beschreibung": "",
+          "zusatz": [],
+          "preise": [
+            "7,50",
+            "12,50"
+          ]
+        },
+        {
+          "nr": "87",
+          "name": "Cheeseburger groß",
+          "beschreibung": "",
+          "zusatz": [],
+          "preise": [
+            "6,50",
+            "11,50"
+          ]
+        },
+        {
+          "nr": "88",
+          "name": "Cheeseburger doppelt",
+          "beschreibung": "",
+          "zusatz": [],
+          "preise": [
+            "8,00",
+            "13,00"
+          ]
+        },
+        {
+          "nr": "89",
+          "name": "Chili-Cheeseburger",
+          "beschreibung": "",
+          "zusatz": [],
+          "preise": [
+            "7,00",
+            "12,00"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "verschiedenes",
+      "name": "Verschiedenes",
+      "bild": "assets/img/pide.jpg",
+      "hinweis": "",
+      "spalten": [
+        ""
+      ],
+      "spaltenKurz": [
+        ""
+      ],
+      "items": [
+        {
+          "nr": "55",
+          "name": "6er Chicken Nuggets",
+          "beschreibung": "mit Pommes",
+          "zusatz": [
+            "2",
+            "7",
+            "8"
+          ],
+          "preise": [
+            "7,00"
+          ]
+        },
+        {
+          "nr": "56",
+          "name": "8er Chicken Nuggets",
+          "beschreibung": "mit Pommes",
+          "zusatz": [
+            "2",
+            "7",
+            "8"
+          ],
+          "preise": [
+            "8,00"
+          ]
+        },
+        {
+          "nr": "57",
+          "name": "12er Chicken Nuggets",
+          "beschreibung": "mit Pommes",
+          "zusatz": [
+            "2",
+            "7",
+            "8"
+          ],
+          "preise": [
+            "9,50"
+          ]
+        },
+        {
+          "nr": "58",
+          "name": "Cevapcici",
+          "beschreibung": "mit Pommes und Dönersoße, Zwiebeln",
+          "zusatz": [
+            "2",
+            "7",
+            "8"
+          ],
+          "preise": [
+            "8,50"
+          ]
+        },
+        {
+          "nr": "59",
+          "name": "Schnitzel",
+          "beschreibung": "mit Pommes und Preiselbeeren",
+          "zusatz": [],
+          "preise": [
+            "9,50"
+          ]
+        },
+        {
+          "nr": "60",
+          "name": "Schnitzelburger",
+          "beschreibung": "Schnitzel, Salat, Zwieb., Tomaten im Fladenbrot",
+          "zusatz": [],
+          "preise": [
+            "7,50"
+          ]
+        },
+        {
+          "nr": "61",
+          "name": "Portion Pommes",
+          "beschreibung": "Klein: 3,00 · Groß: 4,00",
+          "zusatz": [],
+          "preise": [
+            null
+          ]
+        },
+        {
+          "nr": "62",
+          "name": "Grillteller",
+          "beschreibung": "mit Nuggets, Dönerfleisch, 3 Cevapcici, Pommes, Soße",
+          "zusatz": [],
+          "preise": [
+            "11,50"
+          ]
+        },
+        {
+          "nr": "63",
+          "name": "Currywurst",
+          "beschreibung": "mit Pommes",
+          "zusatz": [
+            "2",
+            "4"
+          ],
+          "preise": [
+            "8,00"
+          ]
+        },
+        {
+          "nr": "64",
+          "name": "Riesen-Currywurst",
+          "beschreibung": "mit Pommes",
+          "zusatz": [],
+          "preise": [
+            "10,00"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nudeln",
+      "name": "Nudeln",
+      "bild": "",
+      "hinweis": "Rigatoni / Spaghetti / Tortellini — Überbacken: +1,50",
+      "spalten": [
+        ""
+      ],
+      "spaltenKurz": [
+        ""
+      ],
+      "items": [
+        {
+          "nr": "70",
+          "name": "Napoli",
+          "beschreibung": "mit Tomatensoße",
+          "zusatz": [],
+          "preise": [
+            "6,50"
+          ]
+        },
+        {
+          "nr": "71",
+          "name": "Panna",
+          "beschreibung": "mit Truthahn-Fleischstücken u. Sahnesoße",
+          "zusatz": [
+            "1",
+            "2",
+            "3"
+          ],
+          "preise": [
+            "7,50"
+          ]
+        },
+        {
+          "nr": "72",
+          "name": "Alla Rabiata",
+          "beschreibung": "mit Knoblauch, Peperoni (scharf) u. Tomatensoße",
+          "zusatz": [],
+          "preise": [
+            "7,50"
+          ]
+        },
+        {
+          "nr": "73",
+          "name": "Carbonara",
+          "beschreibung": "mit Truthahn-Fleischstücken, Eier u. Sahnesoße",
+          "zusatz": [],
+          "preise": [
+            "8,00"
+          ]
+        },
+        {
+          "nr": "74",
+          "name": "Vegetarisch",
+          "beschreibung": "Paprika, Champig., Zwieb., Erbsen, Oliven, Käse, Tomaten-/Sahnesoße",
+          "zusatz": [],
+          "preise": [
+            "8,50"
+          ]
+        },
+        {
+          "nr": "75",
+          "name": "Aglio Olio",
+          "beschreibung": "mit Knoblauch, Peperoni, Olivenöl, Petersilie – scharf",
+          "zusatz": [
+            "2",
+            "4"
+          ],
+          "preise": [
+            "8,50"
+          ]
+        },
+        {
+          "nr": "76",
+          "name": "Primavera",
+          "beschreibung": "Truthahnfleisch, Erbsen, Champignons und Sahne",
+          "zusatz": [
+            "2",
+            "4"
+          ],
+          "preise": [
+            "8,50"
+          ]
+        },
+        {
+          "nr": "77",
+          "name": "Tonno",
+          "beschreibung": "Thunfisch, Zwiebeln und Tomatensoße",
+          "zusatz": [],
+          "preise": [
+            "8,50"
+          ]
+        },
+        {
+          "nr": "78",
+          "name": "Nudel-Döner",
+          "beschreibung": "mit Dönerfleisch, Sahne und Tomatensoße",
+          "zusatz": [],
+          "preise": [
+            "8,50"
+          ]
+        },
+        {
+          "nr": "79",
+          "name": "Bolognese",
+          "beschreibung": "mit Hackfleischsoße",
+          "zusatz": [],
+          "preise": [
+            "8,50"
+          ]
+        },
+        {
+          "nr": "80",
+          "name": "Quattro Formaggi",
+          "beschreibung": "mit 4 Käsesorten",
+          "zusatz": [
+            "1",
+            "2"
+          ],
+          "preise": [
+            "9,00"
+          ]
+        },
+        {
+          "nr": "81",
+          "name": "Meeresfrüchte",
+          "beschreibung": "mit Meeresfrüchten u. Tomatensoße",
+          "zusatz": [],
+          "preise": [
+            "9,50"
+          ]
+        },
+        {
+          "nr": "82",
+          "name": "Al Forno",
+          "beschreibung": "mit Truthahn-Fleischstücken, Champignons, Sahnesoße mit Käse überbacken",
+          "zusatz": [],
+          "preise": [
+            "10,00"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "salate",
+      "name": "Salate",
+      "bild": "",
+      "hinweis": "",
+      "spalten": [
+        "klein",
+        "groß"
+      ],
+      "spaltenKurz": [
+        "klein",
+        "groß"
+      ],
+      "items": [
+        {
+          "nr": "95",
+          "name": "Tomatensalat",
+          "beschreibung": "mit Zwiebeln",
+          "zusatz": [],
+          "preise": [
+            "4,50",
+            null
+          ]
+        },
+        {
+          "nr": "96",
+          "name": "Gurkensalat",
+          "beschreibung": "mit Zwiebeln",
+          "zusatz": [],
+          "preise": [
+            "4,50",
+            null
+          ]
+        },
+        {
+          "nr": "97",
+          "name": "Grüner Salat",
+          "beschreibung": "mit Zwiebeln",
+          "zusatz": [],
+          "preise": [
+            "4,50",
+            null
+          ]
+        },
+        {
+          "nr": "98",
+          "name": "Mozzarellasalat",
+          "beschreibung": "Tomaten, Mozzarella, Zwiebeln",
+          "zusatz": [],
+          "preise": [
+            "7,00",
+            null
+          ]
+        },
+        {
+          "nr": "99",
+          "name": "Gemischter Salat",
+          "beschreibung": "Eisbergsalat, Paprika, Gurken, Tomaten, Mais, Zwiebeln",
+          "zusatz": [],
+          "preise": [
+            "6,00",
+            "7,00"
+          ]
+        },
+        {
+          "nr": "100",
+          "name": "Hirtensalat",
+          "beschreibung": "Eisbergsalat, Paprika, Gurken, Tomaten, Zwiebeln, Weichkäse, schwarze Oliven",
+          "zusatz": [],
+          "preise": [
+            "7,00",
+            "9,00"
+          ]
+        },
+        {
+          "nr": "101",
+          "name": "Thunfischsalat",
+          "beschreibung": "Eisbergsal., Paprika, Gurken, Tomat., Zwieb., Thunfisch",
+          "zusatz": [],
+          "preise": [
+            "7,00",
+            "9,00"
+          ]
+        },
+        {
+          "nr": "102",
+          "name": "Meeresfrüchtesalat",
+          "beschreibung": "Meeresfrüchte, Eisbergsalat, Paprika, Gurke, Tomaten, Zwiebeln",
+          "zusatz": [],
+          "preise": [
+            "9,00",
+            "11,00"
+          ]
+        },
+        {
+          "nr": "103",
+          "name": "Mexikanischer Salat",
+          "beschreibung": "Eisbergsalat, Papr., Gurken, Tomaten, Zwiebeln, Truthahn-Fleischst., Mais",
+          "zusatz": [
+            "1",
+            "2",
+            "3"
+          ],
+          "preise": [
+            "7,00",
+            "9,00"
+          ]
+        },
+        {
+          "nr": "104",
+          "name": "Salat nach Art des Hauses",
+          "beschreibung": "Eisbergsalat, Paprika, Gurken, Tomaten, Zwiebeln, Meeresfrüchte, Weichkäse, schwarze Oliven",
+          "zusatz": [],
+          "preise": [
+            null,
+            "11,00"
+          ]
+        },
+        {
+          "nr": "105",
+          "name": "Spezial-Salat",
+          "beschreibung": "Eisbergsalat, Paprika, Gurken, Tomaten, Zwiebeln, Truthahn-Fleischstücke, Salami, Weichkäse u. schwarze Oliven",
+          "zusatz": [
+            "1",
+            "2",
+            "3"
+          ],
+          "preise": [
+            null,
+            "11,00"
+          ]
+        },
+        {
+          "nr": "106",
+          "name": "Döner-Salat",
+          "beschreibung": "Eisbergsalat, Paprika, Gurken, Tomaten, Zwiebeln, Dönerfleisch",
+          "zusatz": [
+            "1",
+            "2",
+            "3"
+          ],
+          "preise": [
+            "8,00",
+            "10,00"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "getraenke",
+      "name": "Getränke",
+      "bild": "assets/img/getraenke.jpg",
+      "hinweis": "(alkoholfrei) zzgl. 0,25 Euro Pfand",
+      "spalten": [
+        "0,33 l",
+        "0,50 l",
+        "1,00 l"
+      ],
+      "spaltenKurz": [
+        "0,33 l",
+        "0,50 l",
+        "1,00 l"
+      ],
+      "items": [
+        {
+          "nr": "",
+          "name": "Cola, Fanta, Mezzo-Mix",
+          "beschreibung": "je",
+          "zusatz": [
+            "1",
+            "2",
+            "9"
+          ],
+          "preise": [
+            "2,50",
+            "3,00",
+            "3,50"
+          ]
+        },
+        {
+          "nr": "",
+          "name": "Sprite",
+          "beschreibung": "",
+          "zusatz": [],
+          "preise": [
+            null,
+            "3,00",
+            "3,50"
+          ]
+        },
+        {
+          "nr": "",
+          "name": "Uludag",
+          "beschreibung": "",
+          "zusatz": [],
+          "preise": [
+            "2,50",
+            null,
+            null
+          ]
+        },
+        {
+          "nr": "",
+          "name": "Wasser",
+          "beschreibung": "",
+          "zusatz": [],
+          "preise": [
+            "2,00",
+            null,
+            null
+          ]
+        },
+        {
+          "nr": "",
+          "name": "Ayran",
+          "beschreibung": "",
+          "zusatz": [],
+          "preise": [
+            "2,00",
+            null,
+            null
+          ]
+        },
+        {
+          "nr": "",
+          "name": "Red Bull",
+          "beschreibung": "",
+          "zusatz": [],
+          "preise": [
+            "3,00",
+            null,
+            null
+          ]
+        }
+      ]
+    }
+  ],
+  "allergene": {
+    "titel": "Allergenliste",
+    "hinweis": "Zutat im Gericht enthalten / verarbeitet. Bei Fragen zu Allergenen und Zusatzstoffen sprechen Sie uns bitte an.",
+    "gruppen": [
+      {
+        "name": "Glutenhaltiges Getreide",
+        "spalten": [
+          "Weizenmehl",
+          "Sojamehl",
+          "Gerste",
+          "Gurkenmehl",
+          "Johanniskernmehl",
+          "Kamut"
+        ]
+      },
+      {
+        "name": "Krebstiere",
+        "spalten": [
+          "Krebstiere"
+        ]
+      },
+      {
+        "name": "Eier",
+        "spalten": [
+          "Eier"
+        ]
+      },
+      {
+        "name": "Fische",
+        "spalten": [
+          "Fische"
+        ]
+      },
+      {
+        "name": "Erdnüsse",
+        "spalten": [
+          "Erdnüsse"
+        ]
+      },
+      {
+        "name": "Sojabohnen",
+        "spalten": [
+          "Sojabohnen"
+        ]
+      },
+      {
+        "name": "Milch",
+        "spalten": [
+          "Milch",
+          "Laktose"
+        ]
+      },
+      {
+        "name": "Nüsse / Schalenfrüchte",
+        "spalten": [
+          "Mandeln",
+          "Haselnüsse",
+          "Walnüsse",
+          "Pekanüsse",
+          "Paranüsse",
+          "Pistazien",
+          "Makadamianüsse",
+          "Queenslandnüsse"
+        ]
+      },
+      {
+        "name": "Sellerie",
+        "spalten": [
+          "Sellerie"
+        ]
+      },
+      {
+        "name": "Senf",
+        "spalten": [
+          "Senf"
+        ]
+      },
+      {
+        "name": "Sesam",
+        "spalten": [
+          "Sesam"
+        ]
+      },
+      {
+        "name": "Schwefeldioxid",
+        "spalten": [
+          "Schwefeldioxid"
+        ]
+      },
+      {
+        "name": "Lupine",
+        "spalten": [
+          "Lupine"
+        ]
+      },
+      {
+        "name": "Weichtiere",
+        "spalten": [
+          "Weichtiere"
+        ]
+      }
+    ],
+    "zeilen": [
+      {
+        "speise": "Pizzateig",
+        "enthaelt": [
+          "Weizenmehl",
+          "Eier",
+          "Milch",
+          "Laktose"
+        ]
+      },
+      {
+        "speise": "Dönerbrot",
+        "enthaelt": [
+          "Weizenmehl",
+          "Sojamehl",
+          "Gerste",
+          "Gurkenmehl"
+        ]
+      },
+      {
+        "speise": "Dönerfleisch (Pute, Hähnchen)",
+        "enthaelt": [
+          "Sojabohnen",
+          "Milch",
+          "Laktose",
+          "Sellerie",
+          "Senf"
+        ]
+      },
+      {
+        "speise": "Pizzakäse",
+        "enthaelt": [
+          "Milch",
+          "Laktose"
+        ]
+      },
+      {
+        "speise": "Weichkäse",
+        "enthaelt": [
+          "Milch",
+          "Laktose"
+        ]
+      },
+      {
+        "speise": "Mozzarella",
+        "enthaelt": [
+          "Eier",
+          "Milch",
+          "Laktose"
+        ]
+      },
+      {
+        "speise": "Scheiblettenkäse",
+        "enthaelt": [
+          "Eier",
+          "Milch",
+          "Laktose"
+        ]
+      },
+      {
+        "speise": "Dürumbrot",
+        "enthaelt": [
+          "Weizenmehl",
+          "Eier",
+          "Milch",
+          "Laktose"
+        ]
+      },
+      {
+        "speise": "Thunfisch",
+        "enthaelt": [
+          "Sojabohnen"
+        ]
+      },
+      {
+        "speise": "Gorgonzola",
+        "enthaelt": [
+          "Milch",
+          "Laktose"
+        ]
+      },
+      {
+        "speise": "Ketchup",
+        "enthaelt": [
+          "Eier"
+        ]
+      },
+      {
+        "speise": "Mayonaise",
+        "enthaelt": [
+          "Eier",
+          "Senf"
+        ]
+      },
+      {
+        "speise": "Parmesan",
+        "enthaelt": [
+          "Eier",
+          "Milch",
+          "Laktose"
+        ]
+      },
+      {
+        "speise": "Dönersauce",
+        "enthaelt": [
+          "Eier",
+          "Milch",
+          "Laktose",
+          "Senf"
+        ]
+      },
+      {
+        "speise": "Joghurtdressing",
+        "enthaelt": [
+          "Gurkenmehl",
+          "Johanniskernmehl",
+          "Eier",
+          "Milch",
+          "Laktose"
+        ]
+      },
+      {
+        "speise": "scharfe Sauce",
+        "enthaelt": [
+          "Eier",
+          "Milch",
+          "Laktose",
+          "Senf"
+        ]
+      },
+      {
+        "speise": "Balsamicocreme",
+        "enthaelt": [
+          "Gurkenmehl",
+          "Schwefeldioxid"
+        ]
+      },
+      {
+        "speise": "Börek Spinat",
+        "enthaelt": [
+          "Weizenmehl",
+          "Milch",
+          "Laktose"
+        ]
+      },
+      {
+        "speise": "Börek Käse",
+        "enthaelt": [
+          "Weizenmehl",
+          "Milch",
+          "Laktose"
+        ]
+      },
+      {
+        "speise": "Lahmacun",
+        "enthaelt": [
+          "Weizenmehl"
+        ]
+      },
+      {
+        "speise": "Baklava",
+        "enthaelt": [
+          "Weizenmehl",
+          "Eier",
+          "Walnüsse"
+        ]
+      }
+    ]
+  },
+  "zusatzstoffe": {
+    "titel": "Zusatzstoff-Kennzeichnung",
+    "hinweis": "Die mit hochgestellten Ziffern gekennzeichneten Speisen enthalten deklarationspflichtige Zusatzstoffe. Die vollständige Kennzeichnung entnehmen Sie bitte der gedruckten Speisekarte bzw. dem Aushang im Lokal oder fragen Sie unser Personal.",
+    "marker": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "7",
+      "8",
+      "9"
+    ],
+    "stern": "* zum Familienpizza-Preis"
+  }
+}

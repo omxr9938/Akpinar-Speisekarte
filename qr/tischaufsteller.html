@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tischaufsteller – Akpinar Speisekarte</title>
+<style>
+  @page { size: A4 portrait; margin: 0; }
+
+  :root {
+    --bg:   #0c0a09;
+    --gold: #e2b35f;
+    --gold-2: #f6dea4;
+    --gold-3: #b98a3c;
+    --red:  #c1201f;
+    --serif: "Playfair Display", "Iowan Old Style", Palatino, Georgia, serif;
+    --sans:  "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: #6b6b6b;
+    font-family: var(--sans);
+    color: #fff;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .sheet {
+    width: 210mm;
+    height: 297mm;
+    margin: 12mm auto;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 6px 34px rgba(0, 0, 0, .4);
+    overflow: hidden;
+  }
+
+  /* The upper panel is rotated so both sides stand upright once folded. */
+  .panel {
+    flex: 1 1 50%;
+    background:
+      radial-gradient(120% 90% at 50% 0%, rgba(193, 32, 31, .3), transparent 62%),
+      linear-gradient(180deg, #1a1513, var(--bg));
+    color: #f4efe9;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8mm 14mm;
+    text-align: center;
+  }
+  .panel--top { transform: rotate(180deg); }
+
+  .fold {
+    height: 0;
+    border-top: 1px dashed rgba(0, 0, 0, .45);
+    position: relative;
+  }
+  .fold::after {
+    content: "hier falten";
+    position: absolute;
+    right: 4mm; top: -4.4mm;
+    font-size: 7pt;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: #777;
+    background: #fff;
+    padding: 0 2mm;
+  }
+
+  .logo {
+    font-family: var(--serif);
+    font-weight: 900;
+    font-size: 30pt;
+    line-height: 1;
+    letter-spacing: .07em;
+    background: linear-gradient(175deg, #fbeec4 6%, var(--gold) 38%, var(--gold-3) 62%, #f4dfa8 92%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin: 0;
+  }
+
+  .sub {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3mm;
+    margin-top: 2mm;
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 11pt;
+    letter-spacing: .3em;
+    text-transform: uppercase;
+    color: #e8564f;
+  }
+  .sub::before, .sub::after {
+    content: "";
+    width: 14mm; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--red), transparent);
+  }
+
+  .claim {
+    margin-top: 2mm;
+    font-size: 7pt;
+    letter-spacing: .32em;
+    text-transform: uppercase;
+    color: var(--gold);
+    opacity: .85;
+  }
+
+  .headline {
+    margin: 5mm 0 0;
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 800;
+    font-size: 16pt;
+    color: var(--gold-2);
+  }
+  .headline small {
+    display: block;
+    margin-top: 1.5mm;
+    font-family: var(--sans);
+    font-style: normal;
+    font-weight: 600;
+    font-size: 9pt;
+    letter-spacing: .04em;
+    color: #c3b7ab;
+  }
+
+  .qr {
+    margin-top: 5mm;
+    padding: 3.5mm;
+    background: #fff;
+    border-radius: 3mm;
+    box-shadow: 0 3mm 8mm rgba(0, 0, 0, .35);
+  }
+  .qr img { display: block; width: 38mm; height: 38mm; }
+
+  .url {
+    margin-top: 3mm;
+    font-size: 8pt;
+    letter-spacing: .02em;
+    color: #8c8177;
+    word-break: break-all;
+  }
+
+  .foot {
+    margin-top: 5mm;
+    padding-top: 3.5mm;
+    border-top: 1px solid rgba(226, 179, 95, .3);
+    width: 100%;
+  }
+  .phone {
+    font-family: var(--serif);
+    font-weight: 800;
+    font-size: 17pt;
+    color: var(--gold);
+    letter-spacing: .02em;
+  }
+  .addr { margin-top: 1.5mm; font-size: 8.5pt; color: #c3b7ab; }
+
+  .hint {
+    max-width: 180mm;
+    margin: 0 auto 10mm;
+    padding: 6mm 8mm;
+    background: #fff;
+    border-radius: 3mm;
+    color: #222;
+    font-size: 10pt;
+    line-height: 1.6;
+  }
+  .hint h1 { margin: 0 0 3mm; font-size: 13pt; }
+  .hint code { background: #eee; padding: 1px 5px; border-radius: 3px; font-size: 9pt; }
+
+  @media print {
+    body { background: #fff; }
+    .sheet { margin: 0; box-shadow: none; }
+    .hint { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hint">
+  <h1>Tischaufsteller drucken</h1>
+  Auf <b>A4</b> drucken (Skalierung 100 %, Ränder „keine“, Hintergrundgrafiken aktivieren),
+  dann auf der gestrichelten Linie falten — fertig ist der beidseitige Tischaufsteller.
+  Am besten auf 200–300 g/m² Karton.
+  <br><br>
+  Die Adresse hinter dem QR-Code steht in <code>qr/url.txt</code>. Nach einem Wechsel
+  der Adresse einmal <code>python3 qr/generate_qr.py --url …</code> ausführen.
+</div>
+
+<div class="sheet">
+
+  <section class="panel panel--top">
+    <p class="logo">Akpinar</p>
+    <p class="sub">Döner &middot; Pizza</p>
+    <p class="claim">Qualität &middot; Frisch &middot; Lecker</p>
+
+    <p class="headline">Unsere Speisekarte online
+      <small>Einfach mit der Handy-Kamera scannen</small>
+    </p>
+
+    <div class="qr"><img src="speisekarte-qr.png" alt="QR-Code zur Online-Speisekarte"></div>
+    <p class="url">omxr9938.github.io/Akpinar-Speisekarte</p>
+
+    <div class="foot">
+      <div class="phone">08671-9580145</div>
+      <div class="addr">Neuöttinger Str. 20 &middot; 84503 Altötting</div>
+    </div>
+  </section>
+
+  <div class="fold"></div>
+
+  <section class="panel">
+    <p class="logo">Akpinar</p>
+    <p class="sub">Döner &middot; Pizza</p>
+    <p class="claim">Qualität &middot; Frisch &middot; Lecker</p>
+
+    <p class="headline">Unsere Speisekarte online
+      <small>Einfach mit der Handy-Kamera scannen</small>
+    </p>
+
+    <div class="qr"><img src="speisekarte-qr.png" alt="QR-Code zur Online-Speisekarte"></div>
+    <p class="url">omxr9938.github.io/Akpinar-Speisekarte</p>
+
+    <div class="foot">
+      <div class="phone">08671-9580145</div>
+      <div class="addr">Neuöttinger Str. 20 &middot; 84503 Altötting</div>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>
