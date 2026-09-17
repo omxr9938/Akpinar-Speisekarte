@@ -98,8 +98,17 @@ einfach die beiden Zahlen ändern.
 Die Seite liegt als statisches HTML im Repository und wird bei jedem Push auf `main`
 über GitHub Actions veröffentlicht ([`.github/workflows/pages.yml`](.github/workflows/pages.yml)).
 
-**Einmalig einzurichten:** im Repository unter *Settings → Pages* bei *Source*
-**„GitHub Actions“** auswählen. Danach läuft jeder Push automatisch live.
+**Voraussetzung: Das Repository muss öffentlich sein.** GitHub Pages ist im Free-Plan
+nur für öffentliche Repositories verfügbar. Bei einem privaten Repository schlägt der
+Deploy mit `Create Pages site failed: Resource not accessible by integration` fehl —
+der Workflow-Token darf dort keine Pages-Site anlegen.
+
+Umstellen unter *Settings → General → Danger Zone → Change visibility → Make public*.
+Alternativ GitHub Pro, dann geht es auch privat.
+
+Sobald das Repository öffentlich ist, richtet der Workflow Pages beim ersten Lauf selbst
+ein (`enablement: true` in der Workflow-Datei) — der Weg über *Settings → Pages* ist
+dann nicht nötig.
 
 ### Eigene Domain
 
