@@ -52,6 +52,7 @@
     justify-content: center;
     padding: 8mm 14mm;
     text-align: center;
+    isolation: isolate;
   }
   .panel--top { transform: rotate(180deg); }
 
@@ -72,45 +73,13 @@
     padding: 0 2mm;
   }
 
-  .logo {
-    font-family: var(--serif);
-    font-weight: 900;
-    font-size: 30pt;
-    line-height: 1;
-    letter-spacing: .07em;
-    background: linear-gradient(175deg, #fbeec4 6%, var(--gold) 38%, var(--gold-3) 62%, #f4dfa8 92%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    margin: 0;
-  }
-
-  .sub {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 3mm;
-    margin-top: 2mm;
-    font-family: var(--serif);
-    font-weight: 700;
-    font-size: 11pt;
-    letter-spacing: .3em;
-    text-transform: uppercase;
-    color: #e8564f;
-  }
-  .sub::before, .sub::after {
-    content: "";
-    width: 14mm; height: 1px;
-    background: linear-gradient(90deg, transparent, var(--red), transparent);
-  }
-
-  .claim {
-    margin-top: 2mm;
-    font-size: 7pt;
-    letter-spacing: .32em;
-    text-transform: uppercase;
-    color: var(--gold);
-    opacity: .85;
+  /* Das Logo ist fuer schwarzen Grund gezeichnet; `screen` macht sein
+     Schwarz auf dem dunklen Panel unsichtbar. */
+  .brand {
+    width: 118mm;
+    max-width: 100%;
+    height: auto;
+    mix-blend-mode: screen;
   }
 
   .headline {
@@ -199,9 +168,7 @@
 <div class="sheet">
 
   <section class="panel panel--top">
-    <p class="logo">Akpinar</p>
-    <p class="sub">Döner &middot; Pizza</p>
-    <p class="claim">Qualität &middot; Frisch &middot; Lecker</p>
+    <img class="brand" src="../assets/img/logo.webp" alt="Akpinar – Döner &amp; Pizza">
 
     <p class="headline">Unsere Speisekarte online
       <small>Einfach mit der Handy-Kamera scannen</small>
@@ -219,9 +186,7 @@
   <div class="fold"></div>
 
   <section class="panel">
-    <p class="logo">Akpinar</p>
-    <p class="sub">Döner &middot; Pizza</p>
-    <p class="claim">Qualität &middot; Frisch &middot; Lecker</p>
+    <img class="brand" src="../assets/img/logo.webp" alt="Akpinar – Döner &amp; Pizza">
 
     <p class="headline">Unsere Speisekarte online
       <small>Einfach mit der Handy-Kamera scannen</small>

@@ -128,12 +128,31 @@ index.html                  Grundgerüst der Seite
 assets/css/styles.css       Gestaltung (dunkel, Gold, Rot — wie die gedruckte Karte)
 assets/js/app.js            baut die Seite aus menu.json auf, Suche und Navigation
 assets/data/menu.json       ← hier stehen alle Gerichte und Preise
+assets/img/logo.webp        Logo für die Seite (Kopfbereich)
+assets/img/logo-small.webp  Logo für den Fuß und die Kärtchen
+assets/img/logo-original.jpg  Logo im Original, unbearbeitet
+assets/img/emblem-180.png   Emblem als App-Icon, favicon-32.png als Favicon
 assets/img/                 Fotos und Hintergrund, aus der PDF-Karte übernommen
 qr/                         QR-Codes, Druckvorlagen und das Erzeugungs-Skript
 ```
 
 Kein Framework, kein Build-Schritt, keine externen Abhängigkeiten zur Laufzeit außer den
 Schriften von Google Fonts (mit System-Schriften als Rückfallebene).
+
+---
+
+## Logo
+
+Das Logo liegt unbearbeitet als `assets/img/logo-original.jpg` bei. Für die Seite ist
+sein Hintergrund auf exaktes Schwarz gezogen und es wird per `mix-blend-mode: screen`
+eingebunden — dadurch verschwindet der schwarze Hintergrund auf jedem dunklen Untergrund
+restlos, ohne dass die schwarzen Flächen **innerhalb** des goldenen Rahmens ausgestanzt
+werden müssten. Im Druck wird das Blending abgeschaltet; dort erscheint das Logo als
+schwarzes Schild auf weißem Papier.
+
+Ein neues Logo einbauen: Bild als `assets/img/logo.webp` (Kopf) und
+`assets/img/logo-small.webp` (Fuß) ablegen — am besten wieder mit schwarzem Hintergrund,
+damit das Blending greift.
 
 ---
 

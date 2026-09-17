@@ -106,6 +106,7 @@ a { color: var(--gold); }
 .hero {
   position: relative;
   overflow: hidden;
+  isolation: isolate;
   border-bottom: 1px solid var(--line);
   background:
     radial-gradient(120% 90% at 50% -10%, rgba(193, 32, 31, .28), transparent 62%),
@@ -125,59 +126,28 @@ a { color: var(--gold); }
 
 .hero__inner {
   position: relative;
-  padding-block: 40px 30px;
+  padding-block: 26px 30px;
   text-align: center;
 }
 
-.crown {
-  width: 34px; height: auto;
-  margin-inline: auto;
-  color: var(--red);
-  opacity: .95;
-}
-
+/* The logo artwork is drawn for a black background and has black areas inside
+   its frame, so it cannot be cut out. Its background is pure black instead,
+   which `screen` blending renders fully invisible over any dark backdrop. */
 .logo {
-  font-family: var(--serif);
-  font-weight: 900;
-  font-size: clamp(2.9rem, 13vw, 5.5rem);
-  line-height: .95;
-  letter-spacing: .06em;
-  margin: 6px 0 0;
-  background: linear-gradient(175deg, #fbeec4 6%, var(--gold) 38%, var(--gold-3) 62%, #f4dfa8 92%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  text-shadow: 0 2px 18px rgba(226, 179, 95, .16);
+  margin: 0;
+  font-size: 0;
+  line-height: 0;
 }
 
-.logo__sub {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 8px;
-  font-family: var(--serif);
-  font-weight: 700;
-  font-size: clamp(1rem, 4.4vw, 1.5rem);
-  letter-spacing: .3em;
-  text-transform: uppercase;
-  color: #e8564f;
-}
-.logo__sub::before,
-.logo__sub::after {
-  content: "";
-  flex: 0 1 60px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--red), transparent);
+.logo__img {
+  width: min(100%, 540px);
+  height: auto;
+  margin-inline: auto;
+  mix-blend-mode: screen;
 }
 
-.logo__claim {
-  margin-top: 10px;
-  font-size: .7rem;
-  letter-spacing: .34em;
-  text-transform: uppercase;
-  color: var(--gold);
-  opacity: .82;
+@media (min-width: 720px) {
+  .logo__img { width: min(100%, 680px); }
 }
 
 /* status + actions */
@@ -876,19 +846,18 @@ table.allergens td.yes { color: var(--gold-2); font-weight: 800; }
 body.is-searching .no-results.show { display: block; }
 
 .site-footer {
+  isolation: isolate;
   margin-top: 50px;
   padding-block: 34px 40px;
   border-top: 1px solid var(--line);
   background: linear-gradient(180deg, var(--bg-2), var(--bg));
   text-align: center;
 }
-.site-footer__name {
-  font-family: var(--serif);
-  font-weight: 800;
-  font-size: 1.5rem;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  color: var(--gold);
+.site-footer__logo {
+  width: min(100%, 300px);
+  height: auto;
+  margin: 0 auto 4px;
+  mix-blend-mode: screen;
 }
 .site-footer p { margin: 8px 0 0; font-size: .88rem; color: var(--text-2); }
 .site-footer .btn { margin-top: 16px; }
@@ -922,10 +891,20 @@ body.is-searching .no-results.show { display: block; }
   .toolbar, .to-top, .hero__actions, .hero__status, .hero__texture, .skip-link,
   .scroll-hint { display: none !important; }
   .hero { border-bottom: 2px solid #000; background: #fff; }
-  .logo { color: #000; -webkit-text-fill-color: #000; background: none; text-shadow: none; }
-  .logo__sub { color: #000; }
-  .section { padding-top: 16pt; break-inside: avoid; }
-  .items, .panel, .offers, .offer, details.acc { background: #fff !important; border-color: #999; box-shadow: none; }
+  .logo__img, .site-footer__logo {
+    mix-blend-mode: normal;
+    width: 62mm;
+  }
+  .section { padding-top: 14pt; }
+  .section__title { break-after: avoid; }
+  .item, .card, .offer, .zone, .season, .stamp { break-inside: avoid; }
+  .items, .panel { break-inside: auto; }
+  .items, .panel, .offers, .offer, details.acc,
+  .offers__grid, .offers__head, .banner, .stamp, .extras, .legend {
+    background: #fff !important; border-color: #999; box-shadow: none;
+  }
+  .offers__grid { gap: 0; }
+  .offer { border: 1px solid #999; }
   .item { border-color: #ddd; }
   .item:nth-child(even) { background: #f7f7f7; }
   .card { background: #eee; color: #000; box-shadow: none; border: 1px solid #999; }

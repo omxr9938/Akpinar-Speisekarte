@@ -53,6 +53,7 @@
     display: flex;
     align-items: center;
     gap: 5mm;
+    isolation: isolate;
   }
 
   .card__qr {
@@ -63,29 +64,16 @@
   }
   .card__qr img { display: block; width: 30mm; height: 30mm; }
 
-  .card__text { min-width: 0; }
+  .card__text { min-width: 0; flex: 1 1 auto; }
 
-  .logo {
-    margin: 0;
-    font-family: var(--serif);
-    font-weight: 900;
-    font-size: 17pt;
-    line-height: 1.16;
-    letter-spacing: .05em;
-    background: linear-gradient(175deg, #fbeec4 6%, var(--gold) 38%, var(--gold-3) 62%, #f4dfa8 92%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
-
-  .sub {
-    margin: 1mm 0 0;
-    font-family: var(--serif);
-    font-weight: 700;
-    font-size: 7pt;
-    letter-spacing: .26em;
-    text-transform: uppercase;
-    color: #e8564f;
+  /* Das Logo ist fuer schwarzen Grund gezeichnet; `screen` macht sein
+     Schwarz auf dem dunklen Kaertchen unsichtbar. */
+  .brand {
+    display: block;
+    width: 100%;
+    max-width: 52mm;
+    height: auto;
+    mix-blend-mode: screen;
   }
 
   .lead {
@@ -156,8 +144,7 @@
     '<div class="card">' +
       '<div class="card__qr"><img src="speisekarte-qr.png" alt="QR-Code zur Online-Speisekarte"></div>' +
       '<div class="card__text">' +
-        '<p class="logo">Akpinar</p>' +
-        '<p class="sub">Döner · Pizza</p>' +
+        '<img class="brand" src="../assets/img/logo.webp" alt="Akpinar – Döner &amp; Pizza">' +
         '<p class="lead">Speisekarte online<small>Mit der Handy-Kamera scannen</small></p>' +
         '<div class="phone">08671-9580145</div>' +
         '<div class="addr">Neuöttinger Str. 20 · 84503 Altötting</div>' +
