@@ -106,9 +106,13 @@ der Workflow-Token darf dort keine Pages-Site anlegen.
 Umstellen unter *Settings → General → Danger Zone → Change visibility → Make public*.
 Alternativ GitHub Pro, dann geht es auch privat.
 
-Sobald das Repository öffentlich ist, richtet der Workflow Pages beim ersten Lauf selbst
-ein (`enablement: true` in der Workflow-Datei) — der Weg über *Settings → Pages* ist
-dann nicht nötig.
+**Zusätzlich einmalig nötig:** unter *Settings → Pages* bei *Source* **„GitHub Actions“**
+auswählen. Diesen Schritt kann der Workflow nicht selbst übernehmen — der `GITHUB_TOKEN`
+darf mit `pages: write` zwar auf eine bestehende Pages-Site deployen, aber keine neue
+anlegen (`Create Pages site failed: Resource not accessible by integration`). Auch
+`enablement: true` an `actions/configure-pages` ändert daran nichts.
+
+Danach läuft jeder Push auf `main` automatisch live.
 
 ### Eigene Domain
 

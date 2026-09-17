@@ -25,12 +25,13 @@ jobs:
       - name: Repository auschecken
         uses: actions/checkout@v4
 
-      # enablement: true schaltet GitHub Pages beim ersten Lauf selbst ein,
-      # sonst müsste man es vorher unter Settings → Pages von Hand aktivieren.
+      # Setzt voraus, dass Pages einmalig unter Settings → Pages mit
+      # Source: "GitHub Actions" aktiviert wurde. Das kann der Workflow nicht
+      # selbst erledigen: der GITHUB_TOKEN darf mit pages: write zwar auf eine
+      # bestehende Pages-Site deployen, aber keine neue anlegen
+      # ("Create Pages site failed: Resource not accessible by integration").
       - name: Pages konfigurieren
         uses: actions/configure-pages@v5
-        with:
-          enablement: true
 
       - name: Seite hochladen
         uses: actions/upload-pages-artifact@v3
