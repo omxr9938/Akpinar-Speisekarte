@@ -7,6 +7,79 @@
 <style>
   @page { size: A4 portrait; margin: 8mm; }
 
+    /* Schriften lokal, damit der Druck unabhängig vom Internet identisch aussieht */
+  @font-face {
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("../assets/fonts/inter-latin-400-normal.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "Inter";
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url("../assets/fonts/inter-latin-400-italic.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url("../assets/fonts/inter-latin-600-normal.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "Inter";
+    font-style: italic;
+    font-weight: 600;
+    font-display: swap;
+    src: url("../assets/fonts/inter-latin-600-italic.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url("../assets/fonts/inter-latin-700-normal.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 800;
+    font-display: swap;
+    src: url("../assets/fonts/inter-latin-800-normal.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "Playfair Display";
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url("../assets/fonts/playfair-display-latin-700-normal.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "Playfair Display";
+    font-style: italic;
+    font-weight: 700;
+    font-display: swap;
+    src: url("../assets/fonts/playfair-display-latin-700-italic.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "Playfair Display";
+    font-style: normal;
+    font-weight: 800;
+    font-display: swap;
+    src: url("../assets/fonts/playfair-display-latin-800-normal.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "Playfair Display";
+    font-style: italic;
+    font-weight: 800;
+    font-display: swap;
+    src: url("../assets/fonts/playfair-display-latin-800-italic.woff2") format("woff2");
+  }
+
+
   :root {
     --bg:   #0c0a09;
     --gold: #e2b35f;
@@ -144,7 +217,7 @@
     '<div class="card">' +
       '<div class="card__qr"><img src="speisekarte-qr.png" alt="QR-Code zur Online-Speisekarte"></div>' +
       '<div class="card__text">' +
-        '<img class="brand" src="../assets/img/logo.webp" alt="Akpinar – Döner &amp; Pizza">' +
+        '<img class="brand" src="../assets/img/logo-print.png" alt="Akpinar – Döner &amp; Pizza">' +
         '<p class="lead">Speisekarte online<small>Mit der Handy-Kamera scannen</small></p>' +
         '<div class="phone">08671-9580145</div>' +
         '<div class="addr">Neuöttinger Str. 20 · 84503 Altötting</div>' +

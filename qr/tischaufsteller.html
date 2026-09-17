@@ -7,6 +7,79 @@
 <style>
   @page { size: A4 portrait; margin: 0; }
 
+    /* Schriften lokal, damit der Druck unabhängig vom Internet identisch aussieht */
+  @font-face {
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("../assets/fonts/inter-latin-400-normal.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "Inter";
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url("../assets/fonts/inter-latin-400-italic.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url("../assets/fonts/inter-latin-600-normal.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "Inter";
+    font-style: italic;
+    font-weight: 600;
+    font-display: swap;
+    src: url("../assets/fonts/inter-latin-600-italic.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url("../assets/fonts/inter-latin-700-normal.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 800;
+    font-display: swap;
+    src: url("../assets/fonts/inter-latin-800-normal.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "Playfair Display";
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url("../assets/fonts/playfair-display-latin-700-normal.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "Playfair Display";
+    font-style: italic;
+    font-weight: 700;
+    font-display: swap;
+    src: url("../assets/fonts/playfair-display-latin-700-italic.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "Playfair Display";
+    font-style: normal;
+    font-weight: 800;
+    font-display: swap;
+    src: url("../assets/fonts/playfair-display-latin-800-normal.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "Playfair Display";
+    font-style: italic;
+    font-weight: 800;
+    font-display: swap;
+    src: url("../assets/fonts/playfair-display-latin-800-italic.woff2") format("woff2");
+  }
+
+
   :root {
     --bg:   #0c0a09;
     --gold: #e2b35f;
@@ -168,7 +241,7 @@
 <div class="sheet">
 
   <section class="panel panel--top">
-    <img class="brand" src="../assets/img/logo.webp" alt="Akpinar – Döner &amp; Pizza">
+    <img class="brand" src="../assets/img/logo-print.png" alt="Akpinar – Döner &amp; Pizza">
 
     <p class="headline">Unsere Speisekarte online
       <small>Einfach mit der Handy-Kamera scannen</small>
@@ -186,7 +259,7 @@
   <div class="fold"></div>
 
   <section class="panel">
-    <img class="brand" src="../assets/img/logo.webp" alt="Akpinar – Döner &amp; Pizza">
+    <img class="brand" src="../assets/img/logo-print.png" alt="Akpinar – Döner &amp; Pizza">
 
     <p class="headline">Unsere Speisekarte online
       <small>Einfach mit der Handy-Kamera scannen</small>

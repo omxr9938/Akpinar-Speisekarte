@@ -2,6 +2,87 @@
    Akpinar Döner · Pizza — Online-Speisekarte
    ========================================================================== */
 
+/* --------------------------------------------------------------- fonts --
+   Lokal eingebunden statt über Google Fonts: das Einbetten per Hotlink
+   überträgt die IP-Adresse jedes Besuchers an Google, was deutsche Gerichte
+   als DSGVO-Verstoß gewertet haben (LG München I, 3 O 17493/20).
+
+   Bewusst statische Schnitte statt Variable Fonts: Chromium kann Variable
+   Fonts nicht als echte Schrift in ein PDF einbetten und wandelt sie in
+   Type3-Vektorzeichnungen um — der Druck bliebe scharf, aber der Text wäre
+   nicht mehr durchsuchbar und manche Druckerei-RIPs kommen damit nicht klar. */
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/inter-latin-400-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/inter-latin-400-italic.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("../fonts/inter-latin-600-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: italic;
+  font-weight: 600;
+  font-display: swap;
+  src: url("../fonts/inter-latin-600-italic.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/inter-latin-700-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("../fonts/inter-latin-800-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Playfair Display";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/playfair-display-latin-700-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Playfair Display";
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/playfair-display-latin-700-italic.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Playfair Display";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("../fonts/playfair-display-latin-800-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Playfair Display";
+  font-style: italic;
+  font-weight: 800;
+  font-display: swap;
+  src: url("../fonts/playfair-display-latin-800-italic.woff2") format("woff2");
+}
+
 :root {
   --bg:            #0c0a09;
   --bg-2:          #141110;
