@@ -98,27 +98,68 @@ einfach die beiden Zahlen ändern.
 Die Seite liegt als statisches HTML im Repository und wird bei jedem Push auf `main`
 über GitHub Actions veröffentlicht ([`.github/workflows/pages.yml`](.github/workflows/pages.yml)).
 
-**Voraussetzung: Das Repository muss öffentlich sein.** GitHub Pages ist im Free-Plan
-nur für öffentliche Repositories verfügbar. Bei einem privaten Repository schlägt der
-Deploy mit `Create Pages site failed: Resource not accessible by integration` fehl —
-der Workflow-Token darf dort keine Pages-Site anlegen.
+### Hosting bei Cloudflare Pages (empfohlen)
 
-Umstellen unter *Settings → General → Danger Zone → Change visibility → Make public*.
-Alternativ GitHub Pro, dann geht es auch privat.
+Cloudflare Pages liefert auch **private** Repositories kostenlos aus und erlaubt
+einen eigenen Projektnamen als Adresse.
 
-**Zusätzlich einmalig nötig:** unter *Settings → Pages* bei *Source* **„GitHub Actions“**
-auswählen. Diesen Schritt kann der Workflow nicht selbst übernehmen — der `GITHUB_TOKEN`
-darf mit `pages: write` zwar auf eine bestehende Pages-Site deployen, aber keine neue
-anlegen (`Create Pages site failed: Resource not accessible by integration`). Auch
-`enablement: true` an `actions/configure-pages` ändert daran nichts.
+Einmalig einzurichten:
 
-Danach läuft jeder Push auf `main` automatisch live.
+1. Konto anlegen auf <https://dash.cloudflare.com/sign-up> (kostenlos)
+2. *Workers & Pages* → *Create* → *Pages* → *Connect to Git*
+3. GitHub verbinden und dieses Repository auswählen
+4. Projektname vergeben — er bestimmt die Adresse:
+   `<projektname>.pages.dev`
+5. Build-Einstellungen: **Framework preset** auf *None*,
+   **Build command** leer lassen, **Build output directory** auf `/`
+6. *Save and Deploy*
+
+Die Seite ist danach unter `<projektname>.pages.dev` erreichbar und wird bei
+jedem Push auf `main` neu veröffentlicht.
+
+Anschließend die Adresse im Projekt umstellen und die Druckvorlagen neu
+erzeugen:
+
+```
+python3 tools/set-site-url.py https://<projektname>.pages.dev/
+python3 qr/generate_qr.py
+```
+
+Die Datei [`_headers`](_headers) steuert dabei das Caching und wird von
+Cloudflare automatisch berücksichtigt.
 
 ### Eigene Domain
 
-1. Datei `CNAME` im Repository-Wurzelverzeichnis anlegen, Inhalt z. B. `www.akpinar-altoetting.de`
-2. Beim Domain-Anbieter einen CNAME-Eintrag auf `omxr9938.github.io` setzen
-3. QR-Code neu erzeugen (siehe oben) und die Druckvorlagen neu ausgeben
+Ohne gekaufte Domain gehört die Adresse immer dem Hoster — `.pages.dev` bei
+Cloudflare, `.github.io` bei GitHub. Endungen wie `.speisekarte` existieren
+nicht; der Teil nach dem letzten Punkt muss eine registrierte Endung sein.
+
+Passende echte Endungen für ein Lokal sind etwa `.menu`, `.pizza`, `.bayern`
+oder schlicht `.de`. Eine eigene Domain kostet je nach Endung rund 10–30 Euro
+im Jahr und hat einen praktischen Vorteil: Sie bleibt bei einem Hosterwechsel
+gleich — **gedruckte QR-Codes behalten ihre Gültigkeit.**
+
+Einrichtung: Domain beim Anbieter kaufen, in Cloudflare unter
+*Workers & Pages* → Projekt → *Custom domains* eintragen, dann wieder
+`tools/set-site-url.py` und `qr/generate_qr.py` laufen lassen.
+
+### Hosting bei GitHub Pages (aktuell aktiv)
+
+**Voraussetzung: Das Repository muss öffentlich sein.** GitHub Pages ist im
+Free-Plan nur für öffentliche Repositories verfügbar.
+
+**Einmalig nötig:** unter *Settings → Pages* bei *Source* **„GitHub Actions"**
+auswählen. Diesen Schritt kann der Workflow nicht selbst übernehmen — der
+`GITHUB_TOKEN` darf mit `pages: write` zwar auf eine bestehende Pages-Site
+deployen, aber keine neue anlegen.
+
+Danach läuft jeder Push auf `main` automatisch live.
+
+
+Eigene Domain bei GitHub Pages: Datei `CNAME` im Wurzelverzeichnis anlegen mit
+der Domain als Inhalt, beim Anbieter einen CNAME-Eintrag auf
+`omxr9938.github.io` setzen, danach `tools/set-site-url.py` und
+`qr/generate_qr.py` laufen lassen.
 
 ---
 
