@@ -204,7 +204,10 @@
 
     var grid = el('div', { class: 'hours' });
     o.saisons.forEach(function (s, idx) {
-      grid.appendChild(el('div', { class: 'season', 'data-active': idx === active }, [
+      // Bewusst die Zeichenkette 'true' statt eines Booleans: el() macht aus
+      // true ein leeres Attribut (data-active=""), das CSS greift aber auf
+      // [data-active="true"] zu — die Hervorhebung blieb dadurch unsichtbar.
+      grid.appendChild(el('div', { class: 'season', 'data-active': idx === active ? 'true' : null }, [
         el('p', { class: 'season__name', text: s.name + (idx === active ? ' · aktuell' : '') })
       ].concat(s.zeiten.map(function (z) {
         return el('div', { class: 'season__row' }, [

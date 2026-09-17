@@ -623,12 +623,18 @@ main { padding-bottom: 40px; }
 .extras__row {
   display: flex;
   align-items: baseline;
+  /* Umbruch erlaubt: auf schmalen Geräten (ab etwa 360 px abwärts) passen
+     Beschriftung und die drei Preise nicht nebeneinander — dann rutschen die
+     Preise in die nächste Zeile, statt die Seite breiter zu machen. */
+  flex-wrap: wrap;
   gap: 12px;
   padding: 5px 0;
   font-size: .9rem;
   color: var(--text-2);
 }
-.extras__row span:first-child { flex: 1 1 auto; }
+/* min-width: 0 ist hier entscheidend: Ein Flex-Kind schrumpft ohne diese
+   Angabe nie unter die Breite seines Inhalts und schiebt die Zeile auf. */
+.extras__row span:first-child { flex: 1 1 auto; min-width: 0; }
 .extras__row .item__price { font-size: .92rem; }
 .extras__foot {
   margin: 10px 0 0;
