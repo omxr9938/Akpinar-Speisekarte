@@ -29,7 +29,7 @@ HERE = pathlib.Path(__file__).resolve().parent
 
 # Adresse der veröffentlichten Speisekarte. Bei eigener Domain hier ändern
 # (oder --url benutzen) und das Skript erneut ausführen.
-DEFAULT_URL = "https://omxr9938.github.io/Akpinar-Speisekarte/"
+DEFAULT_URL = "https://akpinardonerpizza.pages.dev/"
 
 DARK = "#0c0a09"   # Modulfarbe — dunkel, wie die Speisekarte
 LIGHT = "#ffffff"  # Hintergrund — für den Scan immer hell lassen

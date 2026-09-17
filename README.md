@@ -3,7 +3,7 @@
 Die digitale Speisekarte von **Akpinar Döner & Pizza**, Neuöttinger Str. 20, 84503 Altötting
 — erstellt aus der gedruckten Karte (Stand: gültig ab September 2026).
 
-**Adresse der Seite:** <https://omxr9938.github.io/Akpinar-Speisekarte/>
+**Adresse der Seite:** <https://akpinardonerpizza.pages.dev/>
 
 ---
 
