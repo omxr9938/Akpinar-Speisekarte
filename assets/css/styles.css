@@ -957,6 +957,24 @@ table.allergens td.yes { color: var(--gold-2); font-weight: 800; }
 .no-results b { color: var(--text); }
 body.is-searching .no-results.show { display: block; }
 
+/* Während einer Suche nur die Treffer zeigen. Die Angebote stehen über den
+   Gerichten — ohne diese Regel müsste man an ihnen vorbeiscrollen, um das
+   erste Suchergebnis zu sehen. Lieferung und Allergene stehen darunter und
+   sind während der Suche ebenfalls nur Ablenkung. Alle drei kommen zurück,
+   sobald das Suchfeld geleert wird. */
+body.is-searching #angebote,
+body.is-searching #service,
+body.is-searching #allergene { display: none; }
+
+/* Auch die Extra-Zutaten-Kästen ausblenden: Sie hängen an einer Kategorie,
+   sind aber kein Suchtreffer und stünden sonst mitten in den Ergebnissen. */
+body.is-searching .extras { display: none; }
+
+/* Das eingebaute Löschkreuz von input[type=search] ausblenden — wir haben ein
+   eigenes (#search-clear), sonst stünden zwei Kreuze nebeneinander. */
+#search::-webkit-search-cancel-button,
+#search::-webkit-search-decoration { -webkit-appearance: none; appearance: none; }
+
 .site-footer {
   isolation: isolate;
   margin-top: 50px;

@@ -409,10 +409,29 @@
     var items = $$('.item');
     var sections = $$('#kategorien .section');
 
+    var suchteVorher = false;
+    var scrollVorSuche = 0;
+
     function apply() {
       var q = input.value.trim().toLowerCase();
       wrap.classList.toggle('has-value', q.length > 0);
       document.body.classList.toggle('is-searching', q.length > 0);
+
+      // Beim Beginn einer Suche einmal zu den Treffern springen. Ohne das steht
+      // der Kopfbereich über dem ersten Ergebnis und man müsste scrollen.
+      // Bewusst nur beim Übergang von "leer" zu "etwas eingegeben" — bei jedem
+      // Tastendruck zu springen wäre unruhig, besonders mit offener Tastatur.
+      var suchtJetzt = q.length > 0;
+      if (suchtJetzt && !suchteVorher) {
+        scrollVorSuche = window.scrollY;
+        zuTreffernSpringen();
+      } else if (!suchtJetzt && suchteVorher) {
+        // Zurück an die Stelle, an der die Suche begonnen wurde: Beim Leeren
+        // tauchen Angebote und Service wieder auf und schieben den Inhalt nach
+        // unten — ohne das säße man unvermittelt woanders.
+        window.scrollTo({ top: scrollVorSuche, behavior: 'smooth' });
+      }
+      suchteVorher = suchtJetzt;
 
       if (!q) {
         items.forEach(function (i) { i.hidden = false; });
@@ -438,6 +457,16 @@
 
       term.textContent = '„' + input.value.trim() + '“';
       empty.classList.toggle('show', hits === 0);
+    }
+
+    /** Scrollt so, dass die Trefferliste direkt unter der Suchleiste beginnt. */
+    function zuTreffernSpringen() {
+      var ziel = document.getElementById('kategorien');
+      if (!ziel) return;
+      var leiste = document.querySelector('.toolbar');
+      var hoehe = leiste ? leiste.getBoundingClientRect().height : 0;
+      var y = window.scrollY + ziel.getBoundingClientRect().top - hoehe - 8;
+      if (y > window.scrollY) window.scrollTo({ top: y, behavior: 'smooth' });
     }
 
     input.addEventListener('input', apply);
