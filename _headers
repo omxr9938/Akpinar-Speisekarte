@@ -1,8 +1,28 @@
 # Caching-Regeln für Cloudflare Pages.
-# Schriften, Bilder und QR-Codes tragen keinen Versionsstempel im Namen, werden
-# aber praktisch nie geändert — ein Jahr Cache ist hier richtig. Die Seite
-# selbst und die Speisekarten-Daten müssen dagegen sofort aktuell sein, sonst
-# sehen Gäste nach einer Preisänderung tagelang alte Preise.
+#
+# CSS, JavaScript und die Speisekarten-Daten tragen über tools/stamp-assets.py
+# eine Versionskennung aus dem Dateiinhalt in der Adresse (?v=…). Ändert sich
+# der Inhalt, ändert sich die Adresse — die alte Fassung wird nie wieder
+# angefragt. Deshalb dürfen sie lange gespeichert bleiben.
+#
+# index.html trägt keine Kennung und verweist auf die aktuellen Versionen.
+# Diese Datei darf nie zwischengespeichert werden, sonst kommen Korrekturen
+# erst Stunden später bei den Gästen an.
+
+/
+  Cache-Control: no-cache, must-revalidate
+
+/index.html
+  Cache-Control: no-cache, must-revalidate
+
+/assets/css/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/assets/js/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/assets/data/*
+  Cache-Control: public, max-age=31536000, immutable
 
 /assets/fonts/*
   Cache-Control: public, max-age=31536000, immutable
@@ -12,15 +32,3 @@
 
 /qr/*
   Cache-Control: public, max-age=31536000, immutable
-
-/assets/css/*
-  Cache-Control: public, max-age=3600
-
-/assets/js/*
-  Cache-Control: public, max-age=3600
-
-/assets/data/*
-  Cache-Control: public, max-age=300
-
-/
-  Cache-Control: public, max-age=300

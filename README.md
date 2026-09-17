@@ -59,6 +59,18 @@ python3 qr/generate_qr.py --url https://www.akpinar-altoetting.de/
 
 ---
 
+## Nach jeder Änderung an CSS, JS oder menu.json
+
+```
+python3 tools/stamp-assets.py
+```
+
+Das hängt an die Verweise eine Kennung aus dem Dateiinhalt (`?v=…`). Ohne sie
+liefern Browser und CDN nach einer Änderung weiter die alte Fassung aus —
+Korrekturen kämen bei Gästen erst Stunden später an. Mit Kennung ändert sich
+bei jeder Änderung die Adresse, und die Dateien dürfen trotzdem lange
+gespeichert bleiben (siehe [`_headers`](_headers)).
+
 ## Speisekarte pflegen
 
 Alle Inhalte stehen in **einer** Datei: [`assets/data/menu.json`](assets/data/menu.json).
