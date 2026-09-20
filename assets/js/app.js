@@ -473,14 +473,21 @@
       empty.classList.toggle('show', hits === 0);
     }
 
-    /** Scrollt so, dass die Trefferliste direkt unter der Suchleiste beginnt. */
+    /** Scrollt so, dass die Trefferliste direkt unter der Suchleiste beginnt.
+
+        Bewusst in beide Richtungen: Wer weit unten in der Karte steht und dann
+        sucht, bekommt die Treffer sonst oberhalb des Sichtfelds und müsste
+        selbst hochscrollen. Eine frühere Fassung sprang nur nach unten — das
+        war genau der Fall, der nicht funktionierte. */
     function zuTreffernSpringen() {
       var ziel = document.getElementById('kategorien');
       if (!ziel) return;
       var leiste = document.querySelector('.toolbar');
       var hoehe = leiste ? leiste.getBoundingClientRect().height : 0;
-      var y = window.scrollY + ziel.getBoundingClientRect().top - hoehe - 8;
-      if (y > window.scrollY) window.scrollTo({ top: y, behavior: 'smooth' });
+      var y = Math.max(0, window.scrollY + ziel.getBoundingClientRect().top - hoehe - 8);
+      if (Math.abs(y - window.scrollY) > 4) {
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
     }
 
     input.addEventListener('input', apply);
