@@ -531,7 +531,7 @@
 
   document.addEventListener('karte-fertig', function () {
     daten = window.AKPINAR.daten;
-    fetch('assets/data/bestellung.json?v=473ecc01')
+    fetch('assets/data/bestellung.json?v=349e34d0')
       .then(function (r) { return r.json(); })
       .then(function (k) {
         konfig = k;
