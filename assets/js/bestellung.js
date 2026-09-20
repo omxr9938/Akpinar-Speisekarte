@@ -196,6 +196,9 @@
             });
             b.classList.add('ist-an');
             extrasNeu();
+            if (zutatenKonf.menue_bei_groesse) {
+              getraenkeZeigen(g.label === zutatenKonf.menue_bei_groesse);
+            }
             preisAktualisieren();
           }
         }, [el('span', { class: 'bf__optname', text: g.label.replace('\n', ' ') }),
@@ -278,17 +281,54 @@
     }
     extrasNeu();
 
-    // --- Als Menü (Pommes + Getränk zum Aufpreis)
-    var menueKonf = zutatenKonf.menue;
-    // Gilt nur fuer Doener und Duerueum — und nicht dort, wo laut Karte
-    // ohnehin schon Pommes dabei sind (Teller, Boxen, Bowl, Doener Pomm).
-    var menueText = (gericht.name || '') + ' ' + (gericht.beschreibung || '');
-    if (menueKonf
-        && new RegExp(menueKonf.gilt_fuer, 'i').test(gericht.name)
-        && !(menueKonf.nicht_bei && new RegExp(menueKonf.nicht_bei, 'i').test(menueText))) {
-      menuePreis = zuZahl(menueKonf.preis) || 0;
+    // --- Getränkeauswahl, von beiden Menü-Arten genutzt
+    //     Döner/Dürüm: erscheint, wenn der Menü-Schalter an ist.
+    //     Burger: erscheint, wenn die Preisspalte "Menü" gewählt ist — dort
+    //     steht das Menü bereits in der Karte und braucht keinen Schalter.
+    var getraenkBox = el('div', { class: 'bf__getraenke', hidden: true });
 
-      var getraenkBox = el('div', { class: 'bf__getraenke', hidden: true });
+    function getraenkeBauen() {
+      var liste = konfig.menue_getraenke || [];
+      if (!liste.length) return;
+      getraenkBox.appendChild(el('p', { class: 'bf__titel', text: 'Getränk zum Menü' }));
+      var gListe = el('div', { class: 'bf__chips' });
+      liste.forEach(function (name) {
+        var b = el('button', { class: 'bf__chip', type: 'button' },
+          [document.createTextNode(name)]);
+        b.addEventListener('click', function () {
+          stand.getraenk = stand.getraenk === name ? null : name;
+          Array.prototype.forEach.call(gListe.children, function (c) {
+            c.classList.remove('ist-an');
+          });
+          if (stand.getraenk) b.classList.add('ist-an');
+        });
+        gListe.appendChild(b);
+      });
+      getraenkBox.appendChild(gListe);
+    }
+
+    function getraenkeZeigen(zeigen) {
+      getraenkBox.hidden = !zeigen;
+      if (!zeigen) {
+        stand.getraenk = null;
+        Array.prototype.forEach.call(getraenkBox.querySelectorAll('.bf__chip'),
+          function (c) { c.classList.remove('ist-an'); });
+      } else {
+        // Die Auswahl klappt weit unten auf und läge sonst hinter der festen
+        // Fußleiste — auf dem Handy sieht man dann gar nicht, dass es sie gibt.
+        setTimeout(function () {
+          if (getraenkBox.scrollIntoView) {
+            getraenkBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 60);
+      }
+    }
+
+    // --- Als Menü (Döner und Dürüm: Aufpreis-Schalter)
+    var menueKonf = zutatenKonf.menue;
+    var menueText = (gericht.name || '') + ' ' + (gericht.beschreibung || '');
+    if (menueKonf && new RegExp(menueKonf.gilt_fuer, 'i').test(gericht.name)) {
+      menuePreis = zuZahl(menueKonf.preis) || 0;
 
       var menueKnopf = el('button', { class: 'bf__menue', type: 'button' }, [
         el('span', { class: 'bf__menuehaken', 'aria-hidden': 'true' }, ['✓']),
@@ -302,50 +342,19 @@
       menueKnopf.addEventListener('click', function () {
         stand.menue = !stand.menue;
         menueKnopf.classList.toggle('ist-an', stand.menue);
-        getraenkBox.hidden = !stand.menue;
-        if (!stand.menue) {
-          stand.getraenk = null;
-          Array.prototype.forEach.call(getraenkBox.querySelectorAll('.bf__chip'),
-            function (c) { c.classList.remove('ist-an'); });
-        } else {
-          // Der Menü-Block steht unten im Fenster; die Getränke klappen
-          // darunter auf und lägen sonst hinter der festen Fußleiste. Ohne
-          // dieses Scrollen sieht man auf dem Handy gar nicht, dass man ein
-          // Getränk wählen kann.
-          setTimeout(function () {
-            if (getraenkBox.scrollIntoView) {
-              getraenkBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-          }, 60);
-        }
+        getraenkeZeigen(stand.menue);
         preisAktualisieren();
       });
 
-      // Getränke zur Wahl — ohne Angabe wüsste die Küche nicht, welches.
-      // Eigene Liste aus der Konfiguration: Die Karte fasst "Cola, Fanta,
-      // Mezzo-Mix" zu einer Zeile zusammen und führt Sprite ohne
-      // 0,33-l-Preis; über die Kategorie wären sie einzeln nicht wählbar.
-      var getraenke = menueKonf.getraenke_liste || [];
-      if (getraenke.length) {
-        getraenkBox.appendChild(el('p', { class: 'bf__titel', text: 'Getränk zum Menü' }));
-        var gListe = el('div', { class: 'bf__chips' });
-        getraenke.forEach(function (name) {
-          var b = el('button', { class: 'bf__chip', type: 'button' },
-            [document.createTextNode(name)]);
-          b.addEventListener('click', function () {
-            stand.getraenk = stand.getraenk === name ? null : name;
-            Array.prototype.forEach.call(gListe.children, function (c) {
-              c.classList.remove('ist-an');
-            });
-            if (stand.getraenk) b.classList.add('ist-an');
-          });
-          gListe.appendChild(b);
-        });
-        getraenkBox.appendChild(gListe);
-      }
-
+      getraenkeBauen();
       inhalt.appendChild(menueKnopf);
       inhalt.appendChild(getraenkBox);
+    } else if (zutatenKonf.menue_bei_groesse) {
+      // Burger: Das Menü steckt in der Preisspalte, der Preis stimmt also
+      // schon. Es fehlt nur die Angabe, welches Getränk dazugehört.
+      getraenkeBauen();
+      inhalt.appendChild(getraenkBox);
+      getraenkeZeigen(stand.groesse.label === zutatenKonf.menue_bei_groesse);
     }
 
     // --- Notiz
@@ -390,6 +399,11 @@
           anzahlBox,
           el('button', { class: 'bf__rein', type: 'button', onclick: function () {
             stand.notiz = notiz.value.trim();
+            // Hier bestimmen, nicht in hinzufuegen(): zutatenKonf ist nur in
+            // diesem Fenster bekannt, nicht in der Funktion darunter.
+            stand.istMenue = !!(stand.menue
+              || (zutatenKonf.menue_bei_groesse
+                  && stand.groesse.label === zutatenKonf.menue_bei_groesse));
             hinzufuegen(gericht, kategorie, stand, preisJetzt() / stand.anzahl);
             schliessen();
           } }, [document.createTextNode('In den Warenkorb  '), preisZeile])
@@ -421,7 +435,7 @@
       ohne: weg,
       extras: stand.extras.map(function (e) { return e.name; }),
       sossen: stand.sossen || [],
-      menue: stand.menue ? (stand.getraenk || 'Getränk nach Wahl') : null,
+      menue: stand.istMenue ? (stand.getraenk || 'Getränk nach Wahl') : null,
       notiz: stand.notiz || '',
       preis: einzelpreis,
       anzahl: stand.anzahl
@@ -470,7 +484,11 @@
     korb.forEach(function (p, i) {
       var zusatz = [];
       if (p.groesse) zusatz.push(p.groesse);
-      if (p.menue) zusatz.push('Als Menü: Pommes + ' + p.menue);
+      // Bei Burgern heißt die Größe bereits "Menü" — dann nicht doppelt nennen.
+      if (p.menue) {
+        zusatz.push((/^men/i.test(p.groesse || '') ? 'inkl. Pommes + ' : 'Als Menü: Pommes + ')
+          + p.menue);
+      }
       if (p.sossen && p.sossen.length) zusatz.push('Soße: ' + p.sossen.join(' + '));
       if (p.ohne.length) zusatz.push('ohne ' + p.ohne.join(', '));
       if (p.extras.length) zusatz.push('mit ' + p.extras.join(', '));
@@ -531,7 +549,7 @@
 
   document.addEventListener('karte-fertig', function () {
     daten = window.AKPINAR.daten;
-    fetch('assets/data/bestellung.json?v=349e34d0')
+    fetch('assets/data/bestellung.json?v=ddd8453a')
       .then(function (r) { return r.json(); })
       .then(function (k) {
         konfig = k;

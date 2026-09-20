@@ -1,5 +1,17 @@
 {
   "_hinweis": "Konfiguration für den Bestellvorgang. Die Speisekarte selbst steht in menu.json; diese Datei ergänzt nur, was zum Bestellen nötig ist.",
+  "menue_getraenke": [
+    "Cola",
+    "Cola Zero",
+    "Fanta",
+    "Sprite",
+    "Spezi",
+    "Mezzo-Mix",
+    "Uludag",
+    "Wasser",
+    "Ayran"
+  ],
+  "_menue_getraenke_hinweis": "Gemeinsame Getränkeliste für alle Menüs — Döner/Dürüm und Burger. An einer Stelle gepflegt, damit die beiden nicht auseinanderlaufen.",
   "aktiv": true,
   "bestellweg": {
     "typ": "whatsapp",
@@ -84,17 +96,6 @@
         "preis": "5,00",
         "gilt_fuer": "^(D[öo]ner im Fladenbrot|Gem[üu]sed[öo]ner|D[öo]ner Chili|D[öo]ner Saray|D[öo]ner Weichk[äa]se|Vegetarischer D[öo]ner|Falafel D[öo]ner|D[üu]r[üu]m)",
         "_hinweis": "Steht so schon als Banner in der Karte: \"Döner-Menü: inkl. Pommes + 0,33 l Getränk — +5 Euro zum Döner-Preis.\" Die Liste ist ausgeschrieben statt als weites Muster, damit nachlesbar bleibt, welche Gerichte es bekommen. Bewusst NICHT dabei: Döner Pomm (hat schon Pommes), Teller, Boxen, Bowl, Pide Döner und Lahmacun Dürüm. Burger haben eine eigene Menue-Preisspalte in der Karte.",
-        "getraenke_liste": [
-          "Cola",
-          "Cola Zero",
-          "Fanta",
-          "Sprite",
-          "Spezi",
-          "Mezzo-Mix",
-          "Uludag",
-          "Wasser",
-          "Ayran"
-        ],
         "_getraenke_hinweis": "Eigene Liste statt der Getränkekategorie. Die Karte fasst \"Cola, Fanta, Mezzo-Mix\" zu einer Zeile zusammen und fuehrt Sprite ohne 0,33-l-Preis — ueber die Kategorie waeren Cola und Fanta deshalb nicht einzeln waehlbar und Sprite gar nicht. Hier stehen sie einzeln. Cola Zero steht bislang nicht in der Speisekarte; falls es das dauerhaft gibt, gehoert es auch in menu.json unter getraenke."
       }
     },
@@ -106,6 +107,11 @@
           "preis": "1,50"
         }
       ]
+    },
+    "burger": {
+      "basis": [],
+      "menue_bei_groesse": "Menü",
+      "_hinweis": "Burger haben \"Menü\" bereits als Preisspalte in der Karte (\"Menü = inkl. Pommes + 0,33 l Getränk\"). Es braucht deshalb keinen eigenen Schalter — sobald der Gast die Menü-Größe waehlt, erscheint die Getränkeauswahl."
     }
   },
   "upsell": {
