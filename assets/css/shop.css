@@ -3,9 +3,12 @@
 
 /* ------------------------------------------------------ Bestellknopf -- */
 
+/* Der Bestellknopf bekommt eine eigene Rasterspalte. Ohne sie landete er in
+   derselben Spalte wie die Preise und lag bei 48 Gerichten darueber — die
+   Speisekarte kennt drei Rastervarianten (schmal mehrspaltig, einspaltige
+   Kategorien, ab 720 px), und in zweien davon sitzen die Preise rechts. */
+
 .item__bestellen {
-  grid-column: 3;
-  grid-row: 1 / span 2;
   align-self: center;
   justify-self: end;
   width: 42px;
@@ -25,9 +28,48 @@
 .item__bestellen:active { transform: scale(.94); }
 body:not(.bestellen-an) .item__bestellen { display: none; }
 
-@media (min-width: 720px) {
-  .item__bestellen { grid-row: 1; }
+/* schmal, mehrspaltige Kategorien: Preise Spalte 2 / Zeile 2, Knopf Spalte 3 */
+body.bestellen-an .item {
+  grid-template-columns: auto minmax(0, 1fr) auto;
 }
+body.bestellen-an .item__bestellen { grid-column: 3; grid-row: 1 / span 2; }
+
+/* Drei Preise muessen neben Nummer und Knopf in die mittlere Spalte passen.
+   Entscheidend ist min-width: 0 an den einzelnen Preisen — mit der festen
+   Mindestbreite liefen sie aus dem Container heraus und unter den Knopf,
+   ohne dass der Container selbst breiter wurde. flex-wrap ist die
+   Rueckfallebene, falls es doch einmal zu eng wird. */
+body.bestellen-an .item__prices {
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+body.bestellen-an .item__price {
+  min-width: 0;
+  font-size: .95rem;
+}
+body.bestellen-an .item__price-label { font-size: .62rem; }
+
+@media (min-width: 720px) {
+  body.bestellen-an .item__prices { gap: 12px; flex-wrap: nowrap; }
+  body.bestellen-an .item__price { min-width: 4.6em; font-size: 1rem; }
+}
+
+/* einspaltige Kategorien: Preise rechts, Knopf dahinter */
+body.bestellen-an .section--single .item {
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+}
+body.bestellen-an .section--single .item__prices { grid-column: 3; grid-row: 1; }
+body.bestellen-an .section--single .item__bestellen { grid-column: 4; grid-row: 1 / span 2; }
+
+@media (min-width: 720px) {
+  body.bestellen-an .item {
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+  }
+  body.bestellen-an .item__prices { grid-column: 3; grid-row: 1; }
+  body.bestellen-an .item__bestellen { grid-column: 4; grid-row: 1 / span 2; }
+}
+
 
 /* --------------------------------------------------- Auswahlfenster -- */
 
@@ -430,3 +472,9 @@ body.ist-abholung .nur-lieferung { display: none; }
   background: rgba(226, 179, 95, .16);
   color: var(--gold);
 }
+
+/* Gerichte mit eigenen Größen (Pommes klein/groß): Die Bezeichnungen müssen
+   sichtbar bleiben, sonst stehen dort zwei Preise ohne Erklärung. Einspaltige
+   Kategorien und breite Bildschirme blenden sie sonst aus. */
+.item--groessen .item__price-label { display: block !important; }
+.section--single .item--groessen .item__prices { grid-row: 1 / span 2; align-self: center; }

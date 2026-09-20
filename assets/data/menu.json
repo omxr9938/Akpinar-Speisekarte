@@ -993,10 +993,20 @@
         {
           "nr": "61",
           "name": "Portion Pommes",
-          "beschreibung": "Klein: 3,00 · Groß: 4,00",
+          "beschreibung": "",
           "zusatz": [],
           "preise": [
-            null
+            "3,00"
+          ],
+          "groessen": [
+            {
+              "label": "klein",
+              "preis": "3,00"
+            },
+            {
+              "label": "groß",
+              "preis": "4,00"
+            }
           ]
         },
         {

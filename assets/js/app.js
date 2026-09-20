@@ -62,10 +62,14 @@
       body.appendChild(el('span', { class: 'item__desc', text: item.beschreibung }));
     }
 
+    /* Gerichte mit eigenen Größen (etwa Pommes klein/groß) bringen ihre
+       Preise selbst mit — die Kategorie hat dafür keine Spalten. */
     var prices = el('div', { class: 'item__prices' },
-      item.preise.map(function (p, i) {
-        return priceCell(p, (kat.spaltenKurz && kat.spaltenKurz[i]) || '');
-      })
+      (item.groessen
+        ? item.groessen.map(function (g) { return priceCell(g.preis, g.label); })
+        : item.preise.map(function (p, i) {
+            return priceCell(p, (kat.spaltenKurz && kat.spaltenKurz[i]) || '');
+          }))
     );
 
     // Drei Schreibweisen nebeneinander ablegen, damit die Suche mit und ohne
@@ -76,7 +80,12 @@
       .filter(Boolean).join(' ').toLowerCase();
     var searchText = [roh, umlauteLang(roh), umlauteWeg(roh)].join(' ');
 
-    var li = el('li', { class: 'item', 'data-search': searchText }, [
+    var li = el('li', {
+      // Gerichte mit eigenen Größen brauchen die Bezeichnungen sichtbar,
+      // auch in Kategorien mit nur einer Preisspalte.
+      class: 'item' + (item.groessen ? ' item--groessen' : ''),
+      'data-search': searchText
+    }, [
       item.nr ? el('span', { class: 'item__nr', text: item.nr }) : el('span', { class: 'item__nr' }),
       body,
       prices
@@ -530,7 +539,7 @@
     }
   }
 
-  fetch('assets/data/menu.json?v=35e2a1ca')
+  fetch('assets/data/menu.json?v=da59956e')
     .then(function (r) {
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return r.json();

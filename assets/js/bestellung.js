@@ -129,10 +129,16 @@
   /* ------------------------------------------------- Auswahl-Fenster -- */
 
   function fensterOeffnen(gericht, kategorie) {
-    var groessen = (kategorie.spalten || ['']).map(function (sp, i) {
-      return { label: (kategorie.spaltenKurz && kategorie.spaltenKurz[i]) || sp || '',
-               preis: zuZahl(gericht.preise[i]), index: i };
-    }).filter(function (g) { return g.preis !== null; });
+    // Eigene Größen am Gericht haben Vorrang vor den Spalten der Kategorie.
+    var groessen = gericht.groessen
+      ? gericht.groessen.map(function (g, i) {
+          return { label: g.label, preis: zuZahl(g.preis), index: i };
+        })
+      : (kategorie.spalten || ['']).map(function (sp, i) {
+          return { label: (kategorie.spaltenKurz && kategorie.spaltenKurz[i]) || sp || '',
+                   preis: zuZahl(gericht.preise[i]), index: i };
+        });
+    groessen = groessen.filter(function (g) { return g.preis !== null; });
 
     if (!groessen.length) return;
 
