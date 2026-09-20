@@ -77,7 +77,17 @@
       "basis_nicht_bei": {
         "Fleisch": "vegetarisch|falafel|gem[üu]sed[öo]ner|k[äa]se lahmacun|spinat|d[öo]nerfleisch|hackfleisch"
       },
-      "_basis_hinweis": "Fleisch steht bewusst an erster Stelle. basis_nicht_bei nimmt es heraus, wenn das Gericht gar keins enthaelt (vegetarisch, Falafel) oder wenn die Beschreibung es bereits genauer benennt (Doenerfleisch, Hackfleisch) — sonst stuenden \"Doenerfleisch\" und \"Fleisch\" doppelt nebeneinander."
+      "_basis_hinweis": "Fleisch steht bewusst an erster Stelle. basis_nicht_bei nimmt es heraus, wenn das Gericht gar keins enthaelt (vegetarisch, Falafel) oder wenn die Beschreibung es bereits genauer benennt (Doenerfleisch, Hackfleisch) — sonst stuenden \"Doenerfleisch\" und \"Fleisch\" doppelt nebeneinander.",
+      "menue": {
+        "name": "Als Menü",
+        "beschreibung": "inkl. kleine Pommes + 0,33 l Getränk",
+        "preis": "5,00",
+        "gilt_fuer": "d[öo]ner|d[üu]r[üu]m",
+        "getraenke_aus": "getraenke",
+        "getraenke_spalte": 0,
+        "_hinweis": "Steht so schon als Banner in der Karte: \"Döner-Menü: inkl. Pommes + 0,33 l Getränk — +5 Euro zum Döner-Preis.\" gilt_fuer begrenzt es auf Döner und Dürüm. nicht_bei nimmt Gerichte heraus, die laut Karte bereits Pommes enthalten (Döner-Teller, Döner Pomm, Boxen, Bowl, Cup Salon) — dort waere ein Menue mit nochmal Pommes unsinnig. BITTE PRUEFEN, ob das Ihrer Handhabung entspricht. Burger haben bereits eine eigene Menue-Preisspalte.",
+        "nicht_bei": "pommes|teller|box|bowl"
+      }
     },
     "nudeln": {
       "basis": [],

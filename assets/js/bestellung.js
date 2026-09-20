@@ -161,6 +161,8 @@
       weg: {},          // abgewählte Zutaten
       extras: [],       // gewählte Extras
       sossen: [],
+      menue: false,
+      getraenk: null,
       anzahl: 1
     };
 
@@ -169,6 +171,7 @@
     function preisJetzt() {
       var p = stand.groesse.preis;
       stand.extras.forEach(function (e) { p += e.preis; });
+      if (stand.menue) p += menuePreis;
       return p * stand.anzahl;
     }
     function preisAktualisieren() { preisZeile.textContent = euro(preisJetzt()); }
@@ -198,6 +201,67 @@
       });
       inhalt.appendChild(el('p', { class: 'bf__titel', text: 'Größe' }));
       inhalt.appendChild(gWahl);
+    }
+
+    // --- Als Menü (Pommes + Getränk zum Aufpreis)
+    var menueKonf = zutatenKonf.menue;
+    var menuePreis = 0;
+    // Gilt nur fuer Doener und Duerueum — und nicht dort, wo laut Karte
+    // ohnehin schon Pommes dabei sind (Teller, Boxen, Bowl, Doener Pomm).
+    var menueText = (gericht.name || '') + ' ' + (gericht.beschreibung || '');
+    if (menueKonf
+        && new RegExp(menueKonf.gilt_fuer, 'i').test(gericht.name)
+        && !(menueKonf.nicht_bei && new RegExp(menueKonf.nicht_bei, 'i').test(menueText))) {
+      menuePreis = zuZahl(menueKonf.preis) || 0;
+
+      var getraenkBox = el('div', { class: 'bf__getraenke', hidden: true });
+
+      var menueKnopf = el('button', { class: 'bf__menue', type: 'button' }, [
+        el('span', { class: 'bf__menuehaken', 'aria-hidden': 'true' }, ['✓']),
+        el('span', {}, [
+          el('span', { class: 'bf__menuename', text: menueKonf.name }),
+          el('span', { class: 'bf__menuebesch', text: menueKonf.beschreibung })
+        ]),
+        el('span', { class: 'bf__menuepreis', text: '+' + euro(menuePreis) })
+      ]);
+
+      menueKnopf.addEventListener('click', function () {
+        stand.menue = !stand.menue;
+        menueKnopf.classList.toggle('ist-an', stand.menue);
+        getraenkBox.hidden = !stand.menue;
+        if (!stand.menue) {
+          stand.getraenk = null;
+          Array.prototype.forEach.call(getraenkBox.querySelectorAll('.bf__chip'),
+            function (c) { c.classList.remove('ist-an'); });
+        }
+        preisAktualisieren();
+      });
+
+      // Getränke zur Wahl — ohne Angabe wüsste die Küche nicht, welches
+      var kat = (daten.kategorien || []).filter(function (k) {
+        return k.id === menueKonf.getraenke_aus;
+      })[0];
+      if (kat) {
+        getraenkBox.appendChild(el('p', { class: 'bf__titel', text: 'Getränk zum Menü' }));
+        var gListe = el('div', { class: 'bf__chips' });
+        kat.items.forEach(function (it) {
+          if (zuZahl(it.preise[menueKonf.getraenke_spalte]) === null) return;
+          var b = el('button', { class: 'bf__chip', type: 'button' },
+            [document.createTextNode(it.name)]);
+          b.addEventListener('click', function () {
+            stand.getraenk = stand.getraenk === it.name ? null : it.name;
+            Array.prototype.forEach.call(gListe.children, function (c) {
+              c.classList.remove('ist-an');
+            });
+            if (stand.getraenk) b.classList.add('ist-an');
+          });
+          gListe.appendChild(b);
+        });
+        getraenkBox.appendChild(gListe);
+      }
+
+      inhalt.appendChild(menueKnopf);
+      inhalt.appendChild(getraenkBox);
     }
 
     // --- Soße (mehrere gleichzeitig möglich)
@@ -345,6 +409,7 @@
       ohne: weg,
       extras: stand.extras.map(function (e) { return e.name; }),
       sossen: stand.sossen || [],
+      menue: stand.menue ? (stand.getraenk || 'Getränk nach Wahl') : null,
       notiz: stand.notiz || '',
       preis: einzelpreis,
       anzahl: stand.anzahl
@@ -393,6 +458,7 @@
     korb.forEach(function (p, i) {
       var zusatz = [];
       if (p.groesse) zusatz.push(p.groesse);
+      if (p.menue) zusatz.push('Als Menü: Pommes + ' + p.menue);
       if (p.sossen && p.sossen.length) zusatz.push('Soße: ' + p.sossen.join(' + '));
       if (p.ohne.length) zusatz.push('ohne ' + p.ohne.join(', '));
       if (p.extras.length) zusatz.push('mit ' + p.extras.join(', '));
@@ -453,7 +519,7 @@
 
   document.addEventListener('karte-fertig', function () {
     daten = window.AKPINAR.daten;
-    fetch('assets/data/bestellung.json?v=b503eabb')
+    fetch('assets/data/bestellung.json?v=125cc227')
       .then(function (r) { return r.json(); })
       .then(function (k) {
         konfig = k;

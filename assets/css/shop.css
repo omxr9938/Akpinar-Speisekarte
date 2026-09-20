@@ -482,3 +482,54 @@ body.ist-abholung .nur-lieferung { display: none; }
 /* Stand der Seite in der Fußzeile: macht auf einen Blick sichtbar, ob man den
    aktuellen Stand vor sich hat oder eine zwischengespeicherte alte Fassung. */
 .site-footer__stand { display: block; margin-top: 6px; opacity: .55; }
+
+/* Menü-Angebot im Bestellfenster. Bewusst auffällig und mit eigenem Rahmen —
+   es ist ein Angebot, keine Zutat, und soll nicht in den Chips untergehen. */
+.bf__menue {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  margin-top: 18px;
+  padding: 14px 16px;
+  border: 1px solid rgba(226, 179, 95, .45);
+  border-radius: 14px;
+  background: rgba(226, 179, 95, .07);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.bf__menue.ist-an {
+  border-color: var(--gold-2);
+  background: rgba(226, 179, 95, .17);
+}
+.bf__menuehaken {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--gold-3);
+  border-radius: 7px;
+  color: transparent;
+  font-size: 15px;
+  font-weight: 700;
+}
+.bf__menue.ist-an .bf__menuehaken {
+  background: linear-gradient(180deg, var(--gold), var(--gold-2));
+  border-color: transparent;
+  color: #241a08;
+}
+.bf__menue > span:nth-child(2) { flex: 1; min-width: 0; }
+.bf__menuename {
+  display: block;
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 800;
+  font-size: 1.15rem;
+  color: var(--gold);
+}
+.bf__menuebesch { display: block; margin-top: 2px; font-size: .84rem; color: var(--text-2); }
+.bf__menuepreis { flex: none; font-weight: 700; color: var(--gold); white-space: nowrap; }
+.bf__getraenke { margin-top: 4px; }
