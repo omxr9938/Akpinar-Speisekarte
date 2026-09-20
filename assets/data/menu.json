@@ -78,9 +78,9 @@
     "hinweis": "*nur bei Selbstabholung"
   },
   "angebote": {
-    "titel": "Unsere Special-Angebote",
-    "gueltigkeit": "Für Schüler, Firmen und Selbstabholer — Montag bis Freitag von 11:00–14:00 Uhr | außer Feiertage!",
-    "zusatz": "Angebote für Wacker/Gendorf jederzeit gültig!",
+    "titel": "Mittagsangebot",
+    "gueltigkeit": "Montag bis Freitag 11:00–14:00 Uhr · außer Feiertage",
+    "zusatz": "Für Schüler, Firmen und Selbstabholer · Für Wacker/Gendorf jederzeit gültig!",
     "gruppen": [
       {
         "titel": "Familien-Pizza",

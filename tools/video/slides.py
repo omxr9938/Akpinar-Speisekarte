@@ -232,7 +232,10 @@ def akzentseite(bild, breite, hoehe, ueberschrift, text):
     return seite(kopf("") + seite_ + fuss())
 
 
-def angebotsseite(gruppe, gueltigkeit):
+def angebotsseite(gruppe):
+    """Eine Angebotsgruppe. Die Uhrzeit steht auf jeder Seite in der Fußzeile —
+    wer mittags vor der Theke steht, soll sofort sehen, dass es gerade gilt."""
+    a = DATEN["angebote"]
     karten = []
     for k in gruppe.get("karten", []):
         breit = ' breit' if k.get("breit") else ''
@@ -243,16 +246,21 @@ def angebotsseite(gruppe, gueltigkeit):
     hinweis = (f'<p class="hinweis">{_e(gruppe["hinweis"])}</p>'
                if gruppe.get("hinweis") else '')
     return seite(
-        kopf("Special-Angebote")
-        + f'<div class="gruppe"><h2>{_e(gruppe["titel"])}</h2>{hinweis}'
+        kopf(a["titel"])
+        + f'<div class="gruppe">'
+        + f'<p style="text-align:center;font-size:40px;font-weight:700;'
+          f'color:var(--gold2);letter-spacing:.04em;margin-bottom:10px">'
+          f'{_e(a["gueltigkeit"])}</p>'
+        + f'<h2>{_e(gruppe["titel"])}</h2>{hinweis}'
         + f'<div class="karten">{"".join(karten)}</div></div>'
-        + f'<div class="fuss"><span>{_e(gueltigkeit)}</span></div>'
+        + f'<div class="fuss"><span>{_e(a["zusatz"])}</span>'
+          f'<span>Bestellung: <b>{_e(DATEN["betrieb"]["telefon"])}</b></span></div>'
     )
 
 
 def stempelseite(s):
     return seite(
-        kopf("Special-Angebote")
+        kopf(DATEN["angebote"]["titel"])
         + '<div class="gruppe">'
         + f'<h2>{_e(s["titel"])}</h2>'
         + f'<p class="hinweis" style="max-width:1200px;margin:26px auto 0;font-size:40px;'

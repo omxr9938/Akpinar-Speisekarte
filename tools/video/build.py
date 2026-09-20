@@ -52,7 +52,7 @@ def folge_angebote():
     a = D["angebote"]
     s = []
     for g in a["gruppen"]:
-        s.append((slides.angebotsseite(g, a["zusatz"]), 11))
+        s.append((slides.angebotsseite(g), 11))
         s.append((slides.logoseite(), 3))
     s.append((slides.stempelseite(D["stempelkarte"]), 10))
     s.append((slides.endseite(), 8))

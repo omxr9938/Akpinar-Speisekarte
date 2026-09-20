@@ -520,7 +520,7 @@
     }
   }
 
-  fetch('assets/data/menu.json?v=23f34ef8')
+  fetch('assets/data/menu.json?v=da750b84')
     .then(function (r) {
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return r.json();
