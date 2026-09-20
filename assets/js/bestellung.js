@@ -321,22 +321,19 @@
         preisAktualisieren();
       });
 
-      // Getränke zur Wahl — ohne Angabe wüsste die Küche nicht, welches
-      var kat = (daten.kategorien || []).filter(function (k) {
-        return k.id === menueKonf.getraenke_aus;
-      })[0];
-      if (kat) {
+      // Getränke zur Wahl — ohne Angabe wüsste die Küche nicht, welches.
+      // Eigene Liste aus der Konfiguration: Die Karte fasst "Cola, Fanta,
+      // Mezzo-Mix" zu einer Zeile zusammen und führt Sprite ohne
+      // 0,33-l-Preis; über die Kategorie wären sie einzeln nicht wählbar.
+      var getraenke = menueKonf.getraenke_liste || [];
+      if (getraenke.length) {
         getraenkBox.appendChild(el('p', { class: 'bf__titel', text: 'Getränk zum Menü' }));
         var gListe = el('div', { class: 'bf__chips' });
-        var ausser = menueKonf.getraenke_ausser
-          ? new RegExp(menueKonf.getraenke_ausser, 'i') : null;
-        kat.items.forEach(function (it) {
-          if (zuZahl(it.preise[menueKonf.getraenke_spalte]) === null) return;
-          if (ausser && ausser.test(it.name)) return;
+        getraenke.forEach(function (name) {
           var b = el('button', { class: 'bf__chip', type: 'button' },
-            [document.createTextNode(it.name)]);
+            [document.createTextNode(name)]);
           b.addEventListener('click', function () {
-            stand.getraenk = stand.getraenk === it.name ? null : it.name;
+            stand.getraenk = stand.getraenk === name ? null : name;
             Array.prototype.forEach.call(gListe.children, function (c) {
               c.classList.remove('ist-an');
             });
@@ -534,7 +531,7 @@
 
   document.addEventListener('karte-fertig', function () {
     daten = window.AKPINAR.daten;
-    fetch('assets/data/bestellung.json?v=4c28fa6c')
+    fetch('assets/data/bestellung.json?v=473ecc01')
       .then(function (r) { return r.json(); })
       .then(function (k) {
         konfig = k;
