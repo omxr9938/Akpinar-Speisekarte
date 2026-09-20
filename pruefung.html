@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Prüfung – Akpinar</title>
+<style>
+  body { margin:0; padding:20px; background:#0c0a09; color:#f5f0e8;
+         font:16px/1.5 system-ui, sans-serif; }
+  h1 { font-size:1.3rem; color:#e2b35f; margin:0 0 4px; }
+  .klein { color:#8b8178; font-size:.85rem; margin-bottom:18px; }
+  .urteil { padding:14px 16px; border-radius:12px; margin:18px 0;
+            font-weight:700; font-size:1.05rem; }
+  .gut  { background:rgba(90,160,90,.16); border:1px solid rgba(90,160,90,.5); color:#9ed19e; }
+  .warn { background:rgba(226,179,95,.14); border:1px solid rgba(226,179,95,.5); color:#e2b35f; }
+  .bad  { background:rgba(193,32,31,.16); border:1px solid rgba(193,32,31,.6); color:#f0a0a0; }
+  table { width:100%; border-collapse:collapse; font-size:.88rem; }
+  td { padding:8px 4px; border-bottom:1px solid rgba(226,179,95,.14); vertical-align:top; }
+  td:first-child { color:#c9bfb2; width:42%; }
+  .j { color:#9ed19e; } .n { color:#f0a0a0; }
+  a.knopf { display:block; margin-top:22px; padding:14px; text-align:center;
+            border-radius:12px; text-decoration:none; font-weight:700;
+            background:linear-gradient(180deg,#e2b35f,#c8912f); color:#241a08; }
+</style>
+</head>
+<body>
+<h1>Selbstprüfung der Seite</h1>
+<p class="klein">Diese Seite testet sich selbst. Bitte das Ergebnis abfotografieren.</p>
+
+<div class="urteil" id="urteil">wird geprüft …</div>
+<table id="tabelle"></table>
+
+<a class="knopf" href="/?frisch" id="weiter">Zur Speisekarte (ohne Zwischenspeicher)</a>
+
+<script>
+(function () {
+  var zeilen = [], fehler = [];
+  window.onerror = function (m) { fehler.push(String(m)); };
+
+  function zeile(name, wert, gut) {
+    zeilen.push('<tr><td>' + name + '</td><td class="' +
+      (gut === true ? 'j' : gut === false ? 'n' : '') + '">' + wert + '</td></tr>');
+    document.getElementById('tabelle').innerHTML = zeilen.join('');
+  }
+
+  zeile('Diese Prüfseite ist von', '20.09.2026 20:39 UTC');
+  zeile('Adresse', location.host);
+  zeile('Browser', navigator.userAgent.slice(0, 68));
+  zeile('Online', navigator.onLine ? 'ja' : 'nein', navigator.onLine);
+
+  try {
+    localStorage.setItem('t', '1'); localStorage.removeItem('t');
+    zeile('Speicher im Browser', 'nutzbar', true);
+  } catch (e) {
+    zeile('Speicher im Browser', 'gesperrt (privater Modus?)', false);
+  }
+
+  var pruefungen = [
+    ['Startseite', '/?p=' + Date.now(), 'text'],
+    ['Speisekarten-Daten', '/assets/data/menu.json?p=' + Date.now(), 'json'],
+    ['Bestell-Einstellungen', '/assets/data/bestellung.json?p=' + Date.now(), 'json'],
+    ['Gestaltung styles.css', '/assets/css/styles.css?p=' + Date.now(), 'text'],
+    ['Gestaltung shop.css', '/assets/css/shop.css?p=' + Date.now(), 'text'],
+    ['Programm app.js', '/assets/js/app.js?p=' + Date.now(), 'text'],
+    ['Programm bestellung.js', '/assets/js/bestellung.js?p=' + Date.now(), 'text'],
+    ['Programm kasse.js', '/assets/js/kasse.js?p=' + Date.now(), 'text']
+  ];
+
+  var offen = pruefungen.length, schlecht = 0, standSeite = null;
+
+  pruefungen.forEach(function (p) {
+    fetch(p[1], { cache: 'no-store' })
+      .then(function (r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.text();
+      })
+      .then(function (t) {
+        if (p[2] === 'json') JSON.parse(t);
+        var zusatz = '';
+        if (p[0] === 'Startseite') {
+          var m = t.match(/Stand:\s*([^<]+)/);
+          standSeite = m ? m[1].trim() : null;
+          zusatz = standSeite ? ' — Stand ' + standSeite : '';
+          if (/item__bestellen|bestellung\.js/.test(t)) zusatz += ' — mit Bestellfunktion';
+        }
+        zeile(p[0], 'geladen (' + Math.round(t.length / 1024) + ' KB)' + zusatz, true);
+      })
+      .catch(function (e) {
+        schlecht++;
+        zeile(p[0], 'FEHLER: ' + e.message, false);
+      })
+      .then(function () {
+        if (--offen === 0) fertig();
+      });
+  });
+
+  function fertig() {
+    var u = document.getElementById('urteil');
+    if (schlecht > 0) {
+      u.className = 'urteil bad';
+      u.textContent = schlecht + ' Datei(en) laden nicht. Die Seite kann so nicht funktionieren.';
+    } else if (fehler.length) {
+      u.className = 'urteil warn';
+      u.textContent = 'Alle Dateien da, aber ein Programmfehler: ' + fehler[0];
+    } else {
+      u.className = 'urteil gut';
+      u.textContent = 'Alles in Ordnung — alle Dateien laden fehlerfrei.'
+        + (standSeite ? ' Die Startseite ist vom ' + standSeite + '.' : '');
+    }
+  }
+})();
+</script>
+</body>
+</html>
