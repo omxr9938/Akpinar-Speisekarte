@@ -6,7 +6,8 @@ Erzeugt die vier Fernseher-Videos für die USB-Sticks.
     python3 tools/video/build.py pizza      # nur eines
 
 Ergebnis in video/ :
-    1-Angebote.mp4  2-Pizza.mp4  3-Doener.mp4  4-Nudeln.mp4
+    1-Pizza.mp4  2-Tuerkisch.mp4  3-Nudeln-Verschiedenes-Burger.mp4
+    4-Salate-Getraenke.mp4
 
 Ablauf: Jede Bildschirmseite wird als HTML gebaut, mit Chromium zu einem
 Standbild gerendert und anschließend in ffmpeg mit weichen Überblendungen
@@ -50,49 +51,97 @@ def kategorie(kat_id):
 
 # Alle vier Videos sind exakt gleich lang, damit sie bei gleichzeitigem Start
 # zusammenbleiben. Wichtiger noch: Die Karte steht durchgehend, nur der Streifen
-# unten wechselt — dadurch ist auf jedem Bildschirm jederzeit alles lesbar und
+# unten wechselt - dadurch ist auf jedem Bildschirm jederzeit alles lesbar und
 # es spielt keine Rolle, ob die Geraete auseinanderlaufen.
-# Fuenf Streifen, alle Videos exakt gleich lang:
-# 5 x 15,2 s - 4 x 1,0 s Ueberblendung = 72,0 s
-STANDZEIT = 15.2
+# Sechs Streifen, alle Videos exakt gleich lang:
+# 6 x 15,0 s - 5 x 1,0 s Ueberblendung = 85,0 s
+STANDZEIT = 15.0
+
+BESTELL = json.loads((ROOT / "assets/data/bestellung.json").read_text(encoding="utf-8"))
+
 
 # Telefonnummer und Adresse stehen bewusst nicht mehr drauf: Die Bildschirme
 # haengen im Laden. Wer davorsteht, ruft nicht an und sucht nicht die Adresse.
-# Stattdessen Dinge, die er noch nicht weiss - Stempelkarte, Lieferdienst,
-# Oeffnungszeiten.
-def baender(akzent=None):
-    b = [slides.band_logo(), slides.band_stempel(),
-         slides.band_lieferung(), slides.band_zeiten()]
-    b.append(slides.band_spruch(*akzent) if akzent else slides.band_logo())
-    return b
+# Stattdessen Dinge, die er noch nicht weiss - Angebot, Stempelkarte,
+# Lieferdienst, Oeffnungszeiten.
+#
+# Das Mittagsangebot laeuft als Streifen auf allen vier Geraeten mit, zweimal je
+# Durchlauf (Platz 1 und 4, also etwa alle 45 s). Ein eigener Angebots-
+# Bildschirm waere der falsche Tausch gewesen: Er haette eine ganze Kategorie
+# vom Fernseher verdraengt, und das Angebot erreicht so ohnehin nur jeden
+# vierten Gast statt alle.
+def baender(angebot_a, angebot_b, akzent=None):
+    return [slides.band_angebot(angebot_a),
+            slides.band_logo(),
+            slides.band_stempel(),
+            slides.band_angebot(angebot_b),
+            slides.band_lieferung(),
+            slides.band_spruch(*akzent) if akzent else slides.band_zeiten()]
 
 
 def folge_angebote():
-    return [(slides.alleangeboteseite(band), STANDZEIT) for band in baender()]
+    """Nicht mehr Teil der vier Sticks, aber weiter baubar:
+    python3 tools/video/build.py angebote"""
+    b = [slides.band_logo(), slides.band_stempel(),
+         slides.band_lieferung(), slides.band_zeiten(), slides.band_logo()]
+    return [(slides.alleangeboteseite(band), STANDZEIT) for band in b]
 
 
-def folge_karte(kat_id, titel, unterzeile, pbreite=132, akzent=None):
+def block(kat_id, titel=None, pbreite=132):
+    """Ein Kartenblock fuer volllisteseite: (Ueberschrift, Gerichte, Legende,
+    Preisspaltenbreite, Kategoriehinweis). titel=None heisst: einzelne
+    Kategorie, keine Zwischenueberschrift - deren Hinweis steht dann als
+    Unterzeile oben und wird hier nicht noch einmal ausgegeben."""
+    k = kategorie(kat_id)
+    hinweis = k.get("hinweis", "") if titel else ""
+    return (titel, k["items"], k.get("spaltenKurz"), pbreite, hinweis)
+
+
+def folge_karte(titel, unterzeile, bloecke, angebote, akzent=None, notiz=None):
     """Die ganze Kategorie steht fest auf dem Bildschirm; nur der Streifen
     unten wechselt. Kein Gast muss warten, bis sein Gericht wieder erscheint."""
-    k = kategorie(kat_id)
-    return [(slides.volllisteseite(titel, unterzeile, k["items"],
-                                   k.get("spaltenKurz"), pbreite, band), STANDZEIT)
-            for band in baender(akzent)]
+    return [(slides.volllisteseite(titel, unterzeile, bloecke, band, notiz),
+             STANDZEIT)
+            for band in baender(angebote[0], angebote[1], akzent)]
 
+
+# Welches Angebot auf welchem Bildschirm: erst das thematisch passende, spaeter
+# im Durchlauf die Familien-Pizza - das Zugpferd, an dem auch die Stempelkarte
+# haengt. Bildschirm 4 zeigt sie zuerst, weil dort Salat und Getraenk stehen,
+# die in dem Angebot enthalten sind.
+FAMILIE = "Familien-Pizza"
+TUERK = "Döner | Dürüm | Boxen"
 
 VIDEOS = {
-    "angebote": ("1-Angebote", folge_angebote),
-    "pizza": ("2-Pizza", lambda: folge_karte(
-        "pizza", "Pizza", "Alle Pizzen mit Tomaten- oder Sahnesoße und Käse",
-        pbreite=124,
-        akzent=("@@IMG@@/pizza-hero.jpg", "Frisch aus dem Ofen"))),
-    "doener": ("3-Doener", lambda: folge_karte(
-        "tuerkisch", "Türkische Spezialitäten", "Döner · Dürüm · Boxen · Teller",
-        pbreite=150,
-        akzent=("@@IMG@@/doener-hero.jpg", "Täglich frisch gedreht"))),
-    "nudeln": ("4-Nudeln", lambda: folge_karte(
-        "nudeln", "Nudeln", "Rigatoni · Spaghetti · Tortellini — Überbacken: +1,50",
-        pbreite=150)),
+    "pizza": ("1-Pizza", lambda: folge_karte(
+        "Pizza", kategorie("pizza")["hinweis"],
+        [block("pizza", pbreite=124)],
+        ("Pizzen", FAMILIE),
+        akzent=("@@IMG@@/pizza-hero.jpg", "Frisch aus dem Ofen"),
+        notiz=slides.notiz_extras(kategorie("pizza")["extras"]))),
+
+    "tuerkisch": ("2-Tuerkisch", lambda: folge_karte(
+        "Türkische Gerichte", "Döner · Dürüm · Boxen · Pide · Teller",
+        [block("tuerkisch", pbreite=150)],
+        (TUERK, FAMILIE),
+        akzent=("@@IMG@@/doener-hero.jpg", "Täglich frisch gedreht"),
+        notiz=slides.notiz_menue(BESTELL["zutaten"]["tuerkisch"],
+                                 kategorie("tuerkisch")["items"]))),
+
+    "nudeln": ("3-Nudeln-Verschiedenes-Burger", lambda: folge_karte(
+        "Nudeln · Verschiedenes · Burger", None,
+        [block("nudeln", "Nudeln", 150),
+         block("verschiedenes", "Verschiedenes", 150),
+         block("burger", "Burger", 132)],
+        ("Nudeln", FAMILIE))),
+
+    "salate": ("4-Salate-Getraenke", lambda: folge_karte(
+        "Salate · Getränke", None,
+        [block("salate", "Salate", 132),
+         block("getraenke", "Getränke", 118)],
+        (FAMILIE, TUERK))),
+
+    "angebote": ("Zusatz-Angebote", folge_angebote),
 }
 
 
@@ -153,6 +202,37 @@ def rendern(seiten, ordner):
             }""")
             if passt is not None:
                 print(f"    Seite {i}: Schriftgroesse {passt:.0%}")
+
+            # Der Angebotsstreifen darf nicht abgeschnitten werden. Er darf
+            # zweizeilig umbrechen - die Familien-Pizza mit vier Preisen und
+            # dem Hinweis "inkl. Salat oder Getraenk" passt in eine Zeile nicht,
+            # und der Hinweis ist das halbe Angebot. Gemessen wird deshalb die
+            # Hoehe; passt es auch dann nicht, wird die Schrift verkleinert.
+            bandmass = pg.evaluate("""() => {
+                const box = document.querySelector('.ainhalt[data-anpassen]');
+                if (!box) return null;
+                const band = box.parentElement;
+                const passtBei = s => {
+                    box.style.setProperty('--bs', s.toFixed(3));
+                    return box.scrollHeight <= band.clientHeight + 0.5
+                        && box.scrollWidth <= band.clientWidth + 0.5;
+                };
+                if (passtBei(1)) return 1;
+                let unten = 0.55, oben = 1.0;
+                if (!passtBei(unten)) return unten;
+                for (let i = 0; i < 20; i++) {
+                    const mitte = (unten + oben) / 2;
+                    if (passtBei(mitte)) unten = mitte; else oben = mitte;
+                }
+                passtBei(unten);
+                return unten;
+            }""")
+            if bandmass is not None and bandmass < 1:
+                print(f"    Seite {i}: Angebotsstreifen {bandmass:.0%}")
+            if bandmass is not None and bandmass <= 0.55:
+                raise SystemExit(
+                    f"Angebotsstreifen passt auf Seite {i} selbst bei 55 % nicht "
+                    "in den Streifen - Angebotsgruppe kuerzen.")
             fehlend = pg.evaluate(
                 "() => [...document.images].filter(i => !i.complete || !i.naturalWidth)"
                 ".map(i => i.src)")
@@ -225,7 +305,7 @@ def bauen(schluessel):
 
 
 if __name__ == "__main__":
-    wunsch = sys.argv[1:] or list(VIDEOS)
+    wunsch = sys.argv[1:] or ["pizza", "tuerkisch", "nudeln", "salate"]
     for w in wunsch:
         if w not in VIDEOS:
             raise SystemExit(f"Unbekannt: {w}. Möglich: {', '.join(VIDEOS)}")

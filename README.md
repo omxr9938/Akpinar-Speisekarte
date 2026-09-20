@@ -184,21 +184,36 @@ python3 tools/video/build.py            # alle vier
 python3 tools/video/build.py pizza      # nur eines
 ```
 
-Ergebnis in [`video/`](video/), Bedienhinweise in
+| Bildschirm | Datei | Inhalt |
+| --- | --- | --- |
+| 1 | `1-Pizza.mp4` | 28 Pizzen, dazu die Aufpreise für Extra-Zutaten |
+| 2 | `2-Tuerkisch.mp4` | 26 türkische Gerichte, dazu „Als Menü + 5,00 €“ |
+| 3 | `3-Nudeln-Verschiedenes-Burger.mp4` | 13 Nudeln, 10 × Verschiedenes, 5 Burger |
+| 4 | `4-Salate-Getraenke.mp4` | 12 Salate, 6 Getränke |
+
+Zusammen decken die vier Bildschirme alle 100 Gerichte der Karte ab, ohne
+Lücke und ohne Dopplung. Ergebnis in [`video/`](video/), Bedienhinweise in
 [`video/LIESMICH.txt`](video/LIESMICH.txt).
 
-Die vollständige Kategorie steht durchgehend auf dem Bildschirm; es wechselt
-nur der schmale Streifen unten (Adresse, Logo, Gerichtebild, Telefonnummer).
-So ist auf jedem Gerät zu jeder Sekunde die ganze Karte lesbar — und es spielt
-keine Rolle, ob die vier Fernseher synchron laufen.
+Die vollständigen Kategorien stehen durchgehend auf dem Bildschirm; es
+wechselt nur der schmale Streifen unten. So ist auf jedem Gerät zu jeder
+Sekunde die ganze Karte lesbar — und es spielt keine Rolle, ob die vier
+Fernseher synchron laufen.
 
-Alle vier Videos sind exakt 72 Sekunden lang, damit sie bei gleichzeitigem
+Das Mittagsangebot hat bewusst keinen eigenen Bildschirm: Der hätte eine
+ganze Kategorie verdrängt und das Angebot trotzdem nur jedem vierten Gast
+gezeigt. Stattdessen läuft es als Streifen auf allen vier Geräten mit,
+zweimal je Durchlauf, jeweils beginnend mit der Angebotsgruppe, die zum
+Bildschirm passt.
+
+Alle vier Videos sind exakt 85 Sekunden lang, damit sie bei gleichzeitigem
 Start zusammenbleiben.
 
 Jede Bildschirmseite entsteht als HTML, wird mit Chromium zu einem Standbild
 gerendert und in ffmpeg mit weichen Überblendungen aneinandergereiht. Der
 Renderer sucht per Intervallhalbierung die größte Schriftgröße, bei der die
-Kategorie noch vollständig auf den Bildschirm passt.
+Kategorie noch vollständig auf den Bildschirm passt — und getrennt davon die
+größte, bei der der Angebotsstreifen in seine feste Höhe passt.
 
 Ausgabe ist 1920×1080, H.264 mit stiller Tonspur — manche Fernseher spielen
 Dateien ohne Tonspur nicht ab.

@@ -12,6 +12,7 @@ Fernseher im Laden wird aus zwei bis vier Metern gelesen, nicht aus 50 cm.
 import html
 import json
 import pathlib
+import re
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 DATEN = json.loads((ROOT / "assets/data/menu.json").read_text(encoding="utf-8"))
@@ -184,7 +185,52 @@ VOLLSTIL = """
   .vz sup { font-size:.46em; color:var(--gold3); margin-left:.18em; }
   .groessen { text-align:center; font-size:27px; color:var(--gold3);
               letter-spacing:.08em; margin:-8px 0 16px; }
+
+  /* Zwischenueberschrift, wenn mehrere Kategorien auf einem Bildschirm stehen.
+     break-after verhindert, dass eine Ueberschrift allein am Spaltenende
+     haengen bleibt und ihre Gerichte erst in der naechsten Spalte folgen. */
+  .vkat { margin:calc(22px * var(--s)) 0 calc(4px * var(--s));
+          padding-bottom:calc(7px * var(--s));
+          border-bottom:2px solid var(--gold2);
+          break-inside:avoid; -webkit-column-break-inside:avoid;
+          break-after:avoid-column; }
+  .vkat:first-child { margin-top:0; }
+  .vkat .vkkopf { display:flex; align-items:baseline;
+          justify-content:space-between; gap:20px; }
+  .vkat .vkname { font-family:"Playfair Display",serif; font-style:italic;
+          font-weight:800; font-size:calc(36px * var(--s)); color:var(--gold);
+          white-space:nowrap; }
+  .vkat .vkleg { font-size:calc(21px * var(--s)); color:var(--text3);
+          letter-spacing:.07em; white-space:nowrap; }
+  /* Kategoriehinweis in eigener Zeile statt neben dem Namen: "Menue = inkl.
+     Pommes + 0,33 l Getraenk" neben "Burger" und der Groessenlegende waere in
+     einer Spalte zu breit - und ein waagrechter Ueberlauf faellt bei der
+     Hoehenmessung nicht auf. In eigener Zeile darf er umbrechen. */
+  .vkat .vkhinweis { font-size:calc(21px * var(--s)); color:var(--text2);
+          line-height:1.25; margin-top:calc(4px * var(--s)); }
+
+  /* Gerichte mit eigenen Groessen (Portion Pommes: klein 3,00 / gross 4,00).
+     Sie brauchen keine feste Spaltenbreite - es gibt in ihrer Kategorie nur
+     eine Preisspalte, an der sie sich ausrichten muessten. */
+  .vz .vgr { width:auto !important; font-size:calc(22px * var(--s));
+             font-weight:400; color:var(--text2); }
+  .vz .vgr b { color:var(--gold); font-weight:700;
+               font-size:calc(30px * var(--s)); margin-left:calc(5px * var(--s)); }
+
+  /* Hinweisleiste unter der Kopfzeile — Menue-Aufpreis, Extra-Zutaten. */
+  .vnotiz { display:flex; flex-wrap:wrap; align-items:baseline;
+            justify-content:center; gap:calc(8px * var(--s)) calc(26px * var(--s));
+            margin:calc(2px * var(--s)) 0 calc(12px * var(--s));
+            padding:calc(10px * var(--s)) calc(20px * var(--s));
+            border:1px solid rgba(226,179,95,.30); border-radius:14px;
+            background:rgba(226,179,95,.06);
+            font-size:calc(26px * var(--s)); color:var(--text2); }
+  .vnotiz .nt { font-family:"Playfair Display",serif; font-style:italic;
+                font-weight:800; font-size:calc(31px * var(--s));
+                color:var(--gold); }
+  .vnotiz b { color:var(--gold); font-weight:700; }
 """
+
 
 
 def _marken(g):
@@ -194,43 +240,138 @@ def _marken(g):
             + '</sup>')
 
 
-def volllisteseite(kategorie, unterzeile, gerichte, spalten_kurz=None, pbreite=132,
-                   band=None):
-    """Die ganze Kategorie auf einer Seite, zweispaltig.
-
-    Gäste sollen ihr Gericht sofort finden und nicht warten, bis die nächste
-    Seite umblättert. Die Schriftgröße wird beim Rendern automatisch so weit
-    verkleinert, bis alles auf den Bildschirm passt (--s).
-    """
-    zeilen = []
-    for g in gerichte:
+def _vzeile(g, pbreite):
+    # Gerichte mit eigenen Groessen tragen sie in "groessen"; "preise" haelt nur
+    # den kleinsten Preis, damit die Liste auf der Website sortierbar bleibt.
+    # Auf dem Fernseher muessen beide Groessen stehen, sonst wirkt die grosse
+    # Portion an der Kasse wie ein Aufschlag.
+    if g.get("groessen"):
+        preise = ('<span class="vgr">'
+                  + "  \u00b7  ".join(f'{_e(x["label"])} <b>{_e(x["preis"])}</b>'
+                                   for x in g["groessen"])
+                  + '</span>')
+    else:
         preise = "".join(
-            f'<span>{_e(p)}</span>' if p not in (None, "", "-") else '<span>–</span>'
+            f'<span>{_e(p)}</span>' if p not in (None, "", "-") else '<span>\u2013</span>'
             for p in g.get("preise", []))
-        besch = (f'<span class="vbesch">{_e(g["beschreibung"])}</span>'
-                 if g.get("beschreibung") else '')
-        zeilen.append(
-            f'<div class="vz"><span class="vnr">{_e(g.get("nr") or "")}</span>'
+    besch = (f'<span class="vbesch">{_e(g["beschreibung"])}</span>'
+             if g.get("beschreibung") else '')
+    return (f'<div class="vz" style="--pbreite:{pbreite}px">'
+            f'<span class="vnr">{_e(g.get("nr") or "")}</span>'
             f'<span><span class="vname">{_e(g["name"])}{_marken(g)}</span>{besch}</span>'
             f'<span class="vpreise">{preise}</span></div>')
 
-    # Groessenlegende einmal oben statt ueber jeder Spalte — spart Platz und
+
+def _legende(spalten_kurz):
+    """Nur sinnvoll, wenn es mehr als eine Preisspalte gibt \u2014 sonst ist
+    klar, wozu der Preis geh\u00f6rt."""
+    echte = [t for t in (spalten_kurz or []) if t]
+    return "  \u00b7  ".join(echte) if len(echte) > 1 else ""
+
+
+def volllisteseite(kategorie, unterzeile, bloecke, band=None, notiz=None):
+    """Eine oder mehrere Kategorien vollst\u00e4ndig auf einer Seite, zweispaltig.
+
+    G\u00e4ste sollen ihr Gericht sofort finden und nicht warten, bis die n\u00e4chste
+    Seite umbl\u00e4ttert. Die Schriftgr\u00f6\u00dfe wird beim Rendern automatisch so weit
+    verkleinert, bis alles auf den Bildschirm passt (--s).
+
+    bloecke: Liste von (titel|None, gerichte, spalten_kurz, pbreite, hinweis).
+    Steht nur
+    ein Block ohne Titel drin, sieht die Seite aus wie bisher: Gr\u00f6\u00dfenlegende
+    einmal oben. Bei mehreren Kategorien bekommt jede eine Zwischen\u00fcberschrift
+    mit ihrer eigenen Legende \u2014 Nudeln haben einen Preis, Burger zwei,
+    Getr\u00e4nke drei, das l\u00e4sst sich nicht gemeinsam oben abhandeln.
+    """
+    einzeln = len(bloecke) == 1 and not bloecke[0][0]
+
+    teile = []
+    for titel, gerichte, spalten_kurz, pbreite, hinweis in bloecke:
+        if titel:
+            leg = _legende(spalten_kurz)
+            teile.append(
+                '<div class="vkat"><div class="vkkopf">'
+                f'<span class="vkname">{_e(titel)}</span>'
+                + (f'<span class="vkleg">{_e(leg)}</span>' if leg else '')
+                + '</div>'
+                + (f'<div class="vkhinweis">{_e(hinweis)}</div>' if hinweis else '')
+                + '</div>')
+        teile += [_vzeile(g, pbreite) for g in gerichte]
+
+    # Gr\u00f6\u00dfenlegende einmal oben statt \u00fcber jeder Spalte \u2014 spart Platz und
     # bleibt eindeutig, weil die Preise immer in derselben Reihenfolge stehen.
     groessen = ""
-    echte = [s for s in (spalten_kurz or []) if s]
-    if len(echte) > 1:
-        groessen = ('<div class="groessen">Preise in Euro: '
-                    + _e("  ·  ".join(echte)) + '</div>')
+    if einzeln:
+        leg = _legende(bloecke[0][2])
+        if leg:
+            groessen = f'<div class="groessen">Preise in Euro: {_e(leg)}</div>'
 
     unter = (f'<div style="text-align:center;font-size:28px;color:var(--text2);'
              f'margin:-6px 0 10px">{_e(unterzeile)}</div>' if unterzeile else '')
 
     return (KOPF + f'<style>{VOLLSTIL}{BANNERSTIL}</style>'
             + '<div class="flaeche"></div>'
-            + f'<div class="inhalt" style="--s:1;--pbreite:{pbreite}px;padding:30px 58px">'
-            + kopf(kategorie) + unter + groessen
-            + f'<div class="voll" id="voll">{"".join(zeilen)}</div>'
+            + '<div class="inhalt" style="--s:1;padding:30px 58px">'
+            + kopf(kategorie) + unter + (notiz or "") + groessen
+            + f'<div class="voll" id="voll">{"".join(teile)}</div>'
             + (band if band is not None else band_logo()) + '</div>')
+
+
+# ------------------------------------------------------------- Hinweisleisten --
+
+def _nummernbereiche(nummern):
+    """[30,31,32,34,35,36,37] -> "30\u201332, 34\u201337". Eine Aufz\u00e4hlung von elf
+    Einzelnummern liest auf einem Fernseher niemand."""
+    zahlen = sorted({int(n) for n in nummern if str(n).isdigit()})
+    if not zahlen:
+        return ""
+    bereiche, start, vorher = [], zahlen[0], zahlen[0]
+    for z in zahlen[1:]:
+        if z == vorher + 1:
+            vorher = z
+            continue
+        bereiche.append((start, vorher))
+        start = vorher = z
+    bereiche.append((start, vorher))
+    teile = [str(a) if a == b else f"{a}\u2013{b}" for a, b in bereiche]
+    if len(teile) == 1:
+        return teile[0]
+    return ", ".join(teile[:-1]) + " und " + teile[-1]
+
+
+def notiz_menue(zutaten_konf, gerichte):
+    """\u201eAls Men\u00fc + 5,00 \u20ac\u201c. Preis, Text und vor allem die Frage, f\u00fcr welche
+    Gerichte das gilt, kommen aus bestellung.json \u2014 mit genau demselben
+    Ausdruck, den auch die Bestellseite auswertet. Sonst steht auf dem
+    Fernseher irgendwann ein Men\u00fc, das sich online nicht bestellen l\u00e4sst.
+
+    Bewusst die Nummern und nicht \u201ealle D\u00f6ner-Gerichte\u201c: D\u00f6ner Pomm, D\u00f6ner-
+    Teller, D\u00f6ner-Box, D\u00f6ner Bowl und Pide D\u00f6ner hei\u00dfen auch D\u00f6ner, bekommen
+    aber kein Men\u00fc \u2014 sie enthalten Pommes oder Reis bereits.
+    """
+    m = zutaten_konf["menue"]
+    muster = re.compile(zutaten_konf["menue"]["gilt_fuer"], re.IGNORECASE)
+    passend = [g.get("nr") for g in gerichte if muster.search(g["name"])]
+    bereiche = _nummernbereiche(passend)
+    wo = f"bei Nr. {bereiche}" if bereiche else ""
+    return ('<div class="vnotiz">'
+            f'<span class="nt">Als Men\u00fc + {_e(m["preis"])} \u20ac</span>'
+            f'<span>{_e(m["beschreibung"])}</span>'
+            + (f'<span><b>{_e(wo)}</b></span>' if wo else '')
+            + '</div>')
+
+
+def notiz_extras(extras):
+    """Die Aufpreise f\u00fcr Extra-Zutaten \u2014 auf der gedruckten Karte stehen sie
+    unter der Pizzaliste, auf dem Bildschirm passt nur eine Zeile."""
+    teile = [f'<span class="nt">{_e(extras["titel"])}</span>']
+    for z in extras.get("zeilen", []):
+        preise = "  \u00b7  ".join(p for p in z.get("preise", []) if p)
+        teile.append(f'<span>{_e(z["name"])} <b>{_e(preise)}</b></span>')
+    for f in extras.get("fussnoten", []):
+        if not f.strip().startswith("*"):
+            teile.append(f'<span>{_e(f)}</span>')
+    return '<div class="vnotiz">' + "".join(teile) + '</div>'
 
 
 # ------------------------------------------------------- wechselnder Streifen --
@@ -265,6 +406,33 @@ BANNERSTIL = """
   .band .btext { font-size:32px; color:var(--text2); white-space:nowrap; }
   .band .bklein { font-size:24px; color:var(--text3); margin-left:22px;
                   white-space:nowrap; }
+
+  /* Angebotsstreifen. Er darf zweizeilig umbrechen: Die Familien-Pizza mit
+     ihren vier Preisen und dem Hinweis "inkl. Salat oder Getraenk" passt in
+     einer Zeile nicht, und der Hinweis ist das halbe Angebot. Gemessen und
+     verkleinert wird deshalb ueber die Hoehe (--bs), nicht ueber die Breite.
+     Die einzelnen Angaben brechen nicht in sich um (nowrap), damit kein Preis
+     von seiner Bezeichnung getrennt wird. */
+  .ainhalt { display:flex; flex-wrap:wrap; align-items:center;
+             justify-content:center; max-width:100%;
+             gap:calc(4px * var(--bs,1)) calc(22px * var(--bs,1)); }
+  .ainhalt > * { white-space:nowrap; }
+  .ainhalt .amarke { background:linear-gradient(180deg,#e9c987,#c8912f);
+      color:#241a08; border-radius:999px;
+      padding:calc(7px * var(--bs,1)) calc(22px * var(--bs,1));
+      font-family:"Playfair Display",serif; font-style:italic; font-weight:800;
+      font-size:calc(33px * var(--bs,1)); }
+  .ainhalt .azeit { font-size:calc(24px * var(--bs,1)); color:var(--text3);
+      letter-spacing:.04em; }
+  .ainhalt .agtitel { font-size:calc(31px * var(--bs,1)); font-weight:700;
+      color:var(--gold); }
+  .ainhalt .apos { font-size:calc(29px * var(--bs,1)); color:var(--text2); }
+  .ainhalt .apos b { color:var(--gold); font-weight:700;
+      font-variant-numeric:tabular-nums; }
+  .ainhalt .ahinweis { font-size:calc(24px * var(--bs,1)); color:var(--text3);
+      font-style:italic; }
+  .ainhalt .atrenner { width:calc(2px * var(--bs,1));
+      height:calc(44px * var(--bs,1)); background:rgba(226,179,95,.28); }
 """
 
 
@@ -315,6 +483,47 @@ def band_spruch(bild, text):
             f'<img class="bfoto" src="{bild}" alt="">'
             f'<span class="spruchtext">{_e(text)}</span>'
             '</div>')
+
+
+def _angebotskarte_kurz(k):
+    """Eine Angebotskarte auf eine Zeile eindampfen. Karten ohne eigenen Preis
+    tragen ihn im Untertitel (\u201eD\u00f6ner-Boxen klein 7,00 \u20ac \u00b7 gro\u00df 8,00 \u20ac\u201c) \u2014
+    dann bleibt nur der Text stehen."""
+    titel = (k.get("titel") or "").strip()
+    sub = (k.get("sub") or "").strip()
+    preis = (k.get("preis") or "").strip()
+    label = (titel + " " + sub).strip()
+    if not preis:
+        return f'<span class="apos">{_e(label)}</span>'
+    return f'<span class="apos">{_e(label)} <b>{_e(preis)}</b></span>'
+
+
+def band_angebot(gruppen_titel):
+    """Das Mittagsangebot als schmaler Streifen unter der Karte.
+
+    Bewusst kein eigener Angebots-Bildschirm mehr: Der h\u00e4tte die Speisekarte
+    verdeckt, und wer vor einem Bildschirm steht, soll nicht warten, bis seine
+    Kategorie wieder erscheint. Als Streifen l\u00e4uft das Angebot auf allen vier
+    Ger\u00e4ten mit, ohne der Karte auch nur eine Zeile wegzunehmen.
+
+    Die Schrift wird beim Rendern verkleinert, bis der Streifen in die Breite
+    passt (--bs); reicht das nicht, f\u00e4llt zuerst der Zusatzhinweis weg.
+    """
+    a = DATEN["angebote"]
+    g = next(x for x in a["gruppen"] if x["titel"] == gruppen_titel)
+    zeit = a["gueltigkeit"].split(" \u00b7 ")[0]
+
+    teile = [f'<span class="amarke">{_e(a["titel"])}</span>',
+             f'<span class="azeit">{_e(zeit)}</span>',
+             '<span class="atrenner"></span>',
+             f'<span class="agtitel">{_e(g["titel"])}</span>']
+    teile += [_angebotskarte_kurz(k) for k in g.get("karten", [])]
+    if g.get("hinweis"):
+        teile.append(f'<span class="ahinweis">{_e(g["hinweis"])}</span>')
+
+    return ('<div class="band band--mitte">'
+            '<div class="ainhalt" style="--bs:1" data-anpassen>'
+            + "".join(teile) + '</div></div>')
 
 
 ANGEBOTSTIL = """
