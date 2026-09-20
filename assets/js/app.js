@@ -76,11 +76,16 @@
       .filter(Boolean).join(' ').toLowerCase();
     var searchText = [roh, umlauteLang(roh), umlauteWeg(roh)].join(' ');
 
-    return el('li', { class: 'item', 'data-search': searchText }, [
+    var li = el('li', { class: 'item', 'data-search': searchText }, [
       item.nr ? el('span', { class: 'item__nr', text: item.nr }) : el('span', { class: 'item__nr' }),
       body,
       prices
     ]);
+    // Gericht und Kategorie am Element hinterlegen, damit der Bestellvorgang
+    // sie ohne erneute Suche findet.
+    li._gericht = item;
+    li._kategorie = kat;
+    return li;
   }
 
   function renderCategory(kat) {
@@ -512,6 +517,11 @@
     renderChips(data.kategorien);
     initSearch();
     initToTop();
+
+    // Für den Bestellvorgang bereitstellen (bestellung.js haengt sich hier ein)
+    window.AKPINAR = window.AKPINAR || {};
+    window.AKPINAR.daten = data;
+    document.dispatchEvent(new CustomEvent('karte-fertig'));
 
     /* jump to the hash target once everything exists */
     if (location.hash) {

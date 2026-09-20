@@ -25,6 +25,7 @@
 
 <link rel="preload" href="assets/fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/playfair-display-latin-800-italic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/shop.css">
 <link rel="stylesheet" href="assets/css/styles.css?v=4c4d128a">
 </head>
 
@@ -136,6 +137,11 @@
       </svg>
       Jetzt bestellen
     </a>
+    <nav class="site-footer__recht">
+      <a href="impressum.html">Impressum</a>
+      <a href="datenschutz.html">Datenschutz</a>
+      <a href="agb.html">AGB</a>
+    </nav>
     <small>Alle Preise in Euro inkl. MwSt. Änderungen und Irrtümer vorbehalten.</small>
   </div>
 </footer>
@@ -146,6 +152,94 @@
   </svg>
 </button>
 
-<script src="assets/js/app.js?v=8380de4b"></script>
+
+<!-- Warenkorb und Kasse -->
+<button class="korb-knopf" id="korb-knopf" type="button" hidden>
+  <span>Warenkorb</span>
+  <b id="korb-anzahl">0</b>
+  <span id="korb-summe">0,00 €</span>
+</button>
+
+<aside class="korb" id="korb" aria-label="Warenkorb">
+  <div class="korb__karte">
+    <div class="korb__kopf">
+      <h2>Ihre Bestellung</h2>
+      <button class="bf__zu" id="korb-zu" type="button" aria-label="Schließen">&times;</button>
+    </div>
+
+    <div class="korb__inhalt">
+      <div id="korb-liste"></div>
+
+      <div class="kasse" id="kasse">
+        <div class="kasse__tabs" id="kasse-weg"></div>
+
+        <div class="nur-lieferung">
+          <div class="kasse__feld">
+            <label for="f-ort">Lieferort</label>
+            <select id="f-ort"></select>
+          </div>
+          <p class="kasse__min" id="f-ort-hinweis" hidden>
+            Ihr Ort steht nicht in unserer Liste. Bitte rufen Sie kurz an —
+            wir sagen Ihnen, ob wir liefern können.
+          </p>
+          <div class="kasse__feld">
+            <label for="f-strasse">Straße und Hausnummer</label>
+            <input id="f-strasse" type="text" autocomplete="street-address">
+          </div>
+          <div class="kasse__feld">
+            <label for="f-plz">Postleitzahl</label>
+            <input id="f-plz" type="text" inputmode="numeric" autocomplete="postal-code">
+          </div>
+        </div>
+
+        <div class="kasse__feld">
+          <label for="f-name">Ihr Name</label>
+          <input id="f-name" type="text" autocomplete="name">
+        </div>
+        <div class="kasse__feld">
+          <label for="f-tel">Telefonnummer für Rückfragen</label>
+          <input id="f-tel" type="tel" autocomplete="tel">
+        </div>
+        <div class="kasse__feld">
+          <label for="f-notiz">Anmerkung</label>
+          <textarea id="f-notiz" placeholder="z. B. Klingel, Etage, Wunschzeit"></textarea>
+        </div>
+
+        <p class="kasse__min" id="kasse-min"></p>
+        <div id="kasse-vorschlaege"></div>
+
+        <p class="bf__titel" style="margin-top:18px">Bezahlung</p>
+        <div class="kasse__zahlung" id="kasse-zahlung"></div>
+
+        <div class="kasse__summe">
+          <span>Summe</span>
+          <b id="kasse-summe">0,00 €</b>
+        </div>
+
+        <button class="kasse__senden" id="kasse-senden" type="button" disabled>
+          Bestellung noch nicht vollständig
+        </button>
+        <button class="kasse__leeren" id="kasse-leeren" type="button">Warenkorb leeren</button>
+
+        <p class="kasse__danach" id="kasse-danach" hidden>
+          Ihre Bestellung wurde in WhatsApp geöffnet. Bitte dort auf
+          <b>Senden</b> drücken — erst dann erreicht sie uns. Wir bestätigen
+          Ihnen die Bestellung und nennen die Lieferzeit.
+        </p>
+
+        <p class="kasse__recht">
+          Mit „Zahlungspflichtig bestellen“ geben Sie eine verbindliche
+          Bestellung ab. Es gelten unsere
+          <a href="agb.html">Geschäftsbedingungen</a>; Hinweise zum Datenschutz
+          finden Sie in der <a href="datenschutz.html">Datenschutzerklärung</a>.
+        </p>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<script src="assets/js/app.js?v=6f922af7"></script>
+<script src="assets/js/bestellung.js"></script>
+<script src="assets/js/kasse.js"></script>
 </body>
 </html>

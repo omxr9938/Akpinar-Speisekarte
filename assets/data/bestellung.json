@@ -1,0 +1,137 @@
+{
+  "_hinweis": "Konfiguration für den Bestellvorgang. Die Speisekarte selbst steht in menu.json; diese Datei ergänzt nur, was zum Bestellen nötig ist.",
+  "aktiv": true,
+  "bestellweg": {
+    "typ": "whatsapp",
+    "nummer": "4986719580145",
+    "_hinweis": "Nummer im internationalen Format ohne + und ohne Leerzeichen. Die Bestellung wird als fertiger Text in WhatsApp geöffnet; der Gast drückt nur noch auf Senden. Kostet nichts und braucht keinen Server."
+  },
+  "zahlung": [
+    {
+      "id": "bar-abholung",
+      "name": "Bar bei Abholung",
+      "beschreibung": "Sie zahlen bei uns im Laden.",
+      "aktiv": true
+    },
+    {
+      "id": "bar-lieferung",
+      "name": "Bar bei Lieferung",
+      "beschreibung": "Sie zahlen dem Fahrer an der Tür.",
+      "aktiv": true
+    },
+    {
+      "id": "online",
+      "name": "Online bezahlen",
+      "beschreibung": "PayPal, Apple Pay oder Karte",
+      "aktiv": false,
+      "_hinweis": "Auf true stellen, sobald ein Zahlungsanbieter eingerichtet ist. Braucht zusätzlich einen Server-Endpunkt — siehe README."
+    }
+  ],
+  "abholung": {
+    "moeglich": true,
+    "mindestbestellwert": "0,00",
+    "_hinweis": "Bei Abholung gilt kein Mindestbestellwert."
+  },
+  "lieferung": {
+    "mindestbestellwert_standard": "20,00",
+    "_hinweis": "Die Zonen und ihre Orte stehen in menu.json unter lieferung.zonen. Der Gast waehlt im Bestellvorgang seinen Ort aus dieser Liste. Steht sein Ort nicht darin, greift der Standardwert oben und es erscheint der Hinweis, telefonisch nachzufragen.",
+    "_offen": "In menu.json endet die Ortsliste von Zone 1 und Zone 2 mit \"…\". Diese Listen bitte vervollstaendigen, sonst finden Gaeste aus den fehlenden Orten sich nicht wieder."
+  },
+  "zutaten": {
+    "_hinweis": "basis = Zutaten, die immer drauf sind und abgewählt werden können (kostenlos). extras = Zutaten, die gegen Aufpreis dazukommen.",
+    "pizza": {
+      "basis": [
+        "Tomatensoße",
+        "Käse"
+      ],
+      "basis_alternative": {
+        "frage": "Soße",
+        "optionen": [
+          "Tomatensoße",
+          "Sahnesoße"
+        ],
+        "standard": "Tomatensoße"
+      },
+      "extras_quelle": "menu.json/kategorien[pizza]/extras",
+      "_hinweis": "Die Aufpreise für Pizza-Extras stehen bereits in der Speisekarte (Fleisch/Käse/Wurst/Meeresfrüchte und Gemüse, je nach Größe) und werden von dort gelesen."
+    },
+    "tuerkisch": {
+      "basis": [
+        "Salat",
+        "Tomaten",
+        "Zwiebeln",
+        "Blaukraut",
+        "Soße"
+      ],
+      "sossen": {
+        "frage": "Soße",
+        "optionen": [
+          "Kräuter",
+          "Knoblauch",
+          "Scharf",
+          "Cocktail",
+          "ohne Soße"
+        ],
+        "standard": "Kräuter",
+        "_hinweis": "BITTE PRÜFEN — welche Soßen bieten Sie tatsächlich an?"
+      },
+      "extras": [
+        {
+          "name": "Schafskäse",
+          "preis": null
+        },
+        {
+          "name": "Weichkäse",
+          "preis": null
+        },
+        {
+          "name": "Käse",
+          "preis": null
+        },
+        {
+          "name": "Jalapeños",
+          "preis": null
+        },
+        {
+          "name": "extra Fleisch",
+          "preis": null
+        },
+        {
+          "name": "Pommes",
+          "preis": null
+        }
+      ],
+      "_hinweis": "PREISE FEHLEN. Aus der Karte lassen sie sich nicht ableiten: Döner Classic 7,50 -> Döner Weichkäse 8,00 waere +0,50, aber Vegetarischer Döner 5,00 -> mit Weichkäse 7,50 waere +2,50. Solange preis null ist, wird das Extra im Bestellvorgang nicht angeboten."
+    },
+    "nudeln": {
+      "basis": [],
+      "extras": [
+        {
+          "name": "überbacken",
+          "preis": "1,50"
+        }
+      ]
+    }
+  },
+  "upsell": {
+    "_hinweis": "Vorschläge, wenn der Mindestbestellwert knapp verfehlt wird. Verweist über die Nummer bzw. den Namen auf Gerichte in menu.json.",
+    "vorschlaege": [
+      {
+        "kategorie": "getraenke",
+        "name": "Coca-Cola"
+      },
+      {
+        "kategorie": "verschiedenes",
+        "name": "Portion Pommes"
+      },
+      {
+        "kategorie": "salate",
+        "name": "Gemischter Salat"
+      },
+      {
+        "kategorie": "getraenke",
+        "name": "Ayran"
+      }
+    ]
+  }
+}

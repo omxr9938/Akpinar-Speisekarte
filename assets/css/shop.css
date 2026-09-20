@@ -1,0 +1,363 @@
+/* Bestellvorgang: Knopf am Gericht, Auswahlfenster, Warenkorb, Kasse.
+   Gestaltung folgt der Speisekarte — dunkler Grund, Gold, gleiche Schriften. */
+
+/* ------------------------------------------------------ Bestellknopf -- */
+
+.item__bestellen {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  align-self: center;
+  justify-self: end;
+  width: 42px;
+  height: 42px;
+  margin-left: 10px;
+  border: 0;
+  border-radius: 50%;
+  background: linear-gradient(180deg, var(--gold), var(--gold-2));
+  color: #241a08;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform .12s ease, filter .12s ease;
+}
+.item__bestellen:hover { filter: brightness(1.08); }
+.item__bestellen:active { transform: scale(.94); }
+body:not(.bestellen-an) .item__bestellen { display: none; }
+
+@media (min-width: 720px) {
+  .item__bestellen { grid-row: 1; }
+}
+
+/* --------------------------------------------------- Auswahlfenster -- */
+
+body.bf-offen, body.korb-offen { overflow: hidden; }
+
+.bf {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+  background: rgba(0, 0, 0, .68);
+  backdrop-filter: blur(3px);
+}
+@media (min-width: 720px) { .bf { align-items: center; padding: 24px; } }
+
+.bf__karte {
+  width: min(560px, 100%);
+  max-height: 92vh;
+  overflow-y: auto;
+  border-radius: 20px 20px 0 0;
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, var(--panel), var(--bg-2));
+  box-shadow: 0 -20px 60px rgba(0, 0, 0, .5);
+}
+@media (min-width: 720px) { .bf__karte { border-radius: 20px; } }
+
+.bf__kopf {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 20px 20px 12px;
+  background: linear-gradient(180deg, var(--panel), rgba(26, 21, 19, .96));
+  border-bottom: 1px solid var(--line-soft);
+}
+.bf__name {
+  margin: 0;
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 800;
+  font-size: 1.5rem;
+  color: var(--gold);
+}
+.bf__zu {
+  flex: none;
+  width: 36px; height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-2);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+.bf__besch { padding: 12px 20px 0; font-size: .92rem; color: var(--text-2); }
+.bf__body { padding: 4px 20px 16px; }
+
+.bf__titel {
+  margin: 18px 0 8px;
+  font-size: .76rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--gold-3);
+}
+.bf__klein { margin: -4px 0 8px; font-size: .82rem; color: var(--text-3); }
+
+.bf__wahl { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.bf__wahl--schmal { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); }
+.bf__opt {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 11px 8px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .02);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+.bf__opt.ist-an {
+  border-color: var(--gold-2);
+  background: rgba(226, 179, 95, .14);
+}
+.bf__optname { font-size: .86rem; font-weight: 600; }
+.bf__optpreis { font-size: .92rem; font-weight: 700; color: var(--gold); }
+
+.bf__chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.bf__chip {
+  padding: 9px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .02);
+  color: var(--text);
+  font: inherit;
+  font-size: .88rem;
+  cursor: pointer;
+}
+.bf__chip.ist-weg {
+  border-color: rgba(193, 32, 31, .6);
+  background: rgba(193, 32, 31, .16);
+  color: var(--text-3);
+  text-decoration: line-through;
+}
+.bf__chip--extra.ist-an {
+  border-color: var(--gold-2);
+  background: rgba(226, 179, 95, .16);
+  color: var(--gold);
+}
+
+.bf__fuss {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px calc(14px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line-soft);
+  background: linear-gradient(0deg, var(--panel), rgba(26, 21, 19, .96));
+}
+.bf__menge { display: flex; align-items: center; gap: 4px; }
+.bf__rund {
+  width: 38px; height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text);
+  font-size: 20px;
+  cursor: pointer;
+}
+.bf__anzahl { min-width: 28px; text-align: center; font-weight: 700; }
+.bf__rein {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 13px 16px;
+  border: 0;
+  border-radius: 12px;
+  background: linear-gradient(180deg, var(--gold), var(--gold-2));
+  color: #241a08;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* --------------------------------------------------------- Warenkorb -- */
+
+.korb-knopf {
+  position: fixed;
+  right: 16px;
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--gold), var(--gold-2));
+  color: #241a08;
+  font: inherit;
+  font-weight: 700;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .5);
+  cursor: pointer;
+}
+.korb-knopf b { font-variant-numeric: tabular-nums; }
+
+.korb {
+  position: fixed;
+  inset: 0;
+  z-index: 180;
+  display: flex;
+  justify-content: flex-end;
+  visibility: hidden;
+  opacity: 0;
+  background: rgba(0, 0, 0, .6);
+  transition: opacity .18s ease, visibility .18s ease;
+}
+.korb.ist-offen { visibility: visible; opacity: 1; }
+.korb__karte {
+  width: min(440px, 100%);
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-2);
+  border-left: 1px solid var(--line);
+  transform: translateX(100%);
+  transition: transform .22s ease;
+}
+.korb.ist-offen .korb__karte { transform: none; }
+.korb__kopf {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 18px 14px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.korb__kopf h2 {
+  margin: 0; font-family: var(--serif); font-style: italic;
+  font-weight: 800; font-size: 1.4rem; color: var(--gold);
+}
+.korb__inhalt { flex: 1; overflow-y: auto; padding: 8px 18px 18px; }
+.korb__leer { padding: 30px 0; text-align: center; color: var(--text-3); }
+.korb__zeile {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  gap: 10px;
+  align-items: start;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+.korb__anz { font-weight: 700; color: var(--gold-3); }
+.korb__name { display: block; font-weight: 600; }
+.korb__zusatz { display: block; margin-top: 3px; font-size: .8rem; color: var(--text-3); }
+.korb__preis { font-weight: 700; color: var(--gold); white-space: nowrap; }
+.korb__weg {
+  width: 26px; height: 26px; border: 0; border-radius: 50%;
+  background: rgba(255, 255, 255, .06); color: var(--text-3);
+  font-size: 16px; line-height: 1; cursor: pointer;
+}
+
+/* ------------------------------------------------------------- Kasse -- */
+
+.kasse { padding: 4px 18px calc(18px + env(safe-area-inset-bottom)); }
+.kasse__tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+.kasse__tab {
+  padding: 12px; border: 1px solid var(--line); border-radius: 12px;
+  background: rgba(255, 255, 255, .02); color: var(--text);
+  font: inherit; font-weight: 600; cursor: pointer;
+}
+.kasse__tab.ist-an { border-color: var(--gold-2); background: rgba(226, 179, 95, .14); }
+
+.kasse__feld { margin-top: 12px; }
+.kasse__feld label {
+  display: block; margin-bottom: 5px;
+  font-size: .76rem; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--gold-3);
+}
+.kasse__feld input, .kasse__feld select, .kasse__feld textarea {
+  width: 100%; padding: 11px 12px;
+  border: 1px solid var(--line); border-radius: 10px;
+  background: rgba(255, 255, 255, .03); color: var(--text);
+  font: inherit;
+}
+.kasse__feld textarea { min-height: 62px; resize: vertical; }
+body.ist-abholung .nur-lieferung { display: none; }
+
+.kasse__min {
+  margin-top: 14px; padding: 11px 13px; border-radius: 10px;
+  font-size: .88rem;
+  border: 1px solid var(--line); color: var(--text-2);
+}
+.kasse__min.ist-knapp {
+  border-color: rgba(226, 179, 95, .45);
+  background: rgba(226, 179, 95, .10);
+  color: var(--gold);
+}
+.kasse__min.ist-gut {
+  border-color: rgba(90, 160, 90, .4);
+  background: rgba(90, 160, 90, .10);
+  color: #9ed19e;
+}
+
+.kasse__vtitel { margin: 14px 0 8px; font-size: .86rem; color: var(--text-2); }
+.kasse__vliste { display: flex; flex-wrap: wrap; gap: 8px; }
+.kasse__v {
+  display: flex; flex-direction: column; gap: 2px;
+  padding: 9px 13px; border: 1px solid var(--gold-3); border-radius: 12px;
+  background: rgba(226, 179, 95, .08); color: var(--text);
+  font: inherit; cursor: pointer; text-align: left;
+}
+.kasse__vname { font-size: .86rem; font-weight: 600; }
+.kasse__vpreis { font-size: .8rem; color: var(--gold); }
+
+.kasse__zahlung { display: grid; gap: 8px; margin-top: 8px; }
+.kasse__zahl {
+  display: flex; flex-direction: column; gap: 2px;
+  padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px;
+  background: rgba(255, 255, 255, .02); color: var(--text);
+  font: inherit; text-align: left; cursor: pointer;
+}
+.kasse__zahl.ist-an { border-color: var(--gold-2); background: rgba(226, 179, 95, .14); }
+.kasse__zname { font-weight: 600; }
+.kasse__zbesch { font-size: .82rem; color: var(--text-3); }
+
+.kasse__summe {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-top: 18px; padding-top: 14px;
+  border-top: 1px solid var(--line);
+  font-size: 1.1rem;
+}
+.kasse__summe b { font-size: 1.5rem; color: var(--gold); }
+
+.kasse__senden {
+  width: 100%; margin-top: 14px; padding: 15px;
+  border: 0; border-radius: 12px;
+  background: linear-gradient(180deg, var(--gold), var(--gold-2));
+  color: #241a08; font: inherit; font-weight: 700; font-size: 1rem;
+  cursor: pointer;
+}
+.kasse__senden:disabled {
+  background: rgba(255, 255, 255, .07); color: var(--text-3); cursor: not-allowed;
+}
+.kasse__leeren {
+  width: 100%; margin-top: 8px; padding: 10px;
+  border: 1px solid var(--line); border-radius: 10px;
+  background: transparent; color: var(--text-3); font: inherit; cursor: pointer;
+}
+.kasse__danach {
+  margin-top: 14px; padding: 13px; border-radius: 10px;
+  border: 1px solid rgba(90, 160, 90, .4); background: rgba(90, 160, 90, .10);
+  font-size: .88rem; color: #9ed19e;
+}
+.kasse__recht { margin-top: 12px; font-size: .76rem; color: var(--text-3); }
+.kasse__recht a { color: var(--gold-3); }
+
+@media print { .korb-knopf, .korb, .bf, .item__bestellen { display: none !important; } }
+
+/* Pflichtlinks in der Fußzeile */
+.site-footer__recht {
+  display: flex; justify-content: center; flex-wrap: wrap;
+  gap: 8px 22px; margin: 18px 0 10px;
+}
+.site-footer__recht a {
+  color: var(--text-3); font-size: .85rem; text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+.site-footer__recht a:hover { color: var(--gold-3); border-bottom-color: currentColor; }
