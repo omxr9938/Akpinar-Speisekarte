@@ -82,11 +82,10 @@
         "name": "Als Menü",
         "beschreibung": "inkl. kleine Pommes + 0,33 l Getränk",
         "preis": "5,00",
-        "gilt_fuer": "d[öo]ner|d[üu]r[üu]m",
+        "gilt_fuer": "^D[öo]ner im Fladenbrot|^D[üu]r[üu]m",
         "getraenke_aus": "getraenke",
         "getraenke_spalte": 0,
-        "_hinweis": "Steht so schon als Banner in der Karte: \"Döner-Menü: inkl. Pommes + 0,33 l Getränk — +5 Euro zum Döner-Preis.\" gilt_fuer begrenzt es auf Döner und Dürüm. nicht_bei nimmt Gerichte heraus, die laut Karte bereits Pommes enthalten (Döner-Teller, Döner Pomm, Boxen, Bowl, Cup Salon) — dort waere ein Menue mit nochmal Pommes unsinnig. BITTE PRUEFEN, ob das Ihrer Handhabung entspricht. Burger haben bereits eine eigene Menue-Preisspalte.",
-        "nicht_bei": "pommes|teller|box|bowl"
+        "_hinweis": "Steht so schon als Banner in der Karte: \"Döner-Menü: inkl. Pommes + 0,33 l Getränk — +5 Euro zum Döner-Preis.\" gilt_fuer ist am Namensanfang verankert und trifft damit nur \"Döner im Fladenbrot\" und \"Dürüm 28/32 cm\". Nicht getroffen werden Lahmacun Dürüm und Pide Döner (falsche Wortstellung) sowie alle Döner-Varianten wie Chili-Cheese oder Saray. Burger haben eine eigene Menue-Preisspalte in der Karte."
       }
     },
     "nudeln": {

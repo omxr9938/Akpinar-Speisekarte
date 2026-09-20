@@ -519,7 +519,7 @@
 
   document.addEventListener('karte-fertig', function () {
     daten = window.AKPINAR.daten;
-    fetch('assets/data/bestellung.json?v=125cc227')
+    fetch('assets/data/bestellung.json?v=bd76559d')
       .then(function (r) { return r.json(); })
       .then(function (k) {
         konfig = k;
