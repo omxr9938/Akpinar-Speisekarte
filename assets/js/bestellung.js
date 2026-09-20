@@ -307,6 +307,16 @@
           stand.getraenk = null;
           Array.prototype.forEach.call(getraenkBox.querySelectorAll('.bf__chip'),
             function (c) { c.classList.remove('ist-an'); });
+        } else {
+          // Der Menü-Block steht unten im Fenster; die Getränke klappen
+          // darunter auf und lägen sonst hinter der festen Fußleiste. Ohne
+          // dieses Scrollen sieht man auf dem Handy gar nicht, dass man ein
+          // Getränk wählen kann.
+          setTimeout(function () {
+            if (getraenkBox.scrollIntoView) {
+              getraenkBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          }, 60);
         }
         preisAktualisieren();
       });
@@ -318,8 +328,11 @@
       if (kat) {
         getraenkBox.appendChild(el('p', { class: 'bf__titel', text: 'Getränk zum Menü' }));
         var gListe = el('div', { class: 'bf__chips' });
+        var ausser = menueKonf.getraenke_ausser
+          ? new RegExp(menueKonf.getraenke_ausser, 'i') : null;
         kat.items.forEach(function (it) {
           if (zuZahl(it.preise[menueKonf.getraenke_spalte]) === null) return;
+          if (ausser && ausser.test(it.name)) return;
           var b = el('button', { class: 'bf__chip', type: 'button' },
             [document.createTextNode(it.name)]);
           b.addEventListener('click', function () {
@@ -521,7 +534,7 @@
 
   document.addEventListener('karte-fertig', function () {
     daten = window.AKPINAR.daten;
-    fetch('assets/data/bestellung.json?v=89311226')
+    fetch('assets/data/bestellung.json?v=4c28fa6c')
       .then(function (r) { return r.json(); })
       .then(function (k) {
         konfig = k;
