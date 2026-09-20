@@ -50,42 +50,50 @@ def kategorie(kat_id):
 
 def folge_angebote():
     a = D["angebote"]
-    s = [(slides.titelseite("Special-Angebote", a["gueltigkeit"]), 6)]
+    s = []
     for g in a["gruppen"]:
-        s.append((slides.angebotsseite(g, a["zusatz"]), 9))
-    s.append((slides.stempelseite(D["stempelkarte"]), 8))
-    s.append((slides.endseite(), 7))
+        s.append((slides.angebotsseite(g, a["zusatz"]), 11))
+        s.append((slides.logoseite(), 3))
+    s.append((slides.stempelseite(D["stempelkarte"]), 10))
+    s.append((slides.endseite(), 8))
     return s
 
 
-def folge_gerichte(kat_id, titel, unterzeile, pro_seite, akzent=None):
+def folge_karte(kat_id, titel, unterzeile, pbreite=132, akzent=None, standzeit=20):
+    """Die ganze Kategorie steht auf einer Seite und bleibt lange stehen.
+    Dazwischen nur kurze Einblendungen — Gaeste sollen ihr Gericht sofort
+    finden und nicht darauf warten, dass die naechste Seite umblaettert."""
     k = kategorie(kat_id)
-    s = [(slides.titelseite(titel, unterzeile), 6)]
-    bloecke = teile(k["items"], pro_seite)
-    for i, block in enumerate(bloecke):
-        s.append((slides.gerichteseite(titel, block, k["spalten"],
-                                       k.get("spaltenKurz"), dicht=pro_seite >= 6), 9))
-        # Akzentseite etwa in der Mitte einstreuen
-        if akzent and i == len(bloecke) // 2:
-            s.append((slides.akzentseite(*akzent), 7))
+    karte = slides.volllisteseite(titel, unterzeile, k["items"],
+                                  k.get("spaltenKurz"), pbreite)
+    einschuebe = [(slides.logoseite(), 3)]
+    if akzent:
+        einschuebe.append((slides.spruchseite(*akzent), 4))
+    einschuebe.append((slides.telefonseite(), 4))
+
+    s = []
+    for i, einschub in enumerate(einschuebe):
+        s.append((karte, standzeit))
+        s.append(einschub)
     s.append((slides.endseite(), 7))
     return s
 
 
 VIDEOS = {
     "angebote": ("1-Angebote", folge_angebote),
-    "pizza": ("2-Pizza", lambda: folge_gerichte(
-        "pizza", "Pizza", "Alle Pizzen mit Tomaten- oder Sahnesoße und Käse", 4,
+    "pizza": ("2-Pizza", lambda: folge_karte(
+        "pizza", "Pizza", "Alle Pizzen mit Tomaten- oder Sahnesoße und Käse",
+        pbreite=124,
         akzent=("@@IMG@@/pizza-hero.jpg", 285, 285, "Frisch aus dem Ofen",
-                "Jede Pizza wird bei uns frisch belegt und gebacken — "
-                "mit Tomaten- oder Sahnesoße und Käse."))),
-    "doener": ("3-Doener", lambda: folge_gerichte(
-        "tuerkisch", "Türkische Spezialitäten", "Döner · Dürüm · Boxen · Teller", 6,
+                "Jede Pizza wird bei uns frisch belegt und gebacken."))),
+    "doener": ("3-Doener", lambda: folge_karte(
+        "tuerkisch", "Türkische Spezialitäten", "Döner · Dürüm · Boxen · Teller",
+        pbreite=150,
         akzent=("@@IMG@@/doener-hero.jpg", 341, 264, "Täglich frisch gedreht",
-                "Dönerfleisch vom Spieß, hausgemachter Dürüm und "
-                "frisches Fladenbrot."))),
-    "nudeln": ("4-Nudeln", lambda: folge_gerichte(
-        "nudeln", "Nudeln", "Rigatoni · Spaghetti · Tortellini — Überbacken: +1,50", 5)),
+                "Dönerfleisch vom Spieß und frisches Fladenbrot."))),
+    "nudeln": ("4-Nudeln", lambda: folge_karte(
+        "nudeln", "Nudeln", "Rigatoni · Spaghetti · Tortellini — Überbacken: +1,50",
+        pbreite=150, standzeit=18)),
 }
 
 
@@ -121,6 +129,31 @@ def rendern(seiten, ordner):
             htm.write_text(pfade_einsetzen(html_text), encoding="utf-8")
             pg.goto(htm.as_uri(), wait_until="load")
             pg.evaluate("() => document.fonts.ready")
+            # Vollständige Karten automatisch so weit verkleinern, bis sie auf
+            # den Bildschirm passen. Ohne das wuerde bei langen Beschreibungen
+            # unten etwas abgeschnitten, ohne dass es jemand merkt.
+            passt = pg.evaluate("""() => {
+                const voll = document.getElementById('voll');
+                if (!voll) return null;
+                const wurzel = document.querySelector('.inhalt');
+                const passtBei = s => {
+                    wurzel.style.setProperty('--s', s.toFixed(3));
+                    return voll.scrollHeight <= voll.clientHeight + 1
+                        && document.body.scrollHeight <= window.innerHeight + 1;
+                };
+                // Groesste Schrift suchen, die noch passt. Nach oben gedeckelt,
+                // damit kurze Kategorien wie Nudeln nicht ins Alberne wachsen.
+                let unten = 0.40, oben = 1.60;
+                if (!passtBei(unten)) return unten;
+                for (let i = 0; i < 22; i++) {
+                    const mitte = (unten + oben) / 2;
+                    if (passtBei(mitte)) unten = mitte; else oben = mitte;
+                }
+                passtBei(unten);
+                return unten;
+            }""")
+            if passt is not None:
+                print(f"    Seite {i}: Schriftgroesse {passt:.0%}")
             fehlend = pg.evaluate(
                 "() => [...document.images].filter(i => !i.complete || !i.naturalWidth)"
                 ".map(i => i.src)")

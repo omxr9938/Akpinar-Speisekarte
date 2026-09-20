@@ -59,8 +59,8 @@ KOPF = """<!doctype html>
 
   /* Kopfzeile */
   .kopf { display:flex; align-items:center; justify-content:space-between;
-          margin-bottom:34px; }
-  .kopf img { height:74px; mix-blend-mode:screen; }
+          margin-bottom:18px; }
+  .kopf img { height:66px; mix-blend-mode:screen; }
   .kopf .kat { font-family:"Playfair Display",serif; font-style:italic;
                font-weight:800; font-size:54px; color:var(--gold);
                letter-spacing:.01em; }
@@ -86,7 +86,7 @@ KOPF = """<!doctype html>
 
   /* Fußzeile */
   .fuss { display:flex; align-items:center; justify-content:space-between;
-          margin-top:30px; padding-top:24px;
+          margin-top:18px; padding-top:16px;
           border-top:1px solid rgba(226,179,95,.22);
           font-size:30px; color:var(--text2); }
   .fuss b { color:var(--gold); font-size:36px; }
@@ -272,5 +272,103 @@ def endseite():
         f'<div class="adr">{_e(b["strasse"])} · {_e(b["plz"])} {_e(b["ort"])}</div>'
         '<img class="qr" src="@@QR@@" alt="">'
         '<div class="netz">Ganze Speisekarte online — QR-Code scannen</div>'
+        '</div>'
+    )
+
+
+# ------------------------------------------------- vollständige Kartenseite --
+
+VOLLSTIL = """
+  /* Zwei Spalten per CSS-Mehrspaltensatz: Der Browser verteilt die Eintraege
+     selbst so, dass beide Spalten gleich hoch werden. Nach Anzahl geteilt
+     waeren sie unterschiedlich lang, weil manche Beschreibungen umbrechen. */
+  .voll { flex:1; column-count:2; column-gap:58px; column-fill:balance; }
+  .vz { display:grid; grid-template-columns:auto 1fr auto; gap:0 16px;
+        align-items:baseline; padding:calc(9px * var(--s)) 0;
+        border-bottom:1px solid rgba(226,179,95,.12);
+        break-inside:avoid; -webkit-column-break-inside:avoid; }
+  .vz .vnr { font-size:calc(27px * var(--s)); font-weight:700; color:var(--gold3);
+             font-variant-numeric:tabular-nums; min-width:calc(48px * var(--s)); }
+  .vz .vname { font-size:calc(33px * var(--s)); font-weight:700; line-height:1.15; }
+  .vz .vbesch { display:block; font-size:calc(22px * var(--s)); color:var(--text2);
+                line-height:1.2; margin-top:2px; }
+  .vz .vpreise { display:flex; }
+  .vz .vpreise span { width:calc(var(--pbreite,132px) * var(--s)); text-align:right;
+      font-size:calc(32px * var(--s)); font-weight:700; color:var(--gold);
+      font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .vz sup { font-size:.46em; color:var(--gold3); margin-left:.18em; }
+  .groessen { text-align:center; font-size:27px; color:var(--gold3);
+              letter-spacing:.08em; margin:-8px 0 16px; }
+"""
+
+
+def _marken(g):
+    if not g.get("zusatz"):
+        return ""
+    return ('<sup>' + _e("".join(z if z == "*" else z + ")" for z in g["zusatz"]))
+            + '</sup>')
+
+
+def volllisteseite(kategorie, unterzeile, gerichte, spalten_kurz=None, pbreite=132):
+    """Die ganze Kategorie auf einer Seite, zweispaltig.
+
+    Gäste sollen ihr Gericht sofort finden und nicht warten, bis die nächste
+    Seite umblättert. Die Schriftgröße wird beim Rendern automatisch so weit
+    verkleinert, bis alles auf den Bildschirm passt (--s).
+    """
+    zeilen = []
+    for g in gerichte:
+        preise = "".join(
+            f'<span>{_e(p)}</span>' if p not in (None, "", "-") else '<span>–</span>'
+            for p in g.get("preise", []))
+        besch = (f'<span class="vbesch">{_e(g["beschreibung"])}</span>'
+                 if g.get("beschreibung") else '')
+        zeilen.append(
+            f'<div class="vz"><span class="vnr">{_e(g.get("nr") or "")}</span>'
+            f'<span><span class="vname">{_e(g["name"])}{_marken(g)}</span>{besch}</span>'
+            f'<span class="vpreise">{preise}</span></div>')
+
+    # Groessenlegende einmal oben statt ueber jeder Spalte — spart Platz und
+    # bleibt eindeutig, weil die Preise immer in derselben Reihenfolge stehen.
+    groessen = ""
+    echte = [s for s in (spalten_kurz or []) if s]
+    if len(echte) > 1:
+        groessen = ('<div class="groessen">Preise in Euro: '
+                    + _e("  ·  ".join(echte)) + '</div>')
+
+    unter = (f'<div style="text-align:center;font-size:28px;color:var(--text2);'
+             f'margin:-6px 0 10px">{_e(unterzeile)}</div>' if unterzeile else '')
+
+    return (KOPF + f'<style>{VOLLSTIL}</style>'
+            + '<div class="flaeche"></div>'
+            + f'<div class="inhalt" style="--s:1;--pbreite:{pbreite}px;padding:30px 58px">'
+            + kopf(kategorie) + unter + groessen
+            + f'<div class="voll" id="voll">{"".join(zeilen)}</div>'
+            + fuss() + '</div>')
+
+
+def logoseite():
+    """Kurze Einblendung zwischen zwei Standzeiten der Karte."""
+    return seite(
+        '<div class="titel">'
+        '<img class="logo" src="@@LOGO@@" alt="" style="width:980px">'
+        '<div class="linie"></div>'
+        '<p style="font-size:44px;letter-spacing:.14em;color:var(--gold2)">'
+        'QUALITÄT · FRISCH · LECKER</p>'
+        '</div>'
+    )
+
+
+def spruchseite(bild, breite, hoehe, ueberschrift, text):
+    return akzentseite(bild, breite, hoehe, ueberschrift, text)
+
+
+def telefonseite():
+    b = DATEN["betrieb"]
+    return seite(
+        '<div class="ende">'
+        f'<p style="font-size:44px;color:var(--text2)">Bestellen Sie jetzt</p>'
+        f'<div class="tel" style="font-size:150px">{_e(b["telefon"])}</div>'
+        f'<div class="adr">{_e(b["strasse"])} · {_e(b["plz"])} {_e(b["ort"])}</div>'
         '</div>'
     )
