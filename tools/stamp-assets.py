@@ -66,6 +66,18 @@ def main() -> int:
         n, v = stempeln(datei, muster, ziel)
         print(f"  {ziel.relative_to(ROOT)} -> v={v}  ({n}x in {datei.name})")
 
+    # Zeitpunkt sichtbar in die Fußzeile schreiben. So sieht man der Seite an,
+    # ob man den aktuellen Stand vor sich hat — ohne version.txt aufzurufen.
+    import datetime
+    stand = datetime.datetime.now(datetime.timezone.utc).strftime("%d.%m.%Y %H:%M")
+    ih = (ROOT / "index.html")
+    txt = ih.read_text(encoding="utf-8")
+    txt, n = re.subn(r'(<small class="site-footer__stand" id="seiten-stand">)[^<]*(</small>)',
+                     lambda m: m.group(1) + "Stand: " + stand + " UTC" + m.group(2), txt)
+    if n:
+        ih.write_text(txt, encoding="utf-8")
+        print(f"  Fußzeile: Stand {stand} UTC")
+
     print("\nFertig. Die Adressen ändern sich nur, wenn sich der Inhalt ändert.")
     return 0
 

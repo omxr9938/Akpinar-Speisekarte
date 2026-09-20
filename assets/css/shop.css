@@ -478,3 +478,7 @@ body.ist-abholung .nur-lieferung { display: none; }
    Kategorien und breite Bildschirme blenden sie sonst aus. */
 .item--groessen .item__price-label { display: block !important; }
 .section--single .item--groessen .item__prices { grid-row: 1 / span 2; align-self: center; }
+
+/* Stand der Seite in der Fußzeile: macht auf einen Blick sichtbar, ob man den
+   aktuellen Stand vor sich hat oder eine zwischengespeicherte alte Fassung. */
+.site-footer__stand { display: block; margin-top: 6px; opacity: .55; }
