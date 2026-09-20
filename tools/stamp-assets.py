@@ -45,19 +45,24 @@ def stempeln(datei: pathlib.Path, muster: str, ziel: pathlib.Path) -> int:
 def main() -> int:
     index = ROOT / "index.html"
     appjs = ROOT / "assets/js/app.js"
+    bestjs = ROOT / "assets/js/bestellung.js"
 
     aufgaben = [
         # Nur Verweise in Anfuehrungszeichen stempeln - sonst landet die Kennung
         # auch in Kommentaren, die denselben Pfad nennen.
         (index, r'("assets/css/styles\.css)(?:\?v=[0-9a-f]+)?(?=")', ROOT / "assets/css/styles.css"),
-        (index, r'("assets/js/app\.js)(?:\?v=[0-9a-f]+)?(?=")',      appjs),
+        (index, r'("assets/css/shop\.css)(?:\?v=[0-9a-f]+)?(?=")',   ROOT / "assets/css/shop.css"),
+        (index, r'("assets/js/kasse\.js)(?:\?v=[0-9a-f]+)?(?=")',    ROOT / "assets/js/kasse.js"),
+        (bestjs, r"('assets/data/bestellung\.json)(?:\?v=[0-9a-f]+)?(?=')",
+         ROOT / "assets/data/bestellung.json"),
+        (index, r'("assets/js/bestellung\.js)(?:\?v=[0-9a-f]+)?(?=")', bestjs),
         (appjs, r"('assets/data/menu\.json)(?:\?v=[0-9a-f]+)?(?=')", ROOT / "assets/data/menu.json"),
+        (index, r'("assets/js/app\.js)(?:\?v=[0-9a-f]+)?(?=")',      appjs),
     ]
 
-    # app.js zuletzt hashen, denn sein Inhalt ändert sich durch den ersten Stempel
-    reihenfolge = [aufgaben[0], aufgaben[2], aufgaben[1]]
-
-    for datei, muster, ziel in reihenfolge:
+    # Reihenfolge ist wichtig: Wer selbst gestempelt wird, muss erst danach
+    # gehasht werden — sonst zeigt die Kennung auf einen überholten Inhalt.
+    for datei, muster, ziel in aufgaben:
         n, v = stempeln(datei, muster, ziel)
         print(f"  {ziel.relative_to(ROOT)} -> v={v}  ({n}x in {datei.name})")
 

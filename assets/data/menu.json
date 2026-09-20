@@ -52,12 +52,12 @@
     "zonen": [
       {
         "zone": "Zone 1",
-        "orte": "Altötting, Neuötting …",
+        "orte": "Altötting, Neuötting",
         "mindestbestellung": "18,00 €"
       },
       {
         "zone": "Zone 2",
-        "orte": "Winhöring, Eisenfelden, Steinhöring, Unterau …",
+        "orte": "Winhöring, Eisenfelden, Steinhöring, Unterau",
         "mindestbestellung": "25,00 €"
       },
       {
@@ -67,7 +67,7 @@
       },
       {
         "zone": "Zone 4",
-        "orte": "Unterneukirchen, Alzgern",
+        "orte": "Unterneukirchen, Alzgern, Burgkirchen",
         "mindestbestellung": "40,00 €"
       }
     ]

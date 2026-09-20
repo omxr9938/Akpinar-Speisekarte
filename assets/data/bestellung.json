@@ -35,7 +35,7 @@
   "lieferung": {
     "mindestbestellwert_standard": "20,00",
     "_hinweis": "Die Zonen und ihre Orte stehen in menu.json unter lieferung.zonen. Der Gast waehlt im Bestellvorgang seinen Ort aus dieser Liste. Steht sein Ort nicht darin, greift der Standardwert oben und es erscheint der Hinweis, telefonisch nachzufragen.",
-    "_offen": "In menu.json endet die Ortsliste von Zone 1 und Zone 2 mit \"…\". Diese Listen bitte vervollstaendigen, sonst finden Gaeste aus den fehlenden Orten sich nicht wieder."
+    "plz_hinweis": "84508 Burgkirchen gehört zu Zone 4. Die Zonenzuordnung selbst steht in menu.json."
   },
   "zutaten": {
     "_hinweis": "basis = Zutaten, die immer drauf sind und abgewählt werden können (kostenlos). extras = Zutaten, die gegen Aufpreis dazukommen.",
@@ -75,33 +75,7 @@
         "standard": "Kräuter",
         "_hinweis": "BITTE PRÜFEN — welche Soßen bieten Sie tatsächlich an?"
       },
-      "extras": [
-        {
-          "name": "Schafskäse",
-          "preis": null
-        },
-        {
-          "name": "Weichkäse",
-          "preis": null
-        },
-        {
-          "name": "Käse",
-          "preis": null
-        },
-        {
-          "name": "Jalapeños",
-          "preis": null
-        },
-        {
-          "name": "extra Fleisch",
-          "preis": null
-        },
-        {
-          "name": "Pommes",
-          "preis": null
-        }
-      ],
-      "_hinweis": "PREISE FEHLEN. Aus der Karte lassen sie sich nicht ableiten: Döner Classic 7,50 -> Döner Weichkäse 8,00 waere +0,50, aber Vegetarischer Döner 5,00 -> mit Weichkäse 7,50 waere +2,50. Solange preis null ist, wird das Extra im Bestellvorgang nicht angeboten."
+      "_hinweis": "Bewusst keine Extras: Die Karte bildet die Varianten bereits als eigene Gerichte ab (Döner Weichkäse, Döner Chili-Cheese, Döner Saray und so weiter). Ein zusätzlicher Aufpreis-Konfigurator würde dieselbe Sache zweimal anbieten, mit widersprüchlichen Preisen."
     },
     "nudeln": {
       "basis": [],
