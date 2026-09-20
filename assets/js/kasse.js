@@ -138,6 +138,7 @@
       if (p.soße) z.push('   Soße: ' + p.soße);
       if (p.ohne.length) z.push('   OHNE: ' + p.ohne.join(', '));
       if (p.extras.length) z.push('   EXTRA: ' + p.extras.join(', '));
+      if (p.notiz) z.push('   ANMERKUNG: ' + p.notiz);
     });
     z.push('');
     z.push('*Summe: ' + A.euro(A.summe()) + '*');

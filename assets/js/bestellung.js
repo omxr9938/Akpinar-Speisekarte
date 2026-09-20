@@ -215,6 +215,17 @@
     }
     extrasNeu();
 
+    // --- Notiz
+    var notiz = el('textarea', {
+      class: 'bf__notiz',
+      id: 'bf-notiz',
+      rows: '2',
+      placeholder: 'z. B. gut durchgebacken, extra scharf, Soße separat'
+    });
+    inhalt.appendChild(el('label', { class: 'bf__titel', for: 'bf-notiz',
+      text: 'Anmerkung zu diesem Gericht' }));
+    inhalt.appendChild(notiz);
+
     // --- Anzahl
     var anzeige = el('span', { class: 'bf__anzahl', text: '1' });
     var anzahlBox = el('div', { class: 'bf__menge' }, [
@@ -245,6 +256,7 @@
         el('div', { class: 'bf__fuss' }, [
           anzahlBox,
           el('button', { class: 'bf__rein', type: 'button', onclick: function () {
+            stand.notiz = notiz.value.trim();
             hinzufuegen(gericht, kategorie, stand, preisJetzt() / stand.anzahl);
             schliessen();
           } }, [document.createTextNode('In den Warenkorb  '), preisZeile])
@@ -276,12 +288,33 @@
       ohne: weg,
       extras: stand.extras.map(function (e) { return e.name; }),
       soße: stand.soße,
+      notiz: stand.notiz || '',
       preis: einzelpreis,
       anzahl: stand.anzahl
     });
     korbSpeichern();
     korbZeichnen();
-    korbOeffnen();
+    bestaetigen(gericht.name, stand.anzahl);
+  }
+
+  /** Kurze Rückmeldung, dass etwas im Korb gelandet ist. Ohne sie wüsste der
+      Gast nicht, ob der Knopf gewirkt hat — der Warenkorb öffnet sich
+      bewusst nicht mehr, damit er weiter aussuchen kann. */
+  function bestaetigen(name, anzahl) {
+    var alt = document.querySelector('.bestaetigung');
+    if (alt) alt.remove();
+    var box = el('div', { class: 'bestaetigung', role: 'status' }, [
+      el('span', { class: 'bestaetigung__text',
+        text: anzahl + '× ' + name + ' hinzugefügt' }),
+      el('button', { class: 'bestaetigung__korb', type: 'button',
+        onclick: function () { box.remove(); korbOeffnen(); } }, ['Zum Warenkorb'])
+    ]);
+    document.body.appendChild(box);
+    requestAnimationFrame(function () { box.classList.add('ist-da'); });
+    setTimeout(function () {
+      box.classList.remove('ist-da');
+      setTimeout(function () { box.remove(); }, 260);
+    }, 3200);
   }
 
   /* ---------------------------------------------------- Korb-Anzeige -- */
@@ -306,6 +339,7 @@
       if (p.soße) zusatz.push('Soße: ' + p.soße);
       if (p.ohne.length) zusatz.push('ohne ' + p.ohne.join(', '));
       if (p.extras.length) zusatz.push('mit ' + p.extras.join(', '));
+      if (p.notiz) zusatz.push('„' + p.notiz + '“');
       liste.appendChild(el('div', { class: 'korb__zeile' }, [
         el('span', { class: 'korb__anz', text: p.anzahl + '×' }),
         el('span', {}, [

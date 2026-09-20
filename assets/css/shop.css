@@ -168,10 +168,14 @@ body.bf-offen, body.korb-offen { overflow: hidden; }
 .bf__anzahl { min-width: 28px; text-align: center; font-weight: 700; }
 .bf__rein {
   flex: 1;
+  min-width: 0;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   gap: 10px;
+  /* nowrap: Auf schmalen Geräten brach "In den Warenkorb  7,50 €" sonst
+     mitten im Text um und der Preis rutschte unter die Beschriftung. */
+  white-space: nowrap;
   padding: 13px 16px;
   border: 0;
   border-radius: 12px;
@@ -362,3 +366,60 @@ body.ist-abholung .nur-lieferung { display: none; }
   border-bottom: 1px solid transparent;
 }
 .site-footer__recht a:hover { color: var(--gold-3); border-bottom-color: currentColor; }
+
+/* Notizfeld im Auswahlfenster */
+.bf__notiz {
+  width: 100%;
+  min-height: 62px;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .03);
+  color: var(--text);
+  font: inherit;
+  font-size: .92rem;
+  resize: vertical;
+}
+.bf__notiz::placeholder { color: var(--text-3); }
+
+/* Kurze Rückmeldung nach dem Hinzufügen. Der Warenkorb öffnet sich bewusst
+   nicht mehr von selbst — sonst wird man beim Aussuchen herausgerissen. */
+.bestaetigung {
+  position: fixed;
+  left: 50%;
+  bottom: calc(80px + env(safe-area-inset-bottom));
+  z-index: 150;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: calc(100vw - 32px);
+  padding: 12px 14px 12px 18px;
+  border: 1px solid rgba(226, 179, 95, .45);
+  border-radius: 14px;
+  background: rgba(26, 21, 19, .97);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, .55);
+  transform: translate(-50%, 16px);
+  opacity: 0;
+  transition: opacity .22s ease, transform .22s ease;
+  pointer-events: none;
+}
+.bestaetigung.ist-da { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+.bestaetigung__text { font-size: .92rem; color: var(--text); }
+.bestaetigung__korb {
+  flex: none;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--gold), var(--gold-2));
+  color: #241a08;
+  font: inherit;
+  font-size: .86rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+@media print { .bestaetigung { display: none !important; } }
+
+.bf__preis { font-variant-numeric: tabular-nums; }
+@media (max-width: 380px) {
+  .bf__rein { font-size: .92rem; padding: 13px 13px; }
+}
