@@ -158,130 +158,7 @@ def kopf(kategorie: str) -> str:
             f'<span class="kat">{_e(kategorie)}</span></div>')
 
 
-def fuss() -> str:
-    b = DATEN["betrieb"]
-    return (f'<div class="fuss"><span>{_e(b["strasse"])} · {_e(b["plz"])} {_e(b["ort"])}</span>'
-            f'<span>Bestellung: <b>{_e(b["telefon"])}</b></span></div>')
-
-
 # --------------------------------------------------------------- Seitentypen --
-
-def titelseite(kategorie: str, unterzeile: str) -> str:
-    return seite(
-        '<div class="titel">'
-        '<img class="logo" src="@@LOGO@@" alt="">'
-        '<div class="linie"></div>'
-        f'<h1>{_e(kategorie)}</h1>'
-        f'<p>{_e(unterzeile)}</p>'
-        '</div>'
-    )
-
-
-def gerichteseite(kategorie, gerichte, spalten, spalten_kurz, dicht=False):
-    """Eine Seite mit mehreren Gerichten. `dicht` für Kategorien ohne Preisspalten."""
-    mehrspaltig = len([s for s in spalten if s]) > 1
-    stil = ('--gross:46px;--klein:27px;--pgross:44px;--luecke:18px;--pad:14px'
-            if dicht else '')
-
-    zeilen = []
-    for g in gerichte:
-        nr = f'<span class="nr">{_e(g["nr"])}</span>' if g.get("nr") else '<span class="nr"></span>'
-        besch = (f'<span class="besch">{_e(g["beschreibung"])}</span>'
-                 if g.get("beschreibung") else '')
-        zusatz = ''
-        if g.get("zusatz"):
-            # Ziffern bekommen eine schliessende Klammer, das Sternchen nicht -
-            # genauso wie auf der Website und in der gedruckten Karte.
-            marken = "".join(z if z == "*" else z + ")" for z in g["zusatz"])
-            zusatz = ('<sup style="font-size:.42em;color:var(--gold3);margin-left:.25em">'
-                      + _e(marken) + '</sup>')
-
-        felder = []
-        for i, p in enumerate(g.get("preise", [])):
-            if p in (None, "", "-"):
-                continue
-            etikett = ''
-            if mehrspaltig and spalten_kurz and i < len(spalten_kurz):
-                etikett = f'<span class="etikett">{_e(spalten_kurz[i])}</span>'
-            felder.append(f'<span class="preis">{etikett}'
-                          f'<span class="zahl">{_e(p)} €</span></span>')
-
-        zeilen.append(
-            f'<div class="zeile"><span class="nr">{_e(g.get("nr") or "")}</span>'
-            f'<span><span class="name">{_e(g["name"])}{zusatz}</span>{besch}</span>'
-            f'<span class="preise">{"".join(felder)}</span></div>'
-        )
-
-    return seite(
-        kopf(kategorie)
-        + f'<div class="liste" style="{stil}">' + "".join(zeilen) + '</div>'
-        + fuss()
-    )
-
-
-def akzentseite(bild, breite, hoehe, ueberschrift, text):
-    """Bild als runder Akzent neben einem Spruch. Bild bewusst in Originalgröße,
-    hochskaliert würde es auf einem Fernseher matschig aussehen."""
-    seite_ = (
-        '<div class="akzent">'
-        f'<div class="bildrahmen" style="width:{breite}px;height:{hoehe}px">'
-        f'<img src="{bild}" width="{breite}" height="{hoehe}" alt=""></div>'
-        f'<div class="spruch"><h2>{_e(ueberschrift)}</h2><p>{_e(text)}</p></div>'
-        '</div>'
-    )
-    return seite(kopf("") + seite_ + fuss())
-
-
-def angebotsseite(gruppe):
-    """Eine Angebotsgruppe. Die Uhrzeit steht auf jeder Seite in der Fußzeile —
-    wer mittags vor der Theke steht, soll sofort sehen, dass es gerade gilt."""
-    a = DATEN["angebote"]
-    karten = []
-    for k in gruppe.get("karten", []):
-        breit = ' breit' if k.get("breit") else ''
-        sub = f'<div class="ks">{_e(k["sub"])}</div>' if k.get("sub") else ''
-        preis = f'<div class="kp">{_e(k["preis"])}</div>' if k.get("preis") else ''
-        karten.append(f'<div class="karte{breit}"><div class="kt">{_e(k["titel"])}</div>'
-                      f'{sub}{preis}</div>')
-    hinweis = (f'<p class="hinweis">{_e(gruppe["hinweis"])}</p>'
-               if gruppe.get("hinweis") else '')
-    return seite(
-        kopf(a["titel"])
-        + f'<div class="gruppe">'
-        + f'<p style="text-align:center;font-size:40px;font-weight:700;'
-          f'color:var(--gold2);letter-spacing:.04em;margin-bottom:10px">'
-          f'{_e(a["gueltigkeit"])}</p>'
-        + f'<h2>{_e(gruppe["titel"])}</h2>{hinweis}'
-        + f'<div class="karten">{"".join(karten)}</div></div>'
-        + f'<div class="fuss"><span>{_e(a["zusatz"])}</span>'
-          f'<span>Bestellung: <b>{_e(DATEN["betrieb"]["telefon"])}</b></span></div>'
-    )
-
-
-def stempelseite(s):
-    return seite(
-        kopf(DATEN["angebote"]["titel"])
-        + '<div class="gruppe">'
-        + f'<h2>{_e(s["titel"])}</h2>'
-        + f'<p class="hinweis" style="max-width:1200px;margin:26px auto 0;font-size:40px;'
-          f'line-height:1.4">{_e(s["text"])}</p>'
-        + f'<p class="hinweis" style="margin-top:22px;font-size:30px;color:var(--text3)">'
-          f'{_e(s["hinweis"])}</p>'
-        + '</div>' + fuss()
-    )
-
-
-def endseite():
-    b = DATEN["betrieb"]
-    return seite(
-        '<div class="ende">'
-        '<img src="@@LOGO@@" alt="" style="width:620px;mix-blend-mode:screen">'
-        f'<div class="tel">{_e(b["telefon"])}</div>'
-        f'<div class="adr">{_e(b["strasse"])} · {_e(b["plz"])} {_e(b["ort"])}</div>'
-        '<img class="qr" src="@@QR@@" alt="">'
-        '<div class="netz">Ganze Speisekarte online — QR-Code scannen</div>'
-        '</div>'
-    )
 
 
 # ------------------------------------------------- vollständige Kartenseite --
@@ -353,34 +230,7 @@ def volllisteseite(kategorie, unterzeile, gerichte, spalten_kurz=None, pbreite=1
             + f'<div class="inhalt" style="--s:1;--pbreite:{pbreite}px;padding:30px 58px">'
             + kopf(kategorie) + unter + groessen
             + f'<div class="voll" id="voll">{"".join(zeilen)}</div>'
-            + (band if band is not None else band_standard()) + '</div>')
-
-
-def logoseite():
-    """Kurze Einblendung zwischen zwei Standzeiten der Karte."""
-    return seite(
-        '<div class="titel">'
-        '<img class="logo" src="@@LOGO@@" alt="" style="width:980px">'
-        '<div class="linie"></div>'
-        '<p style="font-size:44px;letter-spacing:.14em;color:var(--gold2)">'
-        'QUALITÄT · FRISCH · LECKER</p>'
-        '</div>'
-    )
-
-
-def spruchseite(bild, breite, hoehe, ueberschrift, text):
-    return akzentseite(bild, breite, hoehe, ueberschrift, text)
-
-
-def telefonseite():
-    b = DATEN["betrieb"]
-    return seite(
-        '<div class="ende">'
-        f'<p style="font-size:44px;color:var(--text2)">Bestellen Sie jetzt</p>'
-        f'<div class="tel" style="font-size:150px">{_e(b["telefon"])}</div>'
-        f'<div class="adr">{_e(b["strasse"])} · {_e(b["plz"])} {_e(b["ort"])}</div>'
-        '</div>'
-    )
+            + (band if band is not None else band_logo()) + '</div>')
 
 
 # ------------------------------------------------------- wechselnder Streifen --
@@ -409,15 +259,13 @@ BANNERSTIL = """
   .band .spruchtext { font-family:"Playfair Display",serif; font-style:italic;
                       font-weight:800; font-size:46px; color:var(--gold);
                       margin-left:26px; }
+  .band .btitel { font-family:"Playfair Display",serif; font-style:italic;
+                  font-weight:800; font-size:44px; color:var(--gold);
+                  white-space:nowrap; margin-right:26px; }
+  .band .btext { font-size:32px; color:var(--text2); white-space:nowrap; }
+  .band .bklein { font-size:24px; color:var(--text3); margin-left:22px;
+                  white-space:nowrap; }
 """
-
-
-def band_standard():
-    b = DATEN["betrieb"]
-    return ('<div class="band">'
-            f'<span class="adr">{_e(b["strasse"])} · {_e(b["plz"])} {_e(b["ort"])}</span>'
-            f'<span class="tel">Bestellung: <b>{_e(b["telefon"])}</b></span>'
-            '</div>')
 
 
 def band_logo():
@@ -427,11 +275,38 @@ def band_logo():
             '</div>')
 
 
-def band_telefon():
-    b = DATEN["betrieb"]
+def band_stempel():
+    """Stempelkarte — für jemanden im Laden die nützlichste Information:
+    Sie bringt ihn beim nächsten Mal wieder."""
+    st = DATEN["stempelkarte"]
     return ('<div class="band band--mitte">'
-            '<span class="vor">Jetzt bestellen</span>'
-            f'<span class="gross">{_e(b["telefon"])}</span>'
+            f'<span class="btitel">{_e(st["titel"])}</span>'
+            '<span class="btext">Ab 25 € ein Stempel · 10 Stempel = '
+            'Familien-Pizza gratis</span>'
+            f'<span class="bklein">{_e(st["hinweis"])}</span>'
+            '</div>')
+
+
+def band_lieferung():
+    """Viele Laufkunden wissen nicht, dass es einen Lieferdienst gibt."""
+    orte = []
+    for z in DATEN["lieferung"]["zonen"]:
+        orte += [o.strip() for o in z["orte"].replace("…", "").split(",") if o.strip()]
+    return ('<div class="band band--mitte">'
+            '<span class="btitel">Wir liefern</span>'
+            f'<span class="btext">{_e(" · ".join(orte[:8]))} u. a.</span>'
+            '</div>')
+
+
+def band_zeiten():
+    """Bewusst beide Jahreszeiten nennen: Das Video ist eine feste Datei und
+    wuerde im Winter sonst eine falsche Uhrzeit zeigen."""
+    o = DATEN["oeffnungszeiten"]
+    sommer = o["saisons"][0]["zeiten"][0]["zeit"]
+    winter = o["saisons"][1]["zeiten"][0]["zeit"]
+    return ('<div class="band band--mitte">'
+            '<span class="btitel">Täglich geöffnet</span>'
+            f'<span class="btext">{_e(sommer)} · im Winter {_e(winter)}</span>'
             '</div>')
 
 
@@ -440,9 +315,6 @@ def band_spruch(bild, text):
             f'<img class="bfoto" src="{bild}" alt="">'
             f'<span class="spruchtext">{_e(text)}</span>'
             '</div>')
-
-
-BAENDER_STANDARD = [band_standard, band_logo, band_telefon]
 
 
 ANGEBOTSTIL = """
@@ -499,4 +371,4 @@ def alleangeboteseite(band=None):
             + f'<p class="zeitleiste">{_e(a["gueltigkeit"])}</p>'
             + f'<div class="alle" id="voll">{"".join(gruppen)}</div>'
             + f'<p class="bedingung">{_e(a["zusatz"])}</p>'
-            + (band if band is not None else band_standard()) + '</div>')
+            + (band if band is not None else band_logo()) + '</div>')

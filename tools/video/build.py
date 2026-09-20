@@ -52,18 +52,18 @@ def kategorie(kat_id):
 # zusammenbleiben. Wichtiger noch: Die Karte steht durchgehend, nur der Streifen
 # unten wechselt — dadurch ist auf jedem Bildschirm jederzeit alles lesbar und
 # es spielt keine Rolle, ob die Geraete auseinanderlaufen.
-BAENDER = 4
-STANDZEIT = 18.75          # 4 x 18,75 - 3 x 1,0 Ueberblendung = 72,0 s
+# Fuenf Streifen, alle Videos exakt gleich lang:
+# 5 x 15,2 s - 4 x 1,0 s Ueberblendung = 72,0 s
+STANDZEIT = 15.2
 
-
+# Telefonnummer und Adresse stehen bewusst nicht mehr drauf: Die Bildschirme
+# haengen im Laden. Wer davorsteht, ruft nicht an und sucht nicht die Adresse.
+# Stattdessen Dinge, die er noch nicht weiss - Stempelkarte, Lieferdienst,
+# Oeffnungszeiten.
 def baender(akzent=None):
-    """Die vier Streifen, die unter der Karte durchwechseln."""
-    b = [slides.band_standard(), slides.band_logo()]
-    if akzent:
-        b.append(slides.band_spruch(akzent[0], akzent[1]))
-    else:
-        b.append(slides.band_standard())
-    b.append(slides.band_telefon())
+    b = [slides.band_logo(), slides.band_stempel(),
+         slides.band_lieferung(), slides.band_zeiten()]
+    b.append(slides.band_spruch(*akzent) if akzent else slides.band_logo())
     return b
 
 

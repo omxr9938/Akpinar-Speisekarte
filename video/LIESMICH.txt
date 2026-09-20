@@ -14,8 +14,17 @@ Alle vier Videos sind exakt 72 Sekunden lang.
 DIE KARTE VERSCHWINDET NIE
 --------------------------
 Die vollständige Liste steht durchgehend auf dem Bildschirm. Es wechselt
-nur der schmale Streifen ganz unten: Adresse und Telefon, dann Logo, dann
-ein Gerichtebild, dann die Telefonnummer groß.
+nur der schmale Streifen ganz unten, im Wechsel:
+
+   Logo mit "Qualität · Frisch · Lecker"
+   Stempelkarte: ab 25 € ein Stempel, 10 Stempel = Familien-Pizza gratis
+   Liefergebiete
+   Öffnungszeiten (Sommer und Winter)
+   Gerichtebild mit Spruch
+
+Telefonnummer und Adresse stehen bewusst NICHT darauf: Die Bildschirme
+hängen im Laden. Wer davorsteht, ruft nicht an und sucht nicht die Adresse.
+Der Platz gehört Dingen, die der Gast noch nicht weiß.
 
 Deshalb ist es egal, ob die vier Geräte synchron laufen — auf jedem
 Bildschirm ist zu jeder Sekunde die komplette Karte lesbar.
