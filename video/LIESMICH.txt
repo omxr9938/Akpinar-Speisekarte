@@ -1,17 +1,24 @@
 AKPINAR DÖNER & PIZZA — Videos für die Fernseher
 ================================================
 
-Vier Dateien, ein Stick pro Fernseher:
+Vier Dateien, ein Stick pro Fernseher. Jeder Bildschirm behält dauerhaft
+seine Kategorie:
 
-   1-Angebote.mp4    67 s   Special-Angebote und Stempelkarte
-   2-Pizza.mp4       73 s   alle 28 Pizzen auf einem Bild
-   3-Doener.mp4      73 s   alle 26 türkischen Gerichte auf einem Bild
-   4-Nudeln.mp4      47 s   alle 13 Nudelgerichte auf einem Bild
+   Bildschirm 1   1-Angebote.mp4   Mittagsangebot, alle vier Gruppen
+   Bildschirm 2   2-Pizza.mp4      alle 28 Pizzen
+   Bildschirm 3   3-Doener.mp4     alle 26 türkischen Gerichte
+   Bildschirm 4   4-Nudeln.mp4     alle 13 Nudelgerichte
 
-Die komplette Liste steht die ganze Zeit fest auf dem Bildschirm. Gäste
-müssen nicht warten, bis ihr Gericht drankommt. Nur alle 18 bis 20 Sekunden
-blendet sich für drei bis vier Sekunden das Logo, ein Bild oder die
-Telefonnummer ein, danach steht die Karte sofort wieder da.
+Alle vier Videos sind exakt 72 Sekunden lang.
+
+DIE KARTE VERSCHWINDET NIE
+--------------------------
+Die vollständige Liste steht durchgehend auf dem Bildschirm. Es wechselt
+nur der schmale Streifen ganz unten: Adresse und Telefon, dann Logo, dann
+ein Gerichtebild, dann die Telefonnummer groß.
+
+Deshalb ist es egal, ob die vier Geräte synchron laufen — auf jedem
+Bildschirm ist zu jeder Sekunde die komplette Karte lesbar.
 
 SO GEHT'S
 ---------
@@ -22,6 +29,16 @@ SO GEHT'S
 3. Stick in den Fernseher, Quelle auf USB stellen, Datei starten.
 4. Im Menü des Fernsehers "Wiederholen" bzw. "Repeat" auf
    "Eine Datei" / "Alle" stellen — sonst läuft das Video nur einmal.
+5. Sticks beschriften, damit später klar ist, welcher wohin gehört.
+
+ZUM GLEICHZEITIGEN LAUFEN
+-------------------------
+Die vier Videos sind absichtlich exakt gleich lang. Starten Sie alle vier
+Geräte gleichzeitig, laufen sie über Stunden weitgehend im Gleichtakt.
+
+Ganz exakt bleibt es trotzdem nicht: Jeder Fernseher braucht beim
+Wiederholen einen Sekundenbruchteil, und diese Bruchteile summieren sich.
+Das macht hier aber nichts aus, weil die Karte ohnehin immer steht.
 
 TECHNISCHE DATEN
 ----------------
@@ -35,6 +52,9 @@ WENN DER FERNSEHER DIE DATEI NICHT ANNIMMT
 - Datei umbenennen, ohne Umlaute und Sonderzeichen
 - Prüfen, ob der Fernseher den USB-Anschluss für Medien freigibt
   (manche Geräte haben einen Anschluss nur für Service)
+- Stromausfall testen: Stecker ziehen und wieder einstecken. Manche Geräte
+  vergessen die Einstellung. Dann hilft meist eine Option wie
+  "Letzte Quelle wiederherstellen" oder "USB-Autostart".
 
 ÄNDERUNGEN
 ----------

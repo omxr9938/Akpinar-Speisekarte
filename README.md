@@ -187,10 +187,18 @@ python3 tools/video/build.py pizza      # nur eines
 Ergebnis in [`video/`](video/), Bedienhinweise in
 [`video/LIESMICH.txt`](video/LIESMICH.txt).
 
+Die vollständige Kategorie steht durchgehend auf dem Bildschirm; es wechselt
+nur der schmale Streifen unten (Adresse, Logo, Gerichtebild, Telefonnummer).
+So ist auf jedem Gerät zu jeder Sekunde die ganze Karte lesbar — und es spielt
+keine Rolle, ob die vier Fernseher synchron laufen.
+
+Alle vier Videos sind exakt 72 Sekunden lang, damit sie bei gleichzeitigem
+Start zusammenbleiben.
+
 Jede Bildschirmseite entsteht als HTML, wird mit Chromium zu einem Standbild
-gerendert und in ffmpeg mit weichen Überblendungen aneinandergereiht. Bewusst
-Standbilder statt Einzelbild-Animation: Text auf einem Fernseher soll ruhig
-stehen und aus mehreren Metern lesbar sein, nicht wandern.
+gerendert und in ffmpeg mit weichen Überblendungen aneinandergereiht. Der
+Renderer sucht per Intervallhalbierung die größte Schriftgröße, bei der die
+Kategorie noch vollständig auf den Bildschirm passt.
 
 Ausgabe ist 1920×1080, H.264 mit stiller Tonspur — manche Fernseher spielen
 Dateien ohne Tonspur nicht ab.

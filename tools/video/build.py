@@ -33,7 +33,7 @@ TMP = ROOT / ".video-tmp"
 D = slides.DATEN
 
 FPS = 30
-UEBERBLENDUNG = 0.8          # Sekunden
+UEBERBLENDUNG = 1.0          # Sekunden
 import imageio_ffmpeg
 FFMPEG = imageio_ffmpeg.get_ffmpeg_exe()
 
@@ -48,35 +48,36 @@ def kategorie(kat_id):
     return next(k for k in D["kategorien"] if k["id"] == kat_id)
 
 
-def folge_angebote():
-    a = D["angebote"]
-    s = []
-    for g in a["gruppen"]:
-        s.append((slides.angebotsseite(g), 11))
-        s.append((slides.logoseite(), 3))
-    s.append((slides.stempelseite(D["stempelkarte"]), 10))
-    s.append((slides.endseite(), 8))
-    return s
+# Alle vier Videos sind exakt gleich lang, damit sie bei gleichzeitigem Start
+# zusammenbleiben. Wichtiger noch: Die Karte steht durchgehend, nur der Streifen
+# unten wechselt — dadurch ist auf jedem Bildschirm jederzeit alles lesbar und
+# es spielt keine Rolle, ob die Geraete auseinanderlaufen.
+BAENDER = 4
+STANDZEIT = 18.75          # 4 x 18,75 - 3 x 1,0 Ueberblendung = 72,0 s
 
 
-def folge_karte(kat_id, titel, unterzeile, pbreite=132, akzent=None, standzeit=20):
-    """Die ganze Kategorie steht auf einer Seite und bleibt lange stehen.
-    Dazwischen nur kurze Einblendungen — Gaeste sollen ihr Gericht sofort
-    finden und nicht darauf warten, dass die naechste Seite umblaettert."""
-    k = kategorie(kat_id)
-    karte = slides.volllisteseite(titel, unterzeile, k["items"],
-                                  k.get("spaltenKurz"), pbreite)
-    einschuebe = [(slides.logoseite(), 3)]
+def baender(akzent=None):
+    """Die vier Streifen, die unter der Karte durchwechseln."""
+    b = [slides.band_standard(), slides.band_logo()]
     if akzent:
-        einschuebe.append((slides.spruchseite(*akzent), 4))
-    einschuebe.append((slides.telefonseite(), 4))
+        b.append(slides.band_spruch(akzent[0], akzent[1]))
+    else:
+        b.append(slides.band_standard())
+    b.append(slides.band_telefon())
+    return b
 
-    s = []
-    for i, einschub in enumerate(einschuebe):
-        s.append((karte, standzeit))
-        s.append(einschub)
-    s.append((slides.endseite(), 7))
-    return s
+
+def folge_angebote():
+    return [(slides.alleangeboteseite(band), STANDZEIT) for band in baender()]
+
+
+def folge_karte(kat_id, titel, unterzeile, pbreite=132, akzent=None):
+    """Die ganze Kategorie steht fest auf dem Bildschirm; nur der Streifen
+    unten wechselt. Kein Gast muss warten, bis sein Gericht wieder erscheint."""
+    k = kategorie(kat_id)
+    return [(slides.volllisteseite(titel, unterzeile, k["items"],
+                                   k.get("spaltenKurz"), pbreite, band), STANDZEIT)
+            for band in baender(akzent)]
 
 
 VIDEOS = {
@@ -84,16 +85,14 @@ VIDEOS = {
     "pizza": ("2-Pizza", lambda: folge_karte(
         "pizza", "Pizza", "Alle Pizzen mit Tomaten- oder Sahnesoße und Käse",
         pbreite=124,
-        akzent=("@@IMG@@/pizza-hero.jpg", 285, 285, "Frisch aus dem Ofen",
-                "Jede Pizza wird bei uns frisch belegt und gebacken."))),
+        akzent=("@@IMG@@/pizza-hero.jpg", "Frisch aus dem Ofen"))),
     "doener": ("3-Doener", lambda: folge_karte(
         "tuerkisch", "Türkische Spezialitäten", "Döner · Dürüm · Boxen · Teller",
         pbreite=150,
-        akzent=("@@IMG@@/doener-hero.jpg", 341, 264, "Täglich frisch gedreht",
-                "Dönerfleisch vom Spieß und frisches Fladenbrot."))),
+        akzent=("@@IMG@@/doener-hero.jpg", "Täglich frisch gedreht"))),
     "nudeln": ("4-Nudeln", lambda: folge_karte(
         "nudeln", "Nudeln", "Rigatoni · Spaghetti · Tortellini — Überbacken: +1,50",
-        pbreite=150, standzeit=18)),
+        pbreite=150)),
 }
 
 

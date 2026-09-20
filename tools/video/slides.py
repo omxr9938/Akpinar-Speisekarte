@@ -317,7 +317,8 @@ def _marken(g):
             + '</sup>')
 
 
-def volllisteseite(kategorie, unterzeile, gerichte, spalten_kurz=None, pbreite=132):
+def volllisteseite(kategorie, unterzeile, gerichte, spalten_kurz=None, pbreite=132,
+                   band=None):
     """Die ganze Kategorie auf einer Seite, zweispaltig.
 
     Gäste sollen ihr Gericht sofort finden und nicht warten, bis die nächste
@@ -347,12 +348,12 @@ def volllisteseite(kategorie, unterzeile, gerichte, spalten_kurz=None, pbreite=1
     unter = (f'<div style="text-align:center;font-size:28px;color:var(--text2);'
              f'margin:-6px 0 10px">{_e(unterzeile)}</div>' if unterzeile else '')
 
-    return (KOPF + f'<style>{VOLLSTIL}</style>'
+    return (KOPF + f'<style>{VOLLSTIL}{BANNERSTIL}</style>'
             + '<div class="flaeche"></div>'
             + f'<div class="inhalt" style="--s:1;--pbreite:{pbreite}px;padding:30px 58px">'
             + kopf(kategorie) + unter + groessen
             + f'<div class="voll" id="voll">{"".join(zeilen)}</div>'
-            + fuss() + '</div>')
+            + (band if band is not None else band_standard()) + '</div>')
 
 
 def logoseite():
@@ -380,3 +381,122 @@ def telefonseite():
         f'<div class="adr">{_e(b["strasse"])} · {_e(b["plz"])} {_e(b["ort"])}</div>'
         '</div>'
     )
+
+
+# ------------------------------------------------------- wechselnder Streifen --
+
+BANNERSTIL = """
+  /* Feste Hoehe, nicht min-height: Die vier Streifen sind unterschiedlich hoch
+     (Logo, Foto, Text). Bei variabler Hoehe verschoebe sich die Gerichteliste
+     darueber um ein paar Pixel und die Karte wuerde beim Wechsel springen. */
+  .band { display:flex; align-items:center; justify-content:space-between;
+          gap:40px; height:112px; flex:none; box-sizing:border-box;
+          margin-top:16px; padding-top:16px; overflow:hidden;
+          border-top:1px solid rgba(226,179,95,.24); }
+  .band--mitte { justify-content:center; }
+  .band .adr { font-size:30px; color:var(--text2); }
+  .band .tel { font-size:36px; color:var(--text2); }
+  .band .tel b { color:var(--gold); font-size:42px; }
+  .band .gross { font-family:"Playfair Display",serif; font-style:italic;
+                 font-weight:800; font-size:62px; color:var(--gold);
+                 white-space:nowrap; }
+  .band .vor { font-size:32px; color:var(--text2); margin-right:22px; }
+  .band img.blogo { height:78px; mix-blend-mode:screen; }
+  .band .claim { font-size:28px; letter-spacing:.16em; color:var(--gold2);
+                 margin-left:28px; }
+  .band img.bfoto { height:84px; width:84px; object-fit:cover; border-radius:50%;
+                    border:3px solid var(--gold2); }
+  .band .spruchtext { font-family:"Playfair Display",serif; font-style:italic;
+                      font-weight:800; font-size:46px; color:var(--gold);
+                      margin-left:26px; }
+"""
+
+
+def band_standard():
+    b = DATEN["betrieb"]
+    return ('<div class="band">'
+            f'<span class="adr">{_e(b["strasse"])} · {_e(b["plz"])} {_e(b["ort"])}</span>'
+            f'<span class="tel">Bestellung: <b>{_e(b["telefon"])}</b></span>'
+            '</div>')
+
+
+def band_logo():
+    return ('<div class="band band--mitte">'
+            '<img class="blogo" src="@@LOGO@@" alt="">'
+            '<span class="claim">QUALITÄT · FRISCH · LECKER</span>'
+            '</div>')
+
+
+def band_telefon():
+    b = DATEN["betrieb"]
+    return ('<div class="band band--mitte">'
+            '<span class="vor">Jetzt bestellen</span>'
+            f'<span class="gross">{_e(b["telefon"])}</span>'
+            '</div>')
+
+
+def band_spruch(bild, text):
+    return ('<div class="band band--mitte">'
+            f'<img class="bfoto" src="{bild}" alt="">'
+            f'<span class="spruchtext">{_e(text)}</span>'
+            '</div>')
+
+
+BAENDER_STANDARD = [band_standard, band_logo, band_telefon]
+
+
+ANGEBOTSTIL = """
+  .zeitleiste { text-align:center; font-size:calc(40px * var(--s));
+      font-weight:700; color:var(--gold2); letter-spacing:.03em; margin:-6px 0 14px; }
+  .alle { flex:1; display:grid; grid-template-columns:1fr 1fr; gap:calc(22px * var(--s)) 46px;
+          align-content:start; }
+  .agruppe { border:1px solid rgba(226,179,95,.22); border-radius:18px;
+             padding:calc(18px * var(--s)) calc(22px * var(--s));
+             background:rgba(255,255,255,.02); }
+  .agruppe h3 { font-family:"Playfair Display",serif; font-weight:800;
+      font-size:calc(44px * var(--s)); color:var(--gold); text-align:center; }
+  .ghinweis { text-align:center; font-size:calc(24px * var(--s));
+              color:var(--text2); margin-top:calc(6px * var(--s)); }
+  .akarten { display:flex; flex-wrap:wrap; justify-content:center;
+             gap:calc(14px * var(--s)); margin-top:calc(16px * var(--s)); }
+  .akarte { background:linear-gradient(180deg,#e9c987,#c8912f); color:#241a08;
+            border-radius:14px; padding:calc(14px * var(--s)) calc(22px * var(--s));
+            text-align:center; min-width:calc(190px * var(--s)); }
+  .akarte .kt { font-family:"Playfair Display",serif; font-style:italic;
+                font-weight:800; font-size:calc(30px * var(--s)); }
+  .akarte .ks { font-size:calc(20px * var(--s)); opacity:.78;
+                margin-top:calc(3px * var(--s)); }
+  .akarte .kp { font-family:"Playfair Display",serif; font-style:italic;
+                font-weight:800; font-size:calc(38px * var(--s));
+                margin-top:calc(8px * var(--s)); }
+  .bedingung { text-align:center; font-size:calc(26px * var(--s));
+               color:var(--text3); margin-top:calc(12px * var(--s)); }
+"""
+
+
+def alleangeboteseite(band=None):
+    """Alle Angebotsgruppen auf einer Seite. Damit steht auch auf dem
+    Angebots-Bildschirm durchgehend alles — kein Gast muss warten, bis seine
+    Gruppe wieder drankommt."""
+    a = DATEN["angebote"]
+    gruppen = []
+    for g in a["gruppen"]:
+        karten = []
+        for k in g.get("karten", []):
+            titel = f'<div class="kt">{_e(k["titel"])}</div>' if k.get("titel") else ""
+            sub = f'<div class="ks">{_e(k["sub"])}</div>' if k.get("sub") else ""
+            preis = f'<div class="kp">{_e(k["preis"])}</div>' if k.get("preis") else ""
+            karten.append(f'<div class="akarte">{titel}{sub}{preis}</div>')
+        hinweis = (f'<p class="ghinweis">{_e(g["hinweis"])}</p>'
+                   if g.get("hinweis") else "")
+        gruppen.append(f'<div class="agruppe"><h3>{_e(g["titel"])}</h3>{hinweis}'
+                       f'<div class="akarten">{"".join(karten)}</div></div>')
+
+    return (KOPF + f'<style>{ANGEBOTSTIL}{BANNERSTIL}</style>'
+            + '<div class="flaeche"></div>'
+            + '<div class="inhalt" style="--s:1;padding:28px 56px">'
+            + kopf(a["titel"])
+            + f'<p class="zeitleiste">{_e(a["gueltigkeit"])}</p>'
+            + f'<div class="alle" id="voll">{"".join(gruppen)}</div>'
+            + f'<p class="bedingung">{_e(a["zusatz"])}</p>'
+            + (band if band is not None else band_standard()) + '</div>')
