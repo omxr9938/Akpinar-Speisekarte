@@ -6,3 +6,6 @@ Thumbs.db
 __pycache__/
 *.pyc
 .venv/
+
+# Zwischenordner beim Videobau
+.video-tmp/

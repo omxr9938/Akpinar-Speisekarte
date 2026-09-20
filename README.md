@@ -175,6 +175,26 @@ der Domain als Inhalt, beim Anbieter einen CNAME-Eintrag auf
 
 ---
 
+## Videos für die Fernseher
+
+Vier Endlosvideos für USB-Sticks, je eines pro Fernseher im Laden:
+
+```
+python3 tools/video/build.py            # alle vier
+python3 tools/video/build.py pizza      # nur eines
+```
+
+Ergebnis in [`video/`](video/), Bedienhinweise in
+[`video/LIESMICH.txt`](video/LIESMICH.txt).
+
+Jede Bildschirmseite entsteht als HTML, wird mit Chromium zu einem Standbild
+gerendert und in ffmpeg mit weichen Überblendungen aneinandergereiht. Bewusst
+Standbilder statt Einzelbild-Animation: Text auf einem Fernseher soll ruhig
+stehen und aus mehreren Metern lesbar sein, nicht wandern.
+
+Ausgabe ist 1920×1080, H.264 mit stiller Tonspur — manche Fernseher spielen
+Dateien ohne Tonspur nicht ab.
+
 ## Lokal ansehen
 
 ```bash

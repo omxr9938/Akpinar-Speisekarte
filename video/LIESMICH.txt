@@ -1,0 +1,42 @@
+AKPINAR DÖNER & PIZZA — Videos für die Fernseher
+================================================
+
+Vier Dateien, ein Stick pro Fernseher:
+
+   1-Angebote.mp4    52 s   Special-Angebote und Stempelkarte
+   2-Pizza.mp4       76 s   alle 28 Pizzen
+   3-Doener.mp4      59 s   türkische Spezialitäten
+   4-Nudeln.mp4      37 s   alle Nudelgerichte
+
+SO GEHT'S
+---------
+1. USB-Stick als FAT32 oder exFAT formatieren.
+   Manche Fernseher lesen NTFS nicht.
+2. Eine einzige MP4-Datei auf den Stick kopieren, sonst nichts.
+   Liegt nur eine Datei drauf, starten die meisten Geräte sie von selbst.
+3. Stick in den Fernseher, Quelle auf USB stellen, Datei starten.
+4. Im Menü des Fernsehers "Wiederholen" bzw. "Repeat" auf
+   "Eine Datei" / "Alle" stellen — sonst läuft das Video nur einmal.
+
+TECHNISCHE DATEN
+----------------
+1920 x 1080 (Full HD), 30 Bilder/s, H.264, dazu eine stille Tonspur.
+Die Tonspur ist Absicht: Manche Fernseher weigern sich, Dateien ganz ohne
+Ton abzuspielen. Es ist nichts zu hören.
+
+WENN DER FERNSEHER DIE DATEI NICHT ANNIMMT
+------------------------------------------
+- Stick neu formatieren, diesmal FAT32
+- Datei umbenennen, ohne Umlaute und Sonderzeichen
+- Prüfen, ob der Fernseher den USB-Anschluss für Medien freigibt
+  (manche Geräte haben einen Anschluss nur für Service)
+
+ÄNDERUNGEN
+----------
+Preise ändern sich in assets/data/menu.json. Danach:
+
+    python3 tools/video/build.py
+
+erzeugt alle vier Videos neu. Einzeln geht auch:
+
+    python3 tools/video/build.py pizza
