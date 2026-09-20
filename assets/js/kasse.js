@@ -102,7 +102,7 @@
               A.korb().push({
                 name: v.name, nr: v.nr, kategorie: v.kategorie.name,
                 groesse: (v.kategorie.spaltenKurz && v.kategorie.spaltenKurz[0]) || '',
-                ohne: [], extras: [], soße: null, preis: v.preis, anzahl: 1
+                ohne: [], extras: [], sossen: [], notiz: '', preis: v.preis, anzahl: 1
               });
               A.korbZeichnen();
             }
@@ -135,7 +135,7 @@
       var t = p.anzahl + '× ' + (p.nr ? 'Nr. ' + p.nr + ' ' : '') + p.name;
       if (p.groesse) t += ' (' + p.groesse + ')';
       z.push(t + '   ' + A.euro(p.preis * p.anzahl));
-      if (p.soße) z.push('   Soße: ' + p.soße);
+      if (p.sossen && p.sossen.length) z.push('   SOSSE: ' + p.sossen.join(' + '));
       if (p.ohne.length) z.push('   OHNE: ' + p.ohne.join(', '));
       if (p.extras.length) z.push('   EXTRA: ' + p.extras.join(', '));
       if (p.notiz) z.push('   ANMERKUNG: ' + p.notiz);

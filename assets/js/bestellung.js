@@ -42,19 +42,67 @@
     return n;
   }
 
+  /** Verweise auf andere Gerichte, die keine Zutat sind. */
+  var VERWEIS = /^(D[öo]ner\s+Classic|Nr\.\s*\d+|Inhalt\s+wie|wie\s+Nr)/i;
+
   /** Zutaten aus der Beschreibung lesen: "Salami und Peperoni" -> zwei Zutaten.
-      Die Beschreibung ist die einzige Quelle dafür, was auf dem Gericht liegt. */
+      Die Beschreibung ist die einzige Quelle dafür, was auf dem Gericht liegt.
+
+      Sonderfall Verweise: Manche Gerichte beschreiben sich über ein anderes
+      ("Döner Classic mit Sucuk und Weichkäse"). Der Verweis selbst ist keine
+      Zutat und darf nicht als abwählbarer Punkt erscheinen — die Zutaten des
+      Grundgerichts kommen ohnehin über die Basisliste dazu. Was hinter dem
+      "mit" steht, ist dagegen sehr wohl eine Zutat. */
   function zutatenAus(beschreibung) {
     if (!beschreibung) return [];
-    return beschreibung
+    var roh = beschreibung
       .replace(/\s+u\.\s+/g, ', ')
       .replace(/\s+und\s+/g, ', ')
-      .split(',')
-      .map(function (z) { return z.trim().replace(/^mit\s+/i, ''); })
-      .filter(function (z) {
-        // Sätze und Hinweise sind keine Zutaten
-        return z && z.length < 34 && !/^(Nr\.|Inhalt|inkl\.)/i.test(z);
-      });
+      .split(',');
+
+    var raus = [];
+    roh.forEach(function (teil) {
+      var z = teil.trim();
+      if (!z) return;
+
+      if (VERWEIS.test(z)) {
+        // "Döner Classic mit Sucuk" -> nur "Sucuk" behalten
+        var mit = z.split(/\s+mit\s+/i);
+        if (mit.length > 1) raus.push(mit.slice(1).join(' mit ').trim());
+        return;
+      }
+      z = z.replace(/^mit\s+/i, '').trim();
+      // Sätze und Hinweise sind keine Zutaten
+      if (z && z.length < 34 && !/^(inkl\.|nur\b|als\b)/i.test(z)) raus.push(z);
+    });
+    return raus;
+  }
+
+  /** Doppelte Zutaten zusammenführen, auch wenn die Karte abkürzt:
+      "Blaukr." und "Blaukraut" sind dasselbe. Zusammengeführt wird nur, wenn
+      die kürzere Schreibweise auf einen Punkt endet — sonst würde
+      "Tomaten" fälschlich mit "Tomatensoße" verschmelzen. */
+  function zusammenfassen(liste) {
+    var raus = [];
+    liste.forEach(function (z) {
+      var kurz = z.replace(/\.$/, '');
+      for (var i = 0; i < raus.length; i++) {
+        var v = raus[i];
+        var vKurz = v.replace(/\.$/, '');
+        if (v === z) return;
+        // bereits vorhandener Eintrag ist die Abkürzung -> durch die lange ersetzen
+        if (/\.$/.test(v) && z.toLowerCase().indexOf(vKurz.toLowerCase()) === 0) {
+          raus[i] = z;
+          return;
+        }
+        // neuer Eintrag ist die Abkürzung -> verwerfen
+        if (/\.$/.test(z) && v.toLowerCase().indexOf(kurz.toLowerCase()) === 0) {
+          return;
+        }
+      }
+      raus.push(z);
+    });
+    return raus;
   }
 
   /* -------------------------------------------------------- Warenkorb -- */
@@ -89,17 +137,24 @@
     if (!groessen.length) return;
 
     var zutatenKonf = (konfig.zutaten || {})[kategorie.id] || {};
-    var basis = zutatenKonf.basis || [];
-    var ausBeschreibung = zutatenAus(gericht.beschreibung);
-    var abwaehlbar = basis.concat(ausBeschreibung).filter(function (z, i, a) {
-      return a.indexOf(z) === i;
+    // Basiszutaten, die zum Gericht nicht passen, herausnehmen: Bei einem
+    // vegetarischen Döner soll man kein Fleisch abwählen können.
+    var nichtBei = zutatenKonf.basis_nicht_bei || {};
+    var kennung = ((gericht.name || '') + ' ' + (gericht.beschreibung || '')).toLowerCase();
+    var basis = (zutatenKonf.basis || []).filter(function (z) {
+      var muster = nichtBei[z];
+      return !muster || !new RegExp(muster, 'i').test(kennung);
     });
+    var ausBeschreibung = zutatenAus(gericht.beschreibung);
+    // Beschreibung zuerst, Basis danach: Die Beschreibung nennt die Zutaten in
+    // der Reihenfolge der Karte, und dort steht beim Döner das Fleisch vorne.
+    var abwaehlbar = zusammenfassen(ausBeschreibung.concat(basis));
 
     var stand = {
       groesse: groessen[0],
       weg: {},          // abgewählte Zutaten
       extras: [],       // gewählte Extras
-      soße: zutatenKonf.sossen ? zutatenKonf.sossen.standard : null,
+      sossen: [],
       anzahl: 1
     };
 
@@ -139,21 +194,17 @@
       inhalt.appendChild(gWahl);
     }
 
-    // --- Soße
+    // --- Soße (mehrere gleichzeitig möglich)
     if (zutatenKonf.sossen) {
-      var sWahl = el('div', { class: 'bf__wahl bf__wahl--schmal' });
+      var sWahl = el('div', { class: 'bf__chips' });
       zutatenKonf.sossen.optionen.forEach(function (o) {
-        var b = el('button', {
-          class: 'bf__opt' + (o === stand.soße ? ' ist-an' : ''),
-          type: 'button',
-          onclick: function () {
-            stand.soße = o;
-            Array.prototype.forEach.call(sWahl.children, function (c) {
-              c.classList.remove('ist-an');
-            });
-            b.classList.add('ist-an');
-          }
-        }, [el('span', { class: 'bf__optname', text: o })]);
+        var b = el('button', { class: 'bf__chip bf__chip--sosse', type: 'button' },
+          [document.createTextNode(o)]);
+        b.addEventListener('click', function () {
+          var i = stand.sossen.indexOf(o);
+          if (i >= 0) { stand.sossen.splice(i, 1); b.classList.remove('ist-an'); }
+          else { stand.sossen.push(o); b.classList.add('ist-an'); }
+        });
         sWahl.appendChild(b);
       });
       inhalt.appendChild(el('p', { class: 'bf__titel', text: zutatenKonf.sossen.frage }));
@@ -287,7 +338,7 @@
       groesse: stand.groesse.label.replace('\n', ' '),
       ohne: weg,
       extras: stand.extras.map(function (e) { return e.name; }),
-      soße: stand.soße,
+      sossen: stand.sossen || [],
       notiz: stand.notiz || '',
       preis: einzelpreis,
       anzahl: stand.anzahl
@@ -336,7 +387,7 @@
     korb.forEach(function (p, i) {
       var zusatz = [];
       if (p.groesse) zusatz.push(p.groesse);
-      if (p.soße) zusatz.push('Soße: ' + p.soße);
+      if (p.sossen && p.sossen.length) zusatz.push('Soße: ' + p.sossen.join(' + '));
       if (p.ohne.length) zusatz.push('ohne ' + p.ohne.join(', '));
       if (p.extras.length) zusatz.push('mit ' + p.extras.join(', '));
       if (p.notiz) zusatz.push('„' + p.notiz + '“');
@@ -396,7 +447,7 @@
 
   document.addEventListener('karte-fertig', function () {
     daten = window.AKPINAR.daten;
-    fetch('assets/data/bestellung.json?v=ad949359')
+    fetch('assets/data/bestellung.json?v=830b8c53')
       .then(function (r) { return r.json(); })
       .then(function (k) {
         konfig = k;

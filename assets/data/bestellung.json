@@ -57,6 +57,7 @@
     },
     "tuerkisch": {
       "basis": [
+        "Fleisch",
         "Salat",
         "Tomaten",
         "Zwiebeln",
@@ -64,18 +65,19 @@
         "Soße"
       ],
       "sossen": {
-        "frage": "Soße",
+        "frage": "Soße — beides möglich",
+        "mehrfach": true,
         "optionen": [
-          "Kräuter",
-          "Knoblauch",
-          "Scharf",
-          "Cocktail",
-          "ohne Soße"
+          "Knoblauchsoße",
+          "Special Soße"
         ],
-        "standard": "Kräuter",
-        "_hinweis": "BITTE PRÜFEN — welche Soßen bieten Sie tatsächlich an?"
+        "_hinweis": "Mehrfachauswahl: Der Gast kann beide Soßen nehmen. Wer gar keine Soße will, waehlt oben bei \"Zutaten weglassen\" die Soße ab."
       },
-      "_hinweis": "Bewusst keine Extras: Die Karte bildet die Varianten bereits als eigene Gerichte ab (Döner Weichkäse, Döner Chili-Cheese, Döner Saray und so weiter). Ein zusätzlicher Aufpreis-Konfigurator würde dieselbe Sache zweimal anbieten, mit widersprüchlichen Preisen."
+      "_hinweis": "Bewusst keine Extras: Die Karte bildet die Varianten bereits als eigene Gerichte ab (Döner Weichkäse, Döner Chili-Cheese, Döner Saray und so weiter). Ein zusätzlicher Aufpreis-Konfigurator würde dieselbe Sache zweimal anbieten, mit widersprüchlichen Preisen.",
+      "basis_nicht_bei": {
+        "Fleisch": "vegetarisch|falafel|gem[üu]sed[öo]ner|k[äa]se lahmacun|spinat|d[öo]nerfleisch|hackfleisch"
+      },
+      "_basis_hinweis": "Fleisch steht bewusst an erster Stelle. basis_nicht_bei nimmt es heraus, wenn das Gericht gar keins enthaelt (vegetarisch, Falafel) oder wenn die Beschreibung es bereits genauer benennt (Doenerfleisch, Hackfleisch) — sonst stuenden \"Doenerfleisch\" und \"Fleisch\" doppelt nebeneinander."
     },
     "nudeln": {
       "basis": [],

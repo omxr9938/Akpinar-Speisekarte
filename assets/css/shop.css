@@ -423,3 +423,10 @@ body.ist-abholung .nur-lieferung { display: none; }
 @media (max-width: 380px) {
   .bf__rein { font-size: .92rem; padding: 13px 13px; }
 }
+
+/* Soßen: mehrere gleichzeitig wählbar, deshalb dieselbe Optik wie Extras */
+.bf__chip--sosse.ist-an {
+  border-color: var(--gold-2);
+  background: rgba(226, 179, 95, .16);
+  color: var(--gold);
+}
