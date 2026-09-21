@@ -15,7 +15,7 @@ seine Kategorien:
 Zusammen stehen damit alle 100 Gerichte der Karte auf den vier Bildschirmen
 — keines fehlt, keines doppelt.
 
-Alle vier Videos sind exakt 85 Sekunden lang.
+Alle vier Videos sind exakt 72 Sekunden lang.
 
 DAS MITTAGSANGEBOT LÄUFT AUF ALLEN VIER GERÄTEN
 -----------------------------------------------
@@ -24,9 +24,20 @@ ganze Kategorie vom Fernseher verdrängt und das Angebot trotzdem nur jedem
 vierten Gast gezeigt — nämlich dem, der gerade vor diesem einen Gerät steht.
 
 Stattdessen läuft das Mittagsangebot als Streifen unten mit, auf jedem
-Gerät zweimal pro Durchlauf, also etwa alle 45 Sekunden. Es kostet die
-Karte keine einzige Zeile, und jeder Gast sieht es, egal vor welchem
-Bildschirm er steht.
+Gerät zweimal pro Durchlauf. Es kostet die Karte keine einzige Zeile, und
+jeder Gast sieht es, egal vor welchem Bildschirm er steht.
+
+Die Streifen stehen bewusst unterschiedlich lang. Das Angebot hat Vorrang,
+das Logo ist nur eine Erinnerung an den Namen:
+
+   Mittagsangebot     20 Sekunden
+   Logo                5 Sekunden
+   Stempelkarte       12 Sekunden
+   Mittagsangebot     20 Sekunden
+   Liefergebiete      10 Sekunden
+   Öffnungszeiten     10 Sekunden
+
+Das Angebot steht damit 40 von 72 Sekunden auf dem Schirm, das Logo 5.
 
 Welches Angebot wo zuerst kommt, richtet sich nach dem Bildschirm:
 
@@ -48,12 +59,12 @@ DIE KARTE VERSCHWINDET NIE
 Die vollständige Liste steht durchgehend auf dem Bildschirm. Es wechselt
 nur der schmale Streifen ganz unten, im Wechsel:
 
-   Mittagsangebot (passend zum Bildschirm)
-   Logo mit "Qualität · Frisch · Lecker"
-   Stempelkarte: ab 25 € ein Stempel, 10 Stempel = Familien-Pizza gratis
-   Mittagsangebot (zweites Angebot)
-   Liefergebiete
-   Öffnungszeiten bzw. Gerichtebild mit Spruch
+   Mittagsangebot (passend zum Bildschirm)   20 s
+   Logo mit "Qualität · Frisch · Lecker"      5 s
+   Stempelkarte                              12 s
+   Mittagsangebot (zweites Angebot)          20 s
+   Liefergebiete                             10 s
+   Öffnungszeiten bzw. Gerichtebild          10 s
 
 Telefonnummer und Adresse stehen bewusst NICHT darauf: Die Bildschirme
 hängen im Laden. Wer davorsteht, ruft nicht an und sucht nicht die Adresse.
@@ -107,3 +118,11 @@ Preise ändern sich in assets/data/menu.json. Danach:
 erzeugt alle vier Videos neu. Einzeln geht auch:
 
     python3 tools/video/build.py pizza
+
+Vorher prüfen lohnt sich:
+
+    python3 tools/video/pruefen.py
+
+Das rendert alle Seiten und meldet, wenn etwas nicht mehr auf den
+Bildschirm passt, Text abgeschnitten wird, die Karte beim Streifenwechsel
+springt oder ein Preis nicht mehr zur Speisekarte passt.

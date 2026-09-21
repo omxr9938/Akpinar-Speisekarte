@@ -206,8 +206,15 @@ gezeigt. Stattdessen läuft es als Streifen auf allen vier Geräten mit,
 zweimal je Durchlauf, jeweils beginnend mit der Angebotsgruppe, die zum
 Bildschirm passt.
 
-Alle vier Videos sind exakt 85 Sekunden lang, damit sie bei gleichzeitigem
-Start zusammenbleiben.
+Die Streifen stehen unterschiedlich lang: Das Angebot hat Vorrang (2 × 20 s),
+das Logo bekommt 5 s. Alle vier Videos sind exakt 72 Sekunden lang, damit sie
+bei gleichzeitigem Start zusammenbleiben.
+
+Vor dem Bauen prüft `python3 tools/video/pruefen.py` alle 24 Seiten: ob alles
+in 1920×1080 passt, ob Text abgeschnitten wird, ob die Karte beim
+Streifenwechsel wirklich stillsteht, ob jedes Gericht genau einmal mit genau
+den Preisen aus `menu.json` dasteht, und wie groß die Schrift auf einem
+55-Zoll-Fernseher tatsächlich ist.
 
 Jede Bildschirmseite entsteht als HTML, wird mit Chromium zu einem Standbild
 gerendert und in ffmpeg mit weichen Überblendungen aneinandergereiht. Der
