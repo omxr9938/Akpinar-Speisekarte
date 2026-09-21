@@ -187,6 +187,49 @@ with sync_playwright() as p:
     if "BEILAGE" not in (txt or ""):
         print("      Text:", (txt or "")[:400])
 
+    # --- 9. Keine erfundenen Zutaten
+    print("\nZutaten gegen die Karte")
+    def wegliste(name, kat):
+        oeffnen(name, kat)
+        r = pg.evaluate("""() => {
+            const t = [...document.querySelectorAll('.bf__titel')]
+              .find(e => e.textContent.trim().startsWith('Zutaten weglassen'));
+            if (!t) return [];
+            let x = t.nextElementSibling;
+            while (x && !x.classList.contains('bf__chips')) x = x.nextElementSibling;
+            return x ? [...x.querySelectorAll('.bf__chip')].map(c => c.textContent.trim()) : [];
+        }""")
+        pg.keyboard.press("Escape"); pg.wait_for_timeout(150)
+        return r
+
+    # Die Basiszutaten des Standard-Doeners duerfen nur dort auftauchen, wo die
+    # Beschreibung auf ein anderes Gericht verweist und die Fuellung deshalb
+    # nicht selbst nennt.
+    w = wegliste("Döner-Box", "tuerkisch")
+    pruefe(w == ["Soße"], f"Döner-Box: nur Soße abwählbar  (ist: {w})")
+    w = wegliste("Döner-Teller", "tuerkisch")
+    pruefe(w == ["Fleisch", "Soße"], f"Döner-Teller: Fleisch und Soße  (ist: {w})")
+    w = wegliste("Pide Weichkäse", "tuerkisch")
+    pruefe("Fleisch" not in w, f"Pide Weichkäse hat kein Fleisch  (ist: {w})")
+    w = wegliste("Sucuk Pide mit Ei", "tuerkisch")
+    pruefe("Fleisch" not in w, f"Sucuk Pide hat kein Fleisch  (ist: {w})")
+    w = wegliste("Käse Lahmacun", "tuerkisch")
+    pruefe(not any(x in w for x in ("Tomaten", "Zwiebeln", "Blaukraut")),
+           f"Käse Lahmacun ohne erfundene Zutaten  (ist: {w})")
+    # Gegenprobe: Wo die Karte verweist, muss die Fuellung weiter dastehen.
+    w = wegliste("Döner Saray", "tuerkisch")
+    pruefe(all(x in w for x in ("Sucuk", "Weichkäse", "Fleisch", "Salat", "Blaukraut")),
+           f"Döner Saray behält die Döner-Füllung  (ist: {w})")
+
+    # --- 10. Keine Abkuerzungen auf den Knoepfen
+    print("\nAbkürzungen")
+    for name, kat in (("Vegetarischer Döner", "tuerkisch"), ("Pide Döner", "tuerkisch"),
+                      ("Spinat Pide mit Ei", "tuerkisch"), ("Vegetarisch", "nudeln"),
+                      ("Käse Lahmacun", "tuerkisch"), ("Mexikanischer Salat", "salate")):
+        w = wegliste(name, kat)
+        kurz = [z for z in w if z.endswith(".")]
+        pruefe(not kurz, f"{name}: ausgeschrieben  (abgekürzt: {kurz})")
+
     echt = [k for k in konsole if "pageerror" in k or k.startswith("error")]
     pruefe(not echt, f"keine JavaScript-Fehler  ({echt[:3]})")
     b.close()

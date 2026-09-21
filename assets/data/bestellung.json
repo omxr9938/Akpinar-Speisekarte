@@ -97,7 +97,16 @@
         "gilt_fuer": "^(D[öo]ner im Fladenbrot|Gem[üu]sed[öo]ner|D[öo]ner Chili|D[öo]ner Saray|D[öo]ner Weichk[äa]se|Vegetarischer D[öo]ner|Falafel D[öo]ner|D[üu]r[üu]m)",
         "_hinweis": "Steht so schon als Banner in der Karte: \"Döner-Menü: inkl. Pommes + 0,33 l Getränk — +5 Euro zum Döner-Preis.\" Die Liste ist ausgeschrieben statt als weites Muster, damit nachlesbar bleibt, welche Gerichte es bekommen. Bewusst NICHT dabei: Döner Pomm (hat schon Pommes), Teller, Boxen, Bowl, Pide Döner und Lahmacun Dürüm. Burger haben eine eigene Menue-Preisspalte in der Karte.",
         "_getraenke_hinweis": "Eigene Liste statt der Getränkekategorie. Die Karte fasst \"Cola, Fanta, Mezzo-Mix\" zu einer Zeile zusammen und fuehrt Sprite ohne 0,33-l-Preis — ueber die Kategorie waeren Cola und Fanta deshalb nicht einzeln waehlbar und Sprite gar nicht. Hier stehen sie einzeln. Cola Zero steht bislang nicht in der Speisekarte; falls es das dauerhaft gibt, gehoert es auch in menu.json unter getraenke."
-      }
+      },
+      "extra_abwaehlbar": [
+        {
+          "_hinweis": "Die Karte nennt bei den Doener-Boxen nur die Beilage ('mit Pommes, Reis oder Salat'). Sosse ist trotzdem drauf und soll abwaehlbar sein. Salat, Tomaten, Zwiebeln und Blaukraut sind es nicht - die gehoeren in den Doener im Fladenbrot.",
+          "gilt_fuer": "^Döner-Box",
+          "zutaten": [
+            "Soße"
+          ]
+        }
+      ]
     },
     "nudeln": {
       "basis": [],
@@ -191,5 +200,19 @@
       ],
       "verdeckt": "^Tomaten-/Sahnesoße$"
     }
-  ]
+  ],
+  "abkuerzungen": {
+    "_hinweis": "Die gedruckte Karte kuerzt ab, weil dort der Platz fehlt. Auf dem Handy steht die Zutat als eigener Knopf - 'Blaukr.' liest sich dort wie ein Tippfehler. Vollstaendige Liste, aus den Beschreibungen in menu.json erhoben.",
+    "Blaukr.": "Blaukraut",
+    "Champ.": "Champignons",
+    "Champig.": "Champignons",
+    "Dönerfl.": "Dönerfleisch",
+    "Eisbergsal.": "Eisbergsalat",
+    "Mozzar.": "Mozzarella",
+    "Papr.": "Paprika",
+    "Tomat.": "Tomaten",
+    "Truthahn-Fleisch.": "Truthahn-Fleischstücke",
+    "Truthahn-Fleischst.": "Truthahn-Fleischstücke",
+    "Zwieb.": "Zwiebeln"
+  }
 }

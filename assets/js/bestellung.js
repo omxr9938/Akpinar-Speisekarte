@@ -53,6 +53,21 @@
       Zutat und darf nicht als abwählbarer Punkt erscheinen — die Zutaten des
       Grundgerichts kommen ohnehin über die Basisliste dazu. Was hinter dem
       "mit" steht, ist dagegen sehr wohl eine Zutat. */
+  /** Verweist die Beschreibung auf ein anderes Gericht?
+
+      Das entscheidet, ob die Basiszutaten dazugehören. "Döner Classic mit
+      Weichkäse" nennt die Füllung nicht, die muss aus der Basisliste kommen.
+      "Fleisch, Pommes oder gem. Salat, Soße" nennt sie vollständig — dort die
+      Basisliste danebenzulegen erfindet Zutaten, die es gar nicht gibt. */
+  function verweistAufAnderes(beschreibung) {
+    if (!beschreibung) return false;
+    return beschreibung
+      .replace(/\s+u\.\s+/g, ', ')
+      .replace(/\s+und\s+/g, ', ')
+      .split(',')
+      .some(function (teil) { return VERWEIS.test(teil.trim()); });
+  }
+
   function zutatenAus(beschreibung) {
     if (!beschreibung) return [];
     var roh = beschreibung
@@ -82,6 +97,16 @@
       "Blaukr." und "Blaukraut" sind dasselbe. Zusammengeführt wird nur, wenn
       die kürzere Schreibweise auf einen Punkt endet — sonst würde
       "Tomaten" fälschlich mit "Tomatensoße" verschmelzen. */
+  /** Abkürzungen der gedruckten Karte ausschreiben.
+
+      Auf dem Papier ist "Blaukr." eine Platzersparnis, auf dem Handy steht die
+      Zutat als eigener Knopf und liest sich dort wie ein Tippfehler. Die Liste
+      steht in bestellung.json, damit sie mit der Karte gepflegt werden kann. */
+  function ausschreiben(z) {
+    var lang = (konfig.abkuerzungen || {})[z];
+    return lang || z;
+  }
+
   function zusammenfassen(liste) {
     var raus = [];
     liste.forEach(function (z) {
@@ -160,18 +185,32 @@
     if (!groessen.length) return;
 
     var zutatenKonf = (konfig.zutaten || {})[kategorie.id] || {};
-    // Basiszutaten, die zum Gericht nicht passen, herausnehmen: Bei einem
-    // vegetarischen Döner soll man kein Fleisch abwählen können.
+    // Die Basiszutaten sind die Füllung des Standard-Döners. Sie gehören nur
+    // zu Gerichten, deren Beschreibung auf ein anderes verweist und die
+    // Füllung deshalb nicht selbst aufzählt. Vorher hingen sie an jedem
+    // Gericht der Kategorie — die Döner-Box bekam Salat, Tomaten, Zwiebeln
+    // und Blaukraut angedichtet, das Käse-Pide sogar Fleisch.
     var nichtBei = zutatenKonf.basis_nicht_bei || {};
     var kennung = ((gericht.name || '') + ' ' + (gericht.beschreibung || '')).toLowerCase();
-    var basis = (zutatenKonf.basis || []).filter(function (z) {
-      var muster = nichtBei[z];
-      return !muster || !new RegExp(muster, 'i').test(kennung);
+    var basis = verweistAufAnderes(gericht.beschreibung)
+      ? (zutatenKonf.basis || []).filter(function (z) {
+          var muster = nichtBei[z];
+          return !muster || !new RegExp(muster, 'i').test(kennung);
+        })
+      : [];
+
+    // Umgekehrter Fall: Die Karte nennt bei den Döner-Boxen nur die Beilage,
+    // Soße ist trotzdem drauf und soll abwählbar sein.
+    var nachtrag = [];
+    (zutatenKonf.extra_abwaehlbar || []).forEach(function (e) {
+      if (e.gilt_fuer && !new RegExp(e.gilt_fuer, 'i').test(gericht.name || '')) return;
+      nachtrag = nachtrag.concat(e.zutaten || []);
     });
     var ausBeschreibung = zutatenAus(gericht.beschreibung);
     // Beschreibung zuerst, Basis danach: Die Beschreibung nennt die Zutaten in
     // der Reihenfolge der Karte, und dort steht beim Döner das Fleisch vorne.
-    var abwaehlbar = zusammenfassen(ausBeschreibung.concat(basis));
+    var abwaehlbar = zusammenfassen(
+      ausBeschreibung.concat(basis).concat(nachtrag).map(ausschreiben));
 
     var wahlen = wahlenFuer(gericht, kategorie);
     // Was zur Auswahl steht, gehört nicht mehr unter "Zutaten weglassen":
@@ -632,7 +671,7 @@
 
   document.addEventListener('karte-fertig', function () {
     daten = window.AKPINAR.daten;
-    fetch('assets/data/bestellung.json?v=1ccc045f')
+    fetch('assets/data/bestellung.json?v=bc93be9c')
       .then(function (r) { return r.json(); })
       .then(function (k) {
         konfig = k;
