@@ -6,8 +6,8 @@ Erzeugt die vier Fernseher-Videos für die USB-Sticks.
     python3 tools/video/build.py pizza      # nur eines
 
 Ergebnis in video/ :
-    1-Pizza.mp4  2-Tuerkisch.mp4  3-Nudeln-Verschiedenes-Burger.mp4
-    4-Salate-Getraenke.mp4
+    1-Angebote.mp4  2-Pizza.mp4  3-Tuerkisch.mp4
+    4-Nudeln-Verschiedenes-Burger.mp4
 
 Ablauf: Jede Bildschirmseite wird als HTML gebaut, mit Chromium zu einem
 Standbild gerendert und anschließend in ffmpeg mit weichen Überblendungen
@@ -90,12 +90,23 @@ def baender(angebot_a, angebot_b, akzent=None):
     ]
 
 
-def folge_angebote():
-    """Nicht mehr Teil der vier Sticks, aber weiter baubar:
-    python3 tools/video/build.py angebote"""
-    b = [slides.band_logo(), slides.band_stempel(),
-         slides.band_lieferung(), slides.band_zeiten(), slides.band_logo()]
-    return [(slides.alleangeboteseite(band), STANDZEIT) for band in b]
+def folge_angebote(akzente):
+    """Der Angebotsbildschirm.
+
+    Unten laufen hier keine Angebotsstreifen - das Angebot steht ja gross auf
+    dem Schirm. Die beiden langen Plaetze bekommen stattdessen Gerichtebilder:
+    oben die Preise, unten der Appetit. Die Standzeiten sind dieselben wie auf
+    den Kartenbildschirmen, sonst laufen die vier Geraete auseinander.
+    """
+    b = [
+        (slides.band_spruch(*akzente[0]), STAND_ANGEBOT),
+        (slides.band_logo(), STAND_LOGO),
+        (slides.band_stempel(), STAND_STEMPEL),
+        (slides.band_spruch(*akzente[1]), STAND_ANGEBOT),
+        (slides.band_lieferung(), STAND_LIEFERUNG),
+        (slides.band_zeiten(), STAND_SCHLUSS),
+    ]
+    return [(slides.alleangeboteseite(band), dauer) for band, dauer in b]
 
 
 def block(kat_id, titel=None, pbreite=132):
@@ -123,14 +134,19 @@ FAMILIE = "Familien-Pizza"
 TUERK = "Döner | Dürüm | Boxen"
 
 VIDEOS = {
-    "pizza": ("1-Pizza", lambda: folge_karte(
+    "angebote": ("1-Angebote", lambda: folge_angebote([
+        ("@@IMG@@/pizza-hero.jpg", "Frisch aus dem Ofen"),
+        ("@@IMG@@/doener-hero.jpg", "Täglich frisch gedreht"),
+    ])),
+
+    "pizza": ("2-Pizza", lambda: folge_karte(
         "Pizza", kategorie("pizza")["hinweis"],
         [block("pizza", pbreite=124)],
         ("Pizzen", FAMILIE),
         akzent=("@@IMG@@/pizza-hero.jpg", "Frisch aus dem Ofen"),
         notiz=slides.notiz_extras(kategorie("pizza")["extras"]))),
 
-    "tuerkisch": ("2-Tuerkisch", lambda: folge_karte(
+    "tuerkisch": ("3-Tuerkisch", lambda: folge_karte(
         "Türkische Gerichte", "Döner · Dürüm · Boxen · Pide · Teller",
         [block("tuerkisch", pbreite=150)],
         (TUERK, FAMILIE),
@@ -138,20 +154,20 @@ VIDEOS = {
         notiz=slides.notiz_menue(BESTELL["zutaten"]["tuerkisch"],
                                  kategorie("tuerkisch")["items"]))),
 
-    "nudeln": ("3-Nudeln-Verschiedenes-Burger", lambda: folge_karte(
+    "nudeln": ("4-Nudeln-Verschiedenes-Burger", lambda: folge_karte(
         "Nudeln · Verschiedenes · Burger", None,
         [block("nudeln", "Nudeln", 150),
          block("verschiedenes", "Verschiedenes", 150),
          block("burger", "Burger", 132)],
         ("Nudeln", FAMILIE))),
 
-    "salate": ("4-Salate-Getraenke", lambda: folge_karte(
+    # Salate und Getraenke haben in dieser Aufteilung keinen eigenen
+    # Bildschirm. Baubar bleiben sie:  python3 tools/video/build.py salate
+    "salate": ("Zusatz-Salate-Getraenke", lambda: folge_karte(
         "Salate · Getränke", None,
         [block("salate", "Salate", 132),
          block("getraenke", "Getränke", 118)],
         (FAMILIE, TUERK))),
-
-    "angebote": ("Zusatz-Angebote", folge_angebote),
 }
 
 
@@ -328,7 +344,7 @@ def bauen(schluessel):
 
 
 if __name__ == "__main__":
-    wunsch = sys.argv[1:] or ["pizza", "tuerkisch", "nudeln", "salate"]
+    wunsch = sys.argv[1:] or ["angebote", "pizza", "tuerkisch", "nudeln"]
     for w in wunsch:
         if w not in VIDEOS:
             raise SystemExit(f"Unbekannt: {w}. Möglich: {', '.join(VIDEOS)}")

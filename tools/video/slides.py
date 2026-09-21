@@ -560,8 +560,11 @@ def band_angebot(gruppen_titel):
 ANGEBOTSTIL = """
   .zeitleiste { text-align:center; font-size:calc(40px * var(--s));
       font-weight:700; color:var(--gold2); letter-spacing:.03em; margin:-6px 0 14px; }
-  .alle { flex:1; display:grid; grid-template-columns:1fr 1fr; gap:calc(22px * var(--s)) 46px;
-          align-content:start; }
+  /* min-height:0 wie bei der Gerichteliste: Ohne die Angabe draengt sich der
+     Inhalt auf seine eigene Hoehe auf und schiebt den Streifen darunter unter
+     den Bildrand - die Unterlaengen werden dann abgeschnitten. */
+  .alle { flex:1; min-height:0; display:grid; grid-template-columns:1fr 1fr;
+          gap:calc(22px * var(--s)) 46px; align-content:start; }
   .agruppe { border:1px solid rgba(226,179,95,.22); border-radius:18px;
              padding:calc(18px * var(--s)) calc(22px * var(--s));
              background:rgba(255,255,255,.02); }

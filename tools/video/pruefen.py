@@ -145,10 +145,10 @@ def erwartete_gerichte(kat_ids):
 # in build.VIDEOS, hier aber unabhaengig noch einmal hingeschrieben. Waere sie
 # aus build.py abgeleitet, wuerde der Test einen Tippfehler dort mitmachen.
 SCHIRME = {
+    "angebote": [],                  # zeigt das Mittagsangebot, keine Kategorie
     "pizza": ["pizza"],
     "tuerkisch": ["tuerkisch"],
     "nudeln": ["nudeln", "verschiedenes", "burger"],
-    "salate": ["salate", "getraenke"],
 }
 
 
@@ -233,6 +233,11 @@ def main():
             # Gerichte gegen menu.json
             erwartet = erwartete_gerichte(SCHIRME[schluessel])
             ist = m0["zeilen"]
+            if not SCHIRME[schluessel]:
+                # Angebotsbildschirm: keine Gerichteliste, nur die Angebote.
+                pruefe(not ist, f"{name}: zeigt unerwartet Gerichte")
+                gesehen[name] = 0
+                continue
             pruefe(len(ist) == len(erwartet),
                    f"{name}: {len(ist)} Gerichte auf dem Schirm, "
                    f"{len(erwartet)} in der Karte")
@@ -257,14 +262,24 @@ def main():
     zugeteilt = [kid for kats in SCHIRME.values() for kid in kats]
     for kid in alle_kat:
         n = zugeteilt.count(kid)
-        pruefe(n == 1, f"Kategorie {kid!r} steht auf {n} Bildschirmen statt auf einem")
+        pruefe(n <= 1, f"Kategorie {kid!r} steht auf {n} Bildschirmen doppelt")
     fremd = set(zugeteilt) - set(alle_kat)
     pruefe(not fremd, f"Bildschirm zeigt Kategorien, die es nicht gibt: {fremd}")
 
+    # Kategorien ohne Bildschirm sind kein Fehler, aber niemand soll sie
+    # uebersehen: Wer sie nicht zeigt, hat sie im Laden nirgends haengen.
+    fehlend = [k for k in alle_kat if k not in zugeteilt]
+    for kid in fehlend:
+        k = next(x for x in slides.DATEN["kategorien"] if x["id"] == kid)
+        warnungen.append(f"Kategorie {k['name']!r} ({len(k['items'])} Gerichte) "
+                         f"steht auf keinem Bildschirm")
+
+    gezeigt = sum(len(next(x for x in slides.DATEN["kategorien"] if x["id"] == kid)["items"])
+                  for kid in zugeteilt)
     anzahl_karte = sum(len(k["items"]) for k in slides.DATEN["kategorien"])
-    pruefe(sum(gesehen.values()) == anzahl_karte,
+    pruefe(sum(gesehen.values()) == gezeigt,
            f"{sum(gesehen.values())} Gerichte auf den Bildschirmen, "
-           f"{anzahl_karte} in der Karte")
+           f"{gezeigt} laut Zuordnung")
 
     # Gleiche Laenge, sonst laufen die vier Geraete auseinander
     pruefe(len(set(laengen.values())) == 1,

@@ -186,13 +186,14 @@ python3 tools/video/build.py pizza      # nur eines
 
 | Bildschirm | Datei | Inhalt |
 | --- | --- | --- |
-| 1 | `1-Pizza.mp4` | 28 Pizzen, dazu die Aufpreise für Extra-Zutaten |
-| 2 | `2-Tuerkisch.mp4` | 26 türkische Gerichte, dazu „Als Menü + 5,00 €“ |
-| 3 | `3-Nudeln-Verschiedenes-Burger.mp4` | 13 Nudeln, 10 × Verschiedenes, 5 Burger |
-| 4 | `4-Salate-Getraenke.mp4` | 12 Salate, 6 Getränke |
+| 1 | `1-Angebote.mp4` | Mittagsangebot, alle vier Gruppen |
+| 2 | `2-Pizza.mp4` | 28 Pizzen, dazu die Aufpreise für Extra-Zutaten |
+| 3 | `3-Tuerkisch.mp4` | 26 türkische Gerichte, dazu „Als Menü + 5,00 €“ |
+| 4 | `4-Nudeln-Verschiedenes-Burger.mp4` | 13 Nudeln, 10 × Verschiedenes, 5 Burger |
 
-Zusammen decken die vier Bildschirme alle 100 Gerichte der Karte ab, ohne
-Lücke und ohne Dopplung. Ergebnis in [`video/`](video/), Bedienhinweise in
+Salate und Getränke (18 Gerichte) haben in dieser Aufteilung keinen eigenen
+Bildschirm; `python3 tools/video/build.py salate` baut dafür ein fünftes
+Video. Ergebnis in [`video/`](video/), Bedienhinweise in
 [`video/LIESMICH.txt`](video/LIESMICH.txt).
 
 Die vollständigen Kategorien stehen durchgehend auf dem Bildschirm; es

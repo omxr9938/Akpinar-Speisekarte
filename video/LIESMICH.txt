@@ -2,57 +2,34 @@ AKPINAR DÖNER & PIZZA — Videos für die Fernseher
 ================================================
 
 Vier Dateien, ein Stick pro Fernseher. Jeder Bildschirm behält dauerhaft
-seine Kategorien:
+seinen Inhalt:
 
-   Bildschirm 1   1-Pizza.mp4                       alle 28 Pizzen
-   Bildschirm 2   2-Tuerkisch.mp4                   alle 26 türkischen
+   Bildschirm 1   1-Angebote.mp4                    Mittagsangebot,
+                                                    alle vier Gruppen
+   Bildschirm 2   2-Pizza.mp4                       alle 28 Pizzen
+   Bildschirm 3   3-Tuerkisch.mp4                   alle 26 türkischen
                                                     Gerichte
-   Bildschirm 3   3-Nudeln-Verschiedenes-Burger.mp4 13 Nudelgerichte,
+   Bildschirm 4   4-Nudeln-Verschiedenes-Burger.mp4 13 Nudelgerichte,
                                                     10 x Verschiedenes,
                                                     5 Burger
-   Bildschirm 4   4-Salate-Getraenke.mp4            12 Salate, 6 Getränke
-
-Zusammen stehen damit alle 100 Gerichte der Karte auf den vier Bildschirmen
-— keines fehlt, keines doppelt.
 
 Alle vier Videos sind exakt 72 Sekunden lang.
 
-DAS MITTAGSANGEBOT LÄUFT AUF ALLEN VIER GERÄTEN
------------------------------------------------
-Es gibt bewusst keinen eigenen Angebots-Bildschirm mehr. Der hätte eine
-ganze Kategorie vom Fernseher verdrängt und das Angebot trotzdem nur jedem
-vierten Gast gezeigt — nämlich dem, der gerade vor diesem einen Gerät steht.
+SALATE UND GETRÄNKE STEHEN AUF KEINEM BILDSCHIRM
+------------------------------------------------
+In dieser Aufteilung bleiben 18 Gerichte ohne Fernseher: 12 Salate und
+6 Getränke. Auf der gedruckten Karte und im Internet stehen sie natürlich.
 
-Stattdessen läuft das Mittagsangebot als Streifen unten mit, auf jedem
-Gerät zweimal pro Durchlauf. Es kostet die Karte keine einzige Zeile, und
-jeder Gast sieht es, egal vor welchem Bildschirm er steht.
+Falls Sie die doch zeigen wollen, gibt es zwei Wege:
 
-Die Streifen stehen bewusst unterschiedlich lang. Das Angebot hat Vorrang,
-das Logo ist nur eine Erinnerung an den Namen:
+   python3 tools/video/build.py salate
 
-   Mittagsangebot     20 Sekunden
-   Logo                5 Sekunden
-   Stempelkarte       12 Sekunden
-   Mittagsangebot     20 Sekunden
-   Liefergebiete      10 Sekunden
-   Öffnungszeiten     10 Sekunden
+erzeugt ein fünftes Video (Zusatz-Salate-Getraenke.mp4), ebenfalls
+72 Sekunden lang. Das können Sie auf einen der Sticks legen und die
+beiden Dateien im Fernseher abwechselnd laufen lassen.
 
-Das Angebot steht damit 40 von 72 Sekunden auf dem Schirm, das Logo 5.
-
-Welches Angebot wo zuerst kommt, richtet sich nach dem Bildschirm:
-
-   Bildschirm 1   Pizzen              danach Familien-Pizza
-   Bildschirm 2   Döner|Dürüm|Boxen   danach Familien-Pizza
-   Bildschirm 3   Nudeln              danach Familien-Pizza
-   Bildschirm 4   Familien-Pizza      danach Döner|Dürüm|Boxen
-
-Die Familien-Pizza läuft überall mit: An ihr hängt auch die Stempelkarte
-(10 Stempel = eine gratis), und auf Bildschirm 4 passt sie ohnehin, weil
-Salat und Getränk darin enthalten sind.
-
-Auf Bildschirm 1 stehen zusätzlich die Aufpreise für Extra-Zutaten, auf
-Bildschirm 2 der Menü-Aufpreis von 5,00 € für kleine Pommes und ein
-0,33-l-Getränk.
+Oder Sie sagen Bescheid, dann verteilen wir die Kategorien anders, so
+dass alle 100 Gerichte auf die vier Bildschirme passen.
 
 DIE KARTE VERSCHWINDET NIE
 --------------------------
