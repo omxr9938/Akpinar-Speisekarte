@@ -170,6 +170,25 @@
 
   /* ------------------------------------------------- Auswahl-Fenster -- */
 
+  /** Ein Element im Bestellfenster sichtbar machen.
+
+      Bewusst ohne scrollIntoView und ohne Animation: Im festen Overlay ist
+      beides unzuverlässig. Gerollt wird die Karte selbst (.bf__karte ist das
+      Element mit dem Rollbalken), und zwar synchron. */
+  function rollen(ziel) {
+    var karte = ziel.closest ? ziel.closest('.bf__karte') : null;
+    if (!karte) return;
+    var kr = karte.getBoundingClientRect();
+    var zr = ziel.getBoundingClientRect();
+    // Zielposition: so weit hochrollen, dass das Element mit etwas Luft
+    // oberhalb der Fußleiste steht.
+    var fuss = karte.querySelector('.bf__fuss');
+    var platz = fuss ? fuss.getBoundingClientRect().height : 0;
+    var sichtbar = kr.height - platz;
+    var neu = karte.scrollTop + (zr.top - kr.top) - Math.max(12, (sichtbar - zr.height) / 2);
+    karte.scrollTop = Math.max(0, neu);
+  }
+
   function fensterOeffnen(gericht, kategorie) {
     // Eigene Größen am Gericht haben Vorrang vor den Spalten der Kategorie.
     var groessen = gericht.groessen
@@ -386,7 +405,7 @@
     function getraenkeBauen() {
       var liste = konfig.menue_getraenke || [];
       if (!liste.length) return;
-      getraenkBox.appendChild(el('p', { class: 'bf__titel', text: 'Getränk zum Menü' }));
+      getraenkBox.appendChild(el('p', { class: 'bf__titel', text: 'Getränk zum Menü — bitte wählen' }));
       var gListe = el('div', { class: 'bf__chips' });
       liste.forEach(function (name) {
         var b = el('button', { class: 'bf__chip', type: 'button' },
@@ -397,6 +416,7 @@
             c.classList.remove('ist-an');
           });
           if (stand.getraenk) b.classList.add('ist-an');
+          gListe.classList.remove('ist-fehlend');
         });
         gListe.appendChild(b);
       });
@@ -409,15 +429,21 @@
         stand.getraenk = null;
         Array.prototype.forEach.call(getraenkBox.querySelectorAll('.bf__chip'),
           function (c) { c.classList.remove('ist-an'); });
-      } else {
-        // Die Auswahl klappt weit unten auf und läge sonst hinter der festen
-        // Fußleiste — auf dem Handy sieht man dann gar nicht, dass es sie gibt.
-        setTimeout(function () {
-          if (getraenkBox.scrollIntoView) {
-            getraenkBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }
-        }, 60);
+        return;
       }
+      // Die Auswahl klappt weit unten auf, auf einem Handy rund 630 Pixel tief
+      // — also unter dem Bildrand. Sie muss ins Bild geholt werden, sonst sieht
+      // der Gast überhaupt nicht, dass es sie gibt.
+      //
+      // Das lief früher über scrollIntoView mit weicher Animation. Das ist
+      // genau die Zeile, wegen der dieser Fehler zweimal gemeldet wurde: Läuft
+      // die Animation nicht — iOS Safari verschluckt sie in einem festen
+      // Overlay, und bei "Bewegung reduzieren" ist sie ganz aus — bleibt die
+      // Auswahl unsichtbar, ohne dass irgendetwas kaputt aussieht.
+      //
+      // Jetzt direkt und ohne Animation: scrollTop am Kartenelement setzen.
+      // Das wirkt sofort und überall, unabhängig von Animationen.
+      rollen(getraenkBox);
     }
 
     // --- Als Menü (Döner und Dürüm: Aufpreis-Schalter)
@@ -504,9 +530,16 @@
             if (offen >= 0) {
               var box = wahlKnoepfe[offen];
               box.classList.add('ist-fehlend');
-              if (box.scrollIntoView) {
-                box.scrollIntoView({ behavior: 'smooth', block: 'center' });
-              }
+              rollen(box);
+              return;
+            }
+            // Menü ohne Getränk: Das Getränk ist im Preis enthalten, wer es
+            // nicht angibt, verschenkt es. Früher stand dann "Getränk nach
+            // Wahl" im Warenkorb und der Laden musste nachfragen.
+            if (!getraenkBox.hidden && !stand.getraenk) {
+              var gr = getraenkBox.querySelector('.bf__chips');
+              if (gr) gr.classList.add('ist-fehlend');
+              rollen(getraenkBox);
               return;
             }
             stand.notiz = notiz.value.trim();

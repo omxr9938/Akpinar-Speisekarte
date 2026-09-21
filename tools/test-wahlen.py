@@ -230,6 +230,84 @@ with sync_playwright() as p:
         kurz = [z for z in w if z.endswith(".")]
         pruefe(not kurz, f"{name}: ausgeschrieben  (abgekürzt: {kurz})")
 
+    # --- 11. Menue-Getraenke: erreichbar OHNE Animation
+    # Der Fehler wurde zweimal gemeldet und beide Male von einem Test
+    # uebersehen, der scrollIntoView mitlaufen liess. Die Getraenkebox klappt
+    # rund 630 Pixel tief auf, also unter dem Bildrand jedes Telefons; sichtbar
+    # wurde sie nur durch eine weiche Animation. Laeuft die nicht - iOS Safari
+    # im festen Overlay, oder "Bewegung reduzieren" - sieht der Gast nichts.
+    # Deshalb wird hier scrollIntoView stillgelegt.
+    print("\nMenü-Getränke ohne Animation")
+    for tag, bw, bh in (("Telefon klein", 375, 629), ("Telefon sehr klein", 320, 568)):
+        ctx = b.new_context(viewport={"width": bw, "height": bh})
+        s2 = ctx.new_page()
+        s2.goto("http://127.0.0.1:8931/index.html", wait_until="networkidle")
+        s2.wait_for_timeout(700)
+        s2.evaluate("() => { Element.prototype.scrollIntoView = function(){}; }")
+        gerichte = s2.evaluate("""() => [...document.querySelectorAll('.item')]
+            .map(e => [e._kategorie.id, e._gericht.name])""")
+        schlecht = []
+        geprueft = 0
+        for kid, gn in gerichte:
+            s2.evaluate("""([k,n]) => {
+                document.querySelectorAll('.bf').forEach(x => x.remove());
+                document.body.classList.remove('bf-offen');
+                const li = [...document.querySelectorAll('.item')].find(e =>
+                  e._gericht && e._gericht.name === n && e._kategorie.id === k);
+                li.querySelector('.item__bestellen').click();
+            }""", [kid, gn])
+            s2.wait_for_selector(".bf", timeout=3000)
+            art = s2.evaluate("""() => {
+                if (document.querySelector('.bf__menue')) return 'schalter';
+                const o = [...document.querySelectorAll('.bf__opt')]
+                  .find(x => /men/i.test(x.textContent));
+                return o ? 'groesse' : null;
+            }""")
+            if not art:
+                continue
+            geprueft += 1
+            if art == "schalter":
+                s2.evaluate("() => document.querySelector('.bf__menue').click()")
+            else:
+                s2.evaluate("""() => [...document.querySelectorAll('.bf__opt')]
+                    .find(o => /men/i.test(o.textContent)).click()""")
+            s2.wait_for_timeout(250)
+            r = s2.evaluate("""() => {
+                const box = document.querySelector('.bf__getraenke');
+                if (!box || box.hidden) return {ok: 0, gesamt: 0};
+                const chips = [...box.querySelectorAll('.bf__chip')];
+                const ok = chips.filter(c => {
+                  const r = c.getBoundingClientRect();
+                  const o = document.elementFromPoint(r.left+r.width/2, r.top+r.height/2);
+                  return o && (o === c || c.contains(o));
+                });
+                return {ok: ok.length, gesamt: chips.length};
+            }""")
+            if r["gesamt"] == 0 or r["ok"] != r["gesamt"]:
+                schlecht.append((gn, f"{r['ok']}/{r['gesamt']}"))
+        pruefe(geprueft >= 15,
+               f"{tag}: {geprueft} Gerichte mit Menü gefunden (erwartet 15)")
+        pruefe(not schlecht, f"{tag}: alle Getränke antippbar  (Problem: {schlecht[:4]})")
+        s2.close(); ctx.close()
+
+    # --- 12. Menue ohne Getraenk kommt nicht in den Korb
+    print("\nMenü ohne Getränk")
+    oeffnen("Döner im Fladenbrot (Classic)", "tuerkisch")
+    pg.evaluate("() => document.querySelector('.bf__menue').click()")
+    pg.wait_for_timeout(300)
+    pg.evaluate("() => localStorage.removeItem('akpinar-korb')")
+    pg.click(".bf__rein"); pg.wait_for_timeout(400)
+    pruefe(pg.locator(".bf").count() == 1, "ohne Getränk: Fenster bleibt offen")
+    pruefe(pg.locator(".bf__getraenke .bf__chips.ist-fehlend").count() == 1,
+           "fehlende Getränkewahl wird markiert")
+    pg.evaluate("""() => document.querySelector('.bf__getraenke .bf__chip').click()""")
+    pg.wait_for_timeout(200)
+    pg.click(".bf__rein"); pg.wait_for_timeout(500)
+    pruefe(pg.locator(".bf").count() == 0, "mit Getränk: Fenster schließt")
+    korb = pg.evaluate("() => JSON.parse(localStorage.getItem('akpinar-korb')||'[]')")
+    pruefe(korb and korb[-1].get("menue") == "Cola",
+           f"Getränk steht im Warenkorb  (ist: {korb[-1].get('menue') if korb else None})")
+
     echt = [k for k in konsole if "pageerror" in k or k.startswith("error")]
     pruefe(not echt, f"keine JavaScript-Fehler  ({echt[:3]})")
     b.close()
