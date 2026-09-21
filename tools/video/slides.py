@@ -183,8 +183,13 @@ VOLLSTIL = """
         align-items:baseline; padding:calc(9px * var(--s)) 0;
         border-bottom:1px solid rgba(226,179,95,.12);
         break-inside:avoid; -webkit-column-break-inside:avoid; }
+  /* Feste Breite, nicht min-width: Jede Zeile ist ein eigenes Raster, also
+     richtet sich die Spalte nach der Nummer IN DIESER Zeile. "14A" ist breiter
+     als "14" und schob seinen Gerichtnamen um vier Pixel nach rechts, waehrend
+     alle anderen buendig standen. */
   .vz .vnr { font-size:calc(27px * var(--s)); font-weight:700; color:var(--gold3);
-             font-variant-numeric:tabular-nums; min-width:calc(48px * var(--s)); }
+             font-variant-numeric:tabular-nums;
+             width:calc(58px * var(--s)); flex:none; }
   .vz .vname { font-size:calc(33px * var(--s)); font-weight:700; line-height:1.15; }
   .vz .vbesch { display:block; font-size:calc(22px * var(--s)); color:var(--text2);
                 line-height:1.2; margin-top:2px; }
@@ -437,6 +442,12 @@ BANNERSTIL = """
              justify-content:center; max-width:100%;
              gap:calc(4px * var(--bs,1)) calc(22px * var(--bs,1)); }
   .ainhalt > * { white-space:nowrap; }
+  /* Im Streifen skalieren auch Titel, Text und Kleingedrucktes mit, sonst
+     schrumpft nur der Fliesstext und die Ueberschrift ragt heraus. */
+  .ainhalt .btitel { font-size:calc(44px * var(--bs,1)); margin-right:0; }
+  .ainhalt .btext  { font-size:calc(32px * var(--bs,1)); white-space:normal; }
+  .ainhalt .bklein { font-size:calc(24px * var(--bs,1)); margin-left:0;
+                     white-space:normal; }
   .ainhalt .amarke { background:linear-gradient(180deg,#e9c987,#c8912f);
       color:#241a08; border-radius:999px;
       padding:calc(7px * var(--bs,1)) calc(22px * var(--bs,1));
@@ -467,10 +478,12 @@ def band_stempel():
     """Stempelkarte — für jemanden im Laden die nützlichste Information:
     Sie bringt ihn beim nächsten Mal wieder."""
     st = DATEN["stempelkarte"]
+    # Der Satz kommt aus menu.json, nicht aus dem Programm: Sonst haette eine
+    # Aenderung an der Karte den Fernseher stehen lassen. "Familien-Pizza"
+    # steht nur noch im Titel, nicht auch noch im Satz daneben.
     return ('<div class="band band--mitte">'
             f'<span class="btitel">{_e(st["titel"])}</span>'
-            '<span class="btext">Ab 25 € ein Stempel · 10 Stempel = '
-            'Familien-Pizza gratis</span>'
+            f'<span class="btext">{_e(st.get("kurz", ""))}</span>'
             f'<span class="bklein">{_e(st["hinweis"])}</span>'
             '</div>')
 
@@ -480,10 +493,14 @@ def band_lieferung():
     orte = []
     for z in DATEN["lieferung"]["zonen"]:
         orte += [o.strip() for o in z["orte"].replace("…", "").split(",") if o.strip()]
+    # Alle Orte, nicht nur die ersten acht: Burgkirchen stand sonst auf keinem
+    # Bildschirm, obwohl es eigens ins Liefergebiet aufgenommen wurde. Der
+    # Streifen darf dafuer umbrechen und verkleinert sich notfalls.
     return ('<div class="band band--mitte">'
+            '<div class="ainhalt" style="--bs:1" data-anpassen>'
             '<span class="btitel">Wir liefern</span>'
-            f'<span class="btext">{_e(" · ".join(orte[:8]))} u. a.</span>'
-            '</div>')
+            f'<span class="btext">{_e(" · ".join(orte))}</span>'
+            '</div></div>')
 
 
 def band_zeiten():
@@ -496,6 +513,22 @@ def band_zeiten():
             '<span class="btitel">Täglich geöffnet</span>'
             f'<span class="btext">{_e(sommer)} · im Winter {_e(winter)}</span>'
             '</div>')
+
+
+def band_zusatzstoffe():
+    """Auf den Gerichten stehen hochgestellte Ziffern und Sternchen. Ohne einen
+    Hinweis darauf, was sie bedeuten und wo die Erklaerung haengt, sind sie
+    fuer den Gast nur Rauschen. Alle zwoelf Zusatzstoffe auf den Bildschirm zu
+    schreiben, ginge nicht - dafuer gibt es den Aushang, den § 9 ZZulV ohnehin
+    verlangt. Dieser Streifen verbindet beides."""
+    # Zwei Teile statt drei: Mit einer dritten Zeile endete der Streifen einen
+    # Pixel vor der Bildkante - rechnerisch drin, aber ohne jeden Spielraum.
+    return ('<div class="band band--mitte">'
+            '<div class="ainhalt" style="--bs:1" data-anpassen>'
+            '<span class="btitel">Zusatzstoffe &amp; Allergene</span>'
+            '<span class="btext">Ziffern und Sternchen erklärt der Aushang '
+            'im Laden — bei Fragen sprechen Sie uns bitte an</span>'
+            '</div></div>')
 
 
 def band_spruch(bild, text):

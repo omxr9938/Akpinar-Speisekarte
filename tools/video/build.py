@@ -89,7 +89,7 @@ def baender(akzent):
         (slides.band_zeiten(), STAND_STEMPEL),
         (slides.band_lieferung(), STAND_ANGEBOT),
         (slides.band_spruch(*akzent), STAND_LIEFERUNG),
-        (slides.band_logo(), STAND_SCHLUSS),
+        (slides.band_zusatzstoffe(), STAND_SCHLUSS),
     ]
 
 
@@ -222,13 +222,26 @@ def anpassen(pg, i=0):
     # und der Hinweis ist das halbe Angebot. Gemessen wird deshalb die
     # Hoehe; passt es auch dann nicht, wird die Schrift verkleinert.
     bandmass = pg.evaluate("""() => {
-        const box = document.querySelector('.ainhalt[data-anpassen]');
+        const box = document.querySelector('[data-anpassen]');
         if (!box) return null;
-        const band = box.parentElement;
+        const band = box.closest('.band');
+        // Gemessen wird die tatsaechliche Unterkante des tiefsten Elements,
+        // nicht scrollHeight: Letzteres laesst die Unterlaengen von g, ss und p
+        // aus und meldet "passt", waehrend sie schon angeschnitten sind.
+        // Vier Pixel Luft, weil Schriften auf anderen Geraeten minimal anders
+        // rendern.
+        const luft = 4;
         const passtBei = s => {
             box.style.setProperty('--bs', s.toFixed(3));
-            return box.scrollHeight <= band.clientHeight + 0.5
-                && box.scrollWidth <= band.clientWidth + 0.5;
+            const br = band.getBoundingClientRect();
+            let tief = 0, weit = 0;
+            for (const e of box.querySelectorAll('*')) {
+                const r = e.getBoundingClientRect();
+                if (!r.width && !r.height) continue;
+                if (r.bottom > tief) tief = r.bottom;
+                if (r.right > weit) weit = r.right;
+            }
+            return tief <= br.bottom - luft && weit <= br.right;
         };
         if (passtBei(1)) return 1;
         let unten = 0.55, oben = 1.0;

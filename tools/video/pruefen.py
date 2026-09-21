@@ -85,6 +85,21 @@ MESSUNG = """() => {
 
   const kat = [...document.querySelectorAll('.vkat .vkname')].map(e => norm(e.textContent));
 
+  // Startpositionen der Gerichtnamen: Jede Zeile ist ein eigenes Raster, eine
+  // breitere Nummer ("14A") kann ihren Namen aus der Flucht schieben.
+  const flucht = {};
+  for (const z of document.querySelectorAll('.vz')) {
+    const nm = z.querySelector('.vname');
+    if (!nm) continue;
+    const x = Math.round(nm.getBoundingClientRect().left);
+    flucht[x] = (flucht[x] || 0) + 1;
+  }
+
+  // Jeder sichtbare Text der Seite, fuer die Schreibweisenpruefung.
+  const texte = [...document.querySelectorAll('.inhalt *')]
+    .flatMap(e => [...e.childNodes].filter(n => n.nodeType === 3))
+    .map(n => norm(n.textContent)).filter(Boolean);
+
   // Die tiefste und aeusserste Kante im Bild. document.scrollHeight taugt
   // dafuer nicht: html und body sind auf overflow:hidden gestellt, dort wird
   // ein Ueberlauf abgeschnitten statt gemeldet. Genau deshalb blieb
@@ -101,6 +116,7 @@ MESSUNG = """() => {
   return {
     tiefsteKante: Math.round(tiefste),
     weitesteKante: Math.round(weiteste),
+    flucht, texte,
     seiteBreit: document.documentElement.scrollWidth,
     seiteHoch: document.documentElement.scrollHeight,
     skala: parseFloat(getComputedStyle(wurzel).getPropertyValue('--s')) || 1,
@@ -199,6 +215,28 @@ def main():
                 for art, klasse, text in m["beschnitten"]:
                     fehler.append(f"{v}: Text abgeschnitten ({art}, .{klasse}): {text}")
 
+                # Gerichtnamen muessen in der Flucht stehen. Zwei Spalten
+                # heisst zwei erlaubte Startpositionen, mehr nicht.
+                spalten = sorted(m["flucht"].items(), key=lambda a: -a[1])
+                if len(spalten) > 2:
+                    aus_der_reihe = spalten[2:]
+                    fehler.append(
+                        f"{v}: Gerichtnamen stehen nicht in der Flucht - "
+                        f"{len(aus_der_reihe)} abweichende Startposition(en): "
+                        f"{[x for x, _ in aus_der_reihe]} (erwartet {[x for x, _ in spalten[:2]]})")
+
+                # Schreibweisen: einheitlich Eurozeichen und Doppelpunkt-Uhrzeit
+                import re as _re
+                for t in m["texte"]:
+                    # Nur Betraege: "Preise in Euro:" ist eine Ueberschrift,
+                    # "Preise in \u20ac" waere dort schlechteres Deutsch.
+                    if _re.search(r'\d\s*Euro\b', t):
+                        fehler.append(f"{v}: Betrag mit 'Euro' statt \u20ac: {t!r}")
+                    if _re.search(r'\d{1,2}\.\d{2}\s*Uhr', t):
+                        fehler.append(f"{v}: Uhrzeit mit Punkt statt Doppelpunkt: {t!r}")
+                    if _re.search(r'\bgross\b|\bweiss\b|\bMenue\b', t):
+                        fehler.append(f"{v}: Ersatzschreibung statt \u00df/\u00fc: {t!r}")
+
             # Steht die Karte still, wenn der Streifen wechselt?
             for feld, beschreibung in (("skala", "Schriftgroesse"),
                                        ("vollOben", "Listenanfang"),
@@ -254,6 +292,19 @@ def main():
             gesehen[name] = len(ist)
 
         b.close()
+
+    # Alle Lieferorte muessen auf dem Streifen stehen. Vorher waren es nur die
+    # ersten acht von zwoelf - Burgkirchen fehlte, obwohl es eigens ins
+    # Liefergebiet aufgenommen worden war.
+    orte = []
+    for z in slides.DATEN["lieferung"]["zonen"]:
+        orte += [o.strip() for o in z["orte"].replace("\u2026", "").split(",") if o.strip()]
+    streifen = slides.band_lieferung()
+    fehlende_orte = [o for o in orte if o not in streifen]
+    pruefe(not fehlende_orte,
+           f"Lieferstreifen nennt diese Orte nicht: {fehlende_orte}")
+    print(f"\nLieferstreifen: {len(orte)} Orte, alle genannt"
+          if not fehlende_orte else "")
 
     # Keine Kategorie doppelt, keine vergessen. Bewusst ueber die Kategorien
     # und nicht ueber die Gerichtnamen: "Tonno" gibt es zweimal, als Pizza

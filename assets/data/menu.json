@@ -19,11 +19,11 @@
         "zeiten": [
           {
             "tage": "Mo – Sa",
-            "zeit": "11.00 – 22.00 Uhr"
+            "zeit": "11:00 – 22:00 Uhr"
           },
           {
             "tage": "So, Feiertag",
-            "zeit": "11.00 – 22.00 Uhr"
+            "zeit": "11:00 – 22:00 Uhr"
           }
         ]
       },
@@ -32,11 +32,11 @@
         "zeiten": [
           {
             "tage": "Mo – Sa",
-            "zeit": "11.00 – 21.00 Uhr"
+            "zeit": "11:00 – 21:00 Uhr"
           },
           {
             "tage": "So, Feiertag",
-            "zeit": "11.00 – 21.00 Uhr"
+            "zeit": "11:00 – 21:00 Uhr"
           }
         ]
       }
@@ -75,11 +75,12 @@
   "stempelkarte": {
     "titel": "Familien-Pizza GRATIS!",
     "text": "Bei einem Einkauf ab 25 € gibt es einen Stempel. Bei 10 Stempeln bekommen Sie von uns eine Familien-Pizza gratis.",
-    "hinweis": "*nur bei Selbstabholung"
+    "hinweis": "*nur bei Selbstabholung",
+    "kurz": "Ab 25 € Einkauf ein Stempel · 10 Stempel voll = gratis"
   },
   "angebote": {
     "titel": "Mittagsangebot",
-    "gueltigkeit": "Montag bis Freitag 11:00–14:00 Uhr · außer Feiertage",
+    "gueltigkeit": "Montag bis Freitag 11:00 – 14:00 Uhr · außer Feiertage",
     "zusatz": "Für Schüler, Firmen und Selbstabholer · Für Wacker/Gendorf jederzeit gültig!",
     "gruppen": [
       {
@@ -591,7 +592,7 @@
           }
         ],
         "fussnoten": [
-          "Als Party-Pizza 60 × 40 cm: +3 Euro",
+          "Als Party-Pizza 60 × 40 cm: +3,00 €",
           "* zum Familienpizza-Preis"
         ]
       }
@@ -602,7 +603,7 @@
       "kurz": "Türkisch",
       "bild": "assets/img/doener.jpg",
       "hinweis": "",
-      "banner": "Döner-Menü: inkl. Pommes + 0,33 l Getränk — +5 Euro zum Döner-Preis.",
+      "banner": "Döner-Menü: inkl. Pommes + 0,33 l Getränk — +5,00 € zum Döner-Preis.",
       "spalten": [
         ""
       ],
@@ -1341,7 +1342,7 @@
       "id": "getraenke",
       "name": "Getränke",
       "bild": "assets/img/getraenke.jpg",
-      "hinweis": "(alkoholfrei) zzgl. 0,25 Euro Pfand",
+      "hinweis": "(alkoholfrei) zzgl. 0,25 € Pfand",
       "spalten": [
         "0,33 l",
         "0,50 l",

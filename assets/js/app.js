@@ -258,8 +258,10 @@
     var text = $('#status-text');
     text.appendChild(el('b', { text: isOpen ? 'Jetzt geöffnet' : 'Gerade geschlossen' }));
     text.appendChild(document.createTextNode(
-      isOpen ? ' · bis ' + m[3] + '.' + m[4] + ' Uhr'
-             : ' · öffnet um ' + m[1] + '.' + m[2] + ' Uhr'
+      // Doppelpunkt wie überall sonst. Der Punkt hier war die letzte Stelle,
+      // an der eine Uhrzeit anders geschrieben stand als in der Karte.
+      isOpen ? ' · bis ' + m[3] + ':' + m[4] + ' Uhr'
+             : ' · öffnet um ' + m[1] + ':' + m[2] + ' Uhr'
     ));
   }
 
@@ -546,7 +548,7 @@
     }
   }
 
-  fetch('assets/data/menu.json?v=44c32473')
+  fetch('assets/data/menu.json?v=e01580ca')
     .then(function (r) {
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return r.json();
