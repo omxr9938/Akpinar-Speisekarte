@@ -183,8 +183,10 @@ with sync_playwright() as p:
     pg.evaluate("() => { const b = document.querySelector('#kasse-senden'); if (b) b.click(); }")
     pg.wait_for_timeout(300)
     txt = pg.evaluate("() => window.__auf ? decodeURIComponent(window.__auf) : '(nicht abgeschickt)'")
-    pruefe("BEILAGE: REIS" in (txt or ""), f"Beilage steht im WhatsApp-Text")
-    if "BEILAGE" not in (txt or ""):
+    # Kleinschreibung ist Absicht: toUpperCase() machte im Deutschen aus
+    # "Sosse" ein "SOSSE". Siehe Abschnitt 13.
+    pruefe("*Beilage:* Reis" in (txt or ""), "Beilage steht im WhatsApp-Text")
+    if "Beilage" not in (txt or ""):
         print("      Text:", (txt or "")[:400])
 
     # --- 9. Keine erfundenen Zutaten
@@ -307,6 +309,43 @@ with sync_playwright() as p:
     korb = pg.evaluate("() => JSON.parse(localStorage.getItem('akpinar-korb')||'[]')")
     pruefe(korb and korb[-1].get("menue") == "Cola",
            f"Getränk steht im Warenkorb  (ist: {korb[-1].get('menue') if korb else None})")
+
+    # --- 13. Deutsche Sonderzeichen im Bestelltext
+    # toUpperCase() machte im Deutschen aus "Sosse" ein "SOSSE" und aus der
+    # Auswahl des Gastes, "Tomatensosse", ein "TOMATENSOSSE". Auch "Groesse"
+    # war betroffen. Die Bezeichnungen sind jetzt fest und richtig
+    # geschrieben, hervorgehoben wird mit den Sternchen von WhatsApp.
+    print("\nSonderzeichen im Bestelltext")
+    pg.evaluate("""() => localStorage.setItem('akpinar-korb', JSON.stringify([
+      {name:'Döner-Box', nr:'', kategorie:'Türkisch', groesse:'Ø 32',
+       wahl:['Beilage: Reis','Soße: Tomatensoße'], ohne:['Käse'],
+       extras:['Gemüse'], sossen:['Knoblauchsoße'], menue:'Cola Zero',
+       notiz:'süß-sauer', preis:7, anzahl:1}]))""")
+    pg.reload(wait_until="networkidle"); pg.wait_for_timeout(800)
+    pg.evaluate("() => { window.__auf=null; window.open = u => { window.__auf = u; }; }")
+    pg.click("#korb-knopf"); pg.wait_for_timeout(600)
+    pg.evaluate("""() => {
+      const klick = t => { const b=[...document.querySelectorAll('button')]
+        .find(x=>x.textContent.trim().toLowerCase().indexOf(t)===0); if(b) b.click(); };
+      klick('abholung'); klick('bar bei abholung');
+      document.querySelectorAll('input').forEach(i => {
+        if (i.type==='tel') i.value='0170 1234567';
+        else if (i.type==='text' && !i.value) i.value='Test';
+        i.dispatchEvent(new Event('input',{bubbles:true}));
+      });
+    }""")
+    pg.wait_for_timeout(400)
+    pg.evaluate("() => document.querySelector('#kasse-senden').click()")
+    pg.wait_for_timeout(300)
+    url = pg.evaluate("() => window.__auf") or ""
+    import urllib.parse
+    bt = urllib.parse.unquote(url.split("text=", 1)[1]) if "text=" in url else ""
+    pruefe(bool(bt), "Bestelltext wurde erzeugt")
+    for falsch in ("MENUE", "SOSSE", "GROESSE", "TOMATENSOSSE", "Menue", "Groesse", "Sosse"):
+        pruefe(falsch not in bt, f"'{falsch}' steht nicht im Bestelltext")
+    for richtig in ("*Menü:*", "*Soße:*", "Tomatensoße", "Knoblauchsoße",
+                    "Käse", "Gemüse", "süß-sauer", "Ø 32"):
+        pruefe(richtig in bt, f"'{richtig}' steht richtig im Bestelltext")
 
     echt = [k for k in konsole if "pageerror" in k or k.startswith("error")]
     pruefe(not echt, f"keine JavaScript-Fehler  ({echt[:3]})")

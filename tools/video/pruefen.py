@@ -85,7 +85,22 @@ MESSUNG = """() => {
 
   const kat = [...document.querySelectorAll('.vkat .vkname')].map(e => norm(e.textContent));
 
+  // Die tiefste und aeusserste Kante im Bild. document.scrollHeight taugt
+  // dafuer nicht: html und body sind auf overflow:hidden gestellt, dort wird
+  // ein Ueberlauf abgeschnitten statt gemeldet. Genau deshalb blieb
+  // unbemerkt, dass der Angebotsstreifen einen Pixel unter dem Bildrand
+  // endete und die Unterlaengen von g, ss und p abgeschnitten wurden.
+  let tiefste = 0, weiteste = 0;
+  for (const el of document.querySelectorAll('.inhalt, .inhalt *')) {
+    const r = el.getBoundingClientRect();
+    if (r.width === 0 && r.height === 0) continue;
+    if (r.bottom > tiefste) tiefste = r.bottom;
+    if (r.right > weiteste) weiteste = r.right;
+  }
+
   return {
+    tiefsteKante: Math.round(tiefste),
+    weitesteKante: Math.round(weiteste),
     seiteBreit: document.documentElement.scrollWidth,
     seiteHoch: document.documentElement.scrollHeight,
     skala: parseFloat(getComputedStyle(wurzel).getPropertyValue('--s')) || 1,
@@ -171,6 +186,12 @@ def main():
                        f"{v}: Seite ist {m['seiteBreit']} px breit statt {slides.BREITE}")
                 pruefe(m["seiteHoch"] <= slides.HOEHE,
                        f"{v}: Seite ist {m['seiteHoch']} px hoch statt {slides.HOEHE}")
+                pruefe(m["tiefsteKante"] <= slides.HOEHE,
+                       f"{v}: etwas reicht bis y={m['tiefsteKante']}, das Bild ist "
+                       f"nur {slides.HOEHE} hoch - unten wird abgeschnitten")
+                pruefe(m["weitesteKante"] <= slides.BREITE,
+                       f"{v}: etwas reicht bis x={m['weitesteKante']}, das Bild ist "
+                       f"nur {slides.BREITE} breit - rechts wird abgeschnitten")
                 pruefe(m["vollPasst"], f"{v}: Gerichteliste passt nicht in ihren Bereich")
                 pruefe(m["bandPasst"], f"{v}: Streifen unten laeuft ueber")
                 pruefe(not m["bilderFehlen"],

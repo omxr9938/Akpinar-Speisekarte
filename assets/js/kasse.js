@@ -143,14 +143,22 @@
       var t = p.anzahl + '× ' + (p.nr ? 'Nr. ' + p.nr + ' ' : '') + p.name;
       if (p.groesse) t += ' (' + p.groesse + ')';
       z.push(t + '   ' + A.euro(p.preis * p.anzahl));
+      // Bewusst keine Grossbuchstaben: toUpperCase() macht im Deutschen aus
+      // "Sosse" ein "SOSSE" und aus der Auswahl des Gastes, "Tomatensosse",
+      // ein "TOMATENSOSSE". Das traf auch "Groesse". Hervorgehoben wird
+      // stattdessen mit den Sternchen, die WhatsApp fett setzt - die
+      // Aenderungen springen dem Laden weiter ins Auge, aber die Woerter
+      // bleiben richtig geschrieben.
       if (p.wahl && p.wahl.length) {
-        p.wahl.forEach(function (w) { z.push('   ' + w.toUpperCase()); });
+        p.wahl.forEach(function (w) {
+          z.push('   ' + w.replace(/^([^:]+):/, '*$1:*'));
+        });
       }
-      if (p.menue) z.push('   MENUE: kleine Pommes + ' + p.menue);
-      if (p.sossen && p.sossen.length) z.push('   SOSSE: ' + p.sossen.join(' + '));
-      if (p.ohne.length) z.push('   OHNE: ' + p.ohne.join(', '));
-      if (p.extras.length) z.push('   EXTRA: ' + p.extras.join(', '));
-      if (p.notiz) z.push('   ANMERKUNG: ' + p.notiz);
+      if (p.menue) z.push('   *Menü:* kleine Pommes + ' + p.menue);
+      if (p.sossen && p.sossen.length) z.push('   *Soße:* ' + p.sossen.join(' + '));
+      if (p.ohne.length) z.push('   *Ohne:* ' + p.ohne.join(', '));
+      if (p.extras.length) z.push('   *Extra:* ' + p.extras.join(', '));
+      if (p.notiz) z.push('   *Anmerkung:* ' + p.notiz);
     });
     z.push('');
     z.push('*Summe: ' + A.euro(A.summe()) + '*');

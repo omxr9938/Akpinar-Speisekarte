@@ -168,7 +168,16 @@ VOLLSTIL = """
   /* Zwei Spalten per CSS-Mehrspaltensatz: Der Browser verteilt die Eintraege
      selbst so, dass beide Spalten gleich hoch werden. Nach Anzahl geteilt
      waeren sie unterschiedlich lang, weil manche Beschreibungen umbrechen. */
-  .voll { flex:1; column-count:2; column-gap:58px; column-fill:balance; }
+  /* min-height:0 ist hier nicht kosmetisch: Ohne die Angabe bekommt ein
+     Flex-Element als Mindesthoehe seinen eigenen Inhalt (min-height:auto).
+     Bei einer mehrspaltigen Liste ist das mehr, als die Seite hoch ist - die
+     Liste draengt sich auf, schiebt den Streifen darunter ueber den unteren
+     Bildrand hinaus, und die Unterlaengen von g, ss und p werden abgeschnitten.
+     Der Suchlauf nach der Schriftgroesse merkt davon nichts, weil er
+     voll.scrollHeight gegen voll.clientHeight prueft und clientHeight durch
+     genau diesen Ueberlauf schon zu gross ist. */
+  .voll { flex:1; min-height:0; column-count:2; column-gap:58px;
+          column-fill:balance; }
   .vz { display:grid; grid-template-columns:auto 1fr auto; gap:0 16px;
         align-items:baseline; padding:calc(9px * var(--s)) 0;
         border-bottom:1px solid rgba(226,179,95,.12);
