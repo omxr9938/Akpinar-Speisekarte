@@ -43,9 +43,15 @@
     (A.daten.kategorien || []).forEach(function (k) {
       k.items.forEach(function (it) {
         var p = zuZahl((it.preise || [])[0]);
-        if (p !== null && p > 0) {
-          alle.push({ name: it.name, nr: it.nr || '', preis: p, kategorie: k });
-        }
+        if (p === null || p <= 0) return;
+        // Gerichte mit Pflichtfrage hier nicht anbieten: Der Vorschlag ist ein
+        // einziger Klick, es gibt also keine Gelegenheit zu sagen, ob Pommes
+        // oder Salat dazu soll. Wer so ein Gericht will, nimmt es aus der
+        // Karte, dort wird gefragt.
+        var w = (A.wahlenFuer ? A.wahlenFuer(it, k) : []);
+        if (w.some(function (x) { return x.pflicht; })) return;
+        alle.push({ name: it.name, nr: it.nr || '', preis: p, kategorie: k,
+                    wahl: w.map(function (x) { return x.frage + ': ' + x.optionen[0]; }) });
       });
     });
     // Zuerst die, die den Fehlbetrag gerade so decken, dann aufsteigend
@@ -102,6 +108,7 @@
               A.korb().push({
                 name: v.name, nr: v.nr, kategorie: v.kategorie.name,
                 groesse: (v.kategorie.spaltenKurz && v.kategorie.spaltenKurz[0]) || '',
+                wahl: v.wahl || [],
                 ohne: [], extras: [], sossen: [], menue: null, notiz: '',
                 preis: v.preis, anzahl: 1
               });
@@ -136,6 +143,9 @@
       var t = p.anzahl + '× ' + (p.nr ? 'Nr. ' + p.nr + ' ' : '') + p.name;
       if (p.groesse) t += ' (' + p.groesse + ')';
       z.push(t + '   ' + A.euro(p.preis * p.anzahl));
+      if (p.wahl && p.wahl.length) {
+        p.wahl.forEach(function (w) { z.push('   ' + w.toUpperCase()); });
+      }
       if (p.menue) z.push('   MENUE: kleine Pommes + ' + p.menue);
       if (p.sossen && p.sossen.length) z.push('   SOSSE: ' + p.sossen.join(' + '));
       if (p.ohne.length) z.push('   OHNE: ' + p.ohne.join(', '));

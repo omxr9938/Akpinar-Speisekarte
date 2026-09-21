@@ -134,5 +134,62 @@
         "name": "Ayran"
       }
     ]
-  }
+  },
+  "wahlen": [
+    {
+      "_hinweis": "Die Karte nennt bei diesen Gerichten mehrere Beilagen mit 'oder'. Ohne Auswahl weiss die Kueche nicht, was der Gast will. Deshalb Pflicht: ohne Antwort kein Warenkorb.",
+      "kategorie": "tuerkisch",
+      "gilt_fuer": "^Döner-Box",
+      "frage": "Beilage",
+      "optionen": [
+        "Pommes",
+        "Reis",
+        "Salat"
+      ],
+      "pflicht": true,
+      "verdeckt": "^(Pommes|Reis oder Salat)$"
+    },
+    {
+      "kategorie": "tuerkisch",
+      "gilt_fuer": "^Döner-Teller$",
+      "frage": "Beilage",
+      "optionen": [
+        "Pommes",
+        "gemischter Salat"
+      ],
+      "pflicht": true,
+      "verdeckt": "^Pommes oder gem\\. Salat$"
+    },
+    {
+      "_hinweis": "Steht als Kategoriehinweis auf der Karte: 'Alle Pizzen mit Tomaten- oder Sahnesosse und Kaese'. Pizzabrot ist keine Pizza und hat keine Sosse. Keine Pflicht, sondern Tomatensosse vorausgewaehlt - das ist ohnehin der Normalfall, und 28 Pizzen sollen nicht je einen Pflichtklick mehr kosten.",
+      "kategorie": "pizza",
+      "nicht_bei": "^Pizzabrot",
+      "frage": "Soße",
+      "optionen": [
+        "Tomatensoße",
+        "Sahnesoße"
+      ],
+      "verdeckt": "^(Tomatensoße|Sahnesoße)$"
+    },
+    {
+      "_hinweis": "Steht als Kategoriehinweis auf der Karte: 'Rigatoni / Spaghetti / Tortellini'. Rigatoni vorausgewaehlt, in der Reihenfolge der Karte.",
+      "kategorie": "nudeln",
+      "frage": "Nudelsorte",
+      "optionen": [
+        "Rigatoni",
+        "Spaghetti",
+        "Tortellini"
+      ]
+    },
+    {
+      "kategorie": "nudeln",
+      "gilt_fuer": "^Vegetarisch$",
+      "frage": "Soße",
+      "optionen": [
+        "Tomatensoße",
+        "Sahnesoße"
+      ],
+      "verdeckt": "^Tomaten-/Sahnesoße$"
+    }
+  ]
 }

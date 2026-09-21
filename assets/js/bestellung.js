@@ -105,6 +105,23 @@
     return raus;
   }
 
+  /** Auswahlfragen, die fuer dieses Gericht gelten.
+
+      Die Karte schreibt bei manchen Gerichten mehrere Moeglichkeiten hin, ohne
+      sich festzulegen: "mit Pommes, Reis oder Salat", "Alle Pizzen mit
+      Tomaten- oder Sahnesosse", "Rigatoni / Spaghetti / Tortellini". Der Gast
+      muss sich entscheiden, sonst raet die Kueche. Genau das ging vorher
+      nicht — man konnte den Doener-Teller bestellen, ohne je zu sagen, ob
+      Pommes oder Salat dazu sollen. */
+  function wahlenFuer(gericht, kategorie) {
+    return (konfig.wahlen || []).filter(function (w) {
+      if (w.kategorie && w.kategorie !== kategorie.id) return false;
+      if (w.gilt_fuer && !new RegExp(w.gilt_fuer, 'i').test(gericht.name || '')) return false;
+      if (w.nicht_bei && new RegExp(w.nicht_bei, 'i').test(gericht.name || '')) return false;
+      return !!(w.optionen && w.optionen.length);
+    });
+  }
+
   /* -------------------------------------------------------- Warenkorb -- */
 
   function korbSpeichern() {
@@ -156,8 +173,23 @@
     // der Reihenfolge der Karte, und dort steht beim Döner das Fleisch vorne.
     var abwaehlbar = zusammenfassen(ausBeschreibung.concat(basis));
 
+    var wahlen = wahlenFuer(gericht, kategorie);
+    // Was zur Auswahl steht, gehört nicht mehr unter "Zutaten weglassen":
+    // "Pommes oder gem. Salat" stand sonst als ein einziger abwählbarer Punkt
+    // da, obwohl es in Wahrheit eine Entscheidung zwischen zweien ist.
+    wahlen.forEach(function (w) {
+      if (!w.verdeckt) return;
+      var muster = new RegExp(w.verdeckt, 'i');
+      abwaehlbar = abwaehlbar.filter(function (z) { return !muster.test(z); });
+    });
+
     var stand = {
       groesse: groessen[0],
+      // Pflichtfragen starten leer, damit niemand versehentlich eine Beilage
+      // bekommt, die er nicht wollte. Bei den übrigen ist die erste Angabe der
+      // Karte vorausgewählt (Tomatensoße, Rigatoni) — das ist ohnehin der
+      // Normalfall und erspart bei 28 Pizzen je einen Pflichtklick.
+      wahl: wahlen.map(function (w) { return w.pflicht ? null : w.optionen[0]; }),
       weg: {},          // abgewählte Zutaten
       extras: [],       // gewählte Extras
       sossen: [],
@@ -208,6 +240,31 @@
       inhalt.appendChild(el('p', { class: 'bf__titel', text: 'Größe' }));
       inhalt.appendChild(gWahl);
     }
+
+    // --- Auswahlfragen (genau eine Antwort je Frage)
+    var wahlKnoepfe = [];
+    wahlen.forEach(function (w, wi) {
+      var box = el('div', { class: 'bf__chips' });
+      var knoepfe = [];
+      w.optionen.forEach(function (o) {
+        var b = el('button', {
+          class: 'bf__chip bf__chip--wahl' + (stand.wahl[wi] === o ? ' ist-an' : ''),
+          type: 'button'
+        }, [document.createTextNode(o)]);
+        b.addEventListener('click', function () {
+          stand.wahl[wi] = o;
+          knoepfe.forEach(function (k) { k.classList.remove('ist-an'); });
+          b.classList.add('ist-an');
+          box.classList.remove('ist-fehlend');
+        });
+        knoepfe.push(b);
+        box.appendChild(b);
+      });
+      wahlKnoepfe.push(box);
+      inhalt.appendChild(el('p', { class: 'bf__titel',
+        text: w.frage + (w.pflicht ? ' — bitte wählen' : '') }));
+      inhalt.appendChild(box);
+    });
 
     // --- Soße (mehrere gleichzeitig möglich)
     if (zutatenKonf.sossen) {
@@ -398,12 +455,30 @@
         el('div', { class: 'bf__fuss' }, [
           anzahlBox,
           el('button', { class: 'bf__rein', type: 'button', onclick: function () {
+            // Ohne Antwort auf eine Pflichtfrage nicht in den Korb: Eine
+            // Bestellung "Döner-Teller" ohne Beilage kann die Küche nicht
+            // ausführen, und per WhatsApp fällt es erst beim Kochen auf.
+            var offen = -1;
+            wahlen.forEach(function (w, wi) {
+              if (w.pflicht && !stand.wahl[wi] && offen < 0) offen = wi;
+            });
+            if (offen >= 0) {
+              var box = wahlKnoepfe[offen];
+              box.classList.add('ist-fehlend');
+              if (box.scrollIntoView) {
+                box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }
+              return;
+            }
             stand.notiz = notiz.value.trim();
             // Hier bestimmen, nicht in hinzufuegen(): zutatenKonf ist nur in
             // diesem Fenster bekannt, nicht in der Funktion darunter.
             stand.istMenue = !!(stand.menue
               || (zutatenKonf.menue_bei_groesse
                   && stand.groesse.label === zutatenKonf.menue_bei_groesse));
+            stand.wahlText = wahlen.map(function (w, wi) {
+              return w.frage + ': ' + stand.wahl[wi];
+            }).filter(function (t, i) { return !!stand.wahl[i]; });
             hinzufuegen(gericht, kategorie, stand, preisJetzt() / stand.anzahl);
             schliessen();
           } }, [document.createTextNode('In den Warenkorb  '), preisZeile])
@@ -432,6 +507,7 @@
       nr: gericht.nr || '',
       kategorie: kategorie.name,
       groesse: stand.groesse.label.replace('\n', ' '),
+      wahl: stand.wahlText || [],
       ohne: weg,
       extras: stand.extras.map(function (e) { return e.name; }),
       sossen: stand.sossen || [],
@@ -484,6 +560,9 @@
     korb.forEach(function (p, i) {
       var zusatz = [];
       if (p.groesse) zusatz.push(p.groesse);
+      // Vor allem anderen: Die Antwort auf eine Pflichtfrage gehört zur
+      // Bestellung selbst, nicht zu den Zusätzen.
+      if (p.wahl && p.wahl.length) zusatz = zusatz.concat(p.wahl);
       // Bei Burgern heißt die Größe bereits "Menü" — dann nicht doppelt nennen.
       if (p.menue) {
         zusatz.push((/^men/i.test(p.groesse || '') ? 'inkl. Pommes + ' : 'Als Menü: Pommes + ')
@@ -509,6 +588,10 @@
 
   window.AKPINAR = window.AKPINAR || {};
   window.AKPINAR.korbZeichnen = korbZeichnen;
+  // Die Kasse braucht das für ihre Vorschlagsknöpfe: Ein Gericht mit
+  // Pflichtfrage darf dort nicht mit einem Klick im Korb landen, und die
+  // übrigen brauchen wenigstens ihre Vorgabeantwort.
+  window.AKPINAR.wahlenFuer = wahlenFuer;
   window.AKPINAR.korb = function () { return korb; };
   window.AKPINAR.summe = summe;
   window.AKPINAR.euro = euro;
@@ -549,7 +632,7 @@
 
   document.addEventListener('karte-fertig', function () {
     daten = window.AKPINAR.daten;
-    fetch('assets/data/bestellung.json?v=ddd8453a')
+    fetch('assets/data/bestellung.json?v=1ccc045f')
       .then(function (r) { return r.json(); })
       .then(function (k) {
         konfig = k;
