@@ -10,7 +10,12 @@
 
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var A;                     // window.AKPINAR
-  var zustand = { weg: 'lieferung', ort: null, zahlung: null };
+  // zeit: null heisst "so schnell wie moeglich", sonst { tag: 0|1, min: Minuten
+  // seit Mitternacht, text: "18:30" }.
+  var zustand = { weg: 'lieferung', ort: null, zahlung: null, zeit: null };
+
+  var VORLAUF = 60;   // Mindestvorlauf in Minuten, vom Laden so gewuenscht
+  var TAKT = 15;      // Raster der angebotenen Uhrzeiten
 
   function zuZahl(p) {
     if (p === null || p === undefined || p === '' || p === '-') return null;
@@ -29,6 +34,64 @@
       });
     });
     return liste;
+  }
+
+  /** Öffnungszeiten des Tages als Minuten seit Mitternacht.
+
+      Dieselbe Saisonlogik wie die Statusanzeige oben auf der Seite: Sommer
+      von April bis Oktober, sonst Winter. Sonntag hat in der Karte eine eigene
+      Zeile, auch wenn dort zurzeit dasselbe steht. */
+  function oeffnung(datum) {
+    var o = A.daten.oeffnungszeiten;
+    if (!o || !o.saisons) return null;
+    var m = datum.getMonth() + 1;
+    var sommer = m >= (o.sommerVon || 4) && m <= (o.sommerBis || 10);
+    var saison = o.saisons[sommer ? 0 : 1];
+    if (!saison) return null;
+    var zeile = saison.zeiten[datum.getDay() === 0 ? 1 : 0] || saison.zeiten[0];
+    var t = String(zeile.zeit).match(/(\d{1,2})[.:](\d{2})\s*[–-]\s*(\d{1,2})[.:](\d{2})/);
+    if (!t) return null;
+    return { von: (+t[1]) * 60 + (+t[2]), bis: (+t[3]) * 60 + (+t[4]) };
+  }
+
+  function alsUhrzeit(min) {
+    var h = Math.floor(min / 60), m = min % 60;
+    return (h < 10 ? '0' : '') + h + ':' + (m < 10 ? '0' : '') + m;
+  }
+
+  /** Wählbare Zeiten für heute und, falls heute nichts mehr geht, für morgen.
+
+      Frühestens eine Stunde ab jetzt — so will es der Laden, und es ist auch
+      die ehrliche Angabe: Alles darunter kann die Küche bei Andrang nicht
+      zusagen. Aufgerundet auf die nächste Viertelstunde, damit runde Zeiten
+      dastehen statt "18:37". */
+  function zeitfenster(jetzt) {
+    var raus = [];
+    for (var tag = 0; tag < 2; tag++) {
+      var datum = new Date(jetzt.getTime() + tag * 86400000);
+      var off = oeffnung(datum);
+      if (!off) continue;
+      var frueheste = tag === 0
+        ? Math.max(off.von, jetzt.getHours() * 60 + jetzt.getMinutes() + VORLAUF)
+        : off.von;
+      var erste = Math.ceil(frueheste / TAKT) * TAKT;
+      var zeiten = [];
+      for (var m = erste; m <= off.bis; m += TAKT) zeiten.push(m);
+      if (zeiten.length) raus.push({ tag: tag, zeiten: zeiten });
+      // Sobald heute etwas frei ist, reicht das - morgen nur als Ausweg,
+      // wenn heute nichts mehr geht.
+      if (tag === 0 && zeiten.length) break;
+    }
+    return raus;
+  }
+
+  /** Ist der Laden gerade offen? Nur dann ergibt "so schnell wie möglich"
+      einen Sinn - sonst wäre es eine Zusage, die niemand halten kann. */
+  function jetztOffen(jetzt) {
+    var off = oeffnung(jetzt);
+    if (!off) return false;
+    var min = jetzt.getHours() * 60 + jetzt.getMinutes();
+    return min >= off.von && min < off.bis;
   }
 
   function mindestwert() {
@@ -123,13 +186,98 @@
       }
     }
 
+    zeitenZeichnen();
+
     var senden = $('#kasse-senden');
     if (senden) {
+      // Ohne wählbare Zeit ist die Bestellung nicht ausführbar: Wenn der Laden
+      // zu ist und auch morgen nichts mehr frei wäre, hilft dem Gast ein
+      // abschickbares Formular nicht weiter.
+      var zeitOk = zustand.zeit !== null || jetztOffen(new Date());
       var bereit = A.korb().length > 0 && fehlt === 0 && zustand.zahlung
+        && zeitOk
         && (zustand.weg === 'abholung' || zustand.ort);
       senden.disabled = !bereit;
       senden.textContent = bereit ? 'Zahlungspflichtig bestellen'
                                   : 'Bestellung noch nicht vollständig';
+    }
+  }
+
+  /** Die Zeitauswahl aufbauen.
+
+      Wird bei jeder Änderung neu gezeichnet, weil sie von Abholung/Lieferung
+      abhängt (nur die Beschriftung) und weil sich die Uhrzeit weiterdreht,
+      während der Gast noch aussucht. */
+  function zeitenZeichnen() {
+    var box = $('#kasse-zeit');
+    if (!box) return;
+    var jetzt = new Date();
+    var offen = jetztOffen(jetzt);
+    var bloecke = zeitfenster(jetzt);
+    var wort = zustand.weg === 'abholung' ? 'Abholung' : 'Lieferung';
+
+    var titel = $('#zeit-titel');
+    if (titel) titel.textContent = wort + ' — wann?';
+
+    // Eine gewählte Zeit, die inzwischen zu früh geworden ist, wieder lösen.
+    if (zustand.zeit) {
+      var nochDa = bloecke.some(function (b) {
+        return b.tag === zustand.zeit.tag
+          && b.zeiten.indexOf(zustand.zeit.min) >= 0;
+      });
+      if (!nochDa) zustand.zeit = null;
+    }
+    // Ist der Laden zu, ist "so schnell wie möglich" keine Option — dann die
+    // früheste wählbare Zeit vorbelegen.
+    if (!offen && !zustand.zeit && bloecke.length) {
+      var b0 = bloecke[0];
+      zustand.zeit = { tag: b0.tag, min: b0.zeiten[0], text: alsUhrzeit(b0.zeiten[0]) };
+    }
+
+    box.innerHTML = '';
+
+    if (offen) {
+      var sofort = A.el('button', {
+        class: 'kasse__zopt kasse__zopt--sofort' + (zustand.zeit ? '' : ' ist-an'),
+        type: 'button'
+      }, ['So schnell wie möglich']);
+      sofort.addEventListener('click', function () {
+        zustand.zeit = null;
+        aktualisieren();
+      });
+      box.appendChild(sofort);
+    }
+
+    bloecke.forEach(function (b) {
+      box.appendChild(A.el('span', { class: 'kasse__ztag',
+        text: b.tag ? 'Morgen' : 'Heute' }));
+      b.zeiten.forEach(function (m) {
+        var an = zustand.zeit && zustand.zeit.tag === b.tag && zustand.zeit.min === m;
+        var k = A.el('button', {
+          class: 'kasse__zopt' + (an ? ' ist-an' : ''), type: 'button'
+        }, [alsUhrzeit(m)]);
+        k.addEventListener('click', function () {
+          zustand.zeit = { tag: b.tag, min: m, text: alsUhrzeit(m) };
+          aktualisieren();
+        });
+        box.appendChild(k);
+      });
+    });
+
+    var hinweis = $('#kasse-zeit-hinweis');
+    if (!hinweis) return;
+    if (!bloecke.length) {
+      hinweis.hidden = false;
+      hinweis.textContent = 'Heute ist keine Bestellung mehr möglich. '
+        + 'Bitte rufen Sie uns an oder bestellen Sie morgen wieder.';
+    } else if (!offen) {
+      hinweis.hidden = false;
+      hinweis.textContent = 'Wir haben gerade geschlossen — bitte wählen Sie '
+        + 'eine Zeit. Frühestens eine Stunde im Voraus.';
+    } else {
+      hinweis.hidden = false;
+      hinweis.textContent = 'Feste Zeiten frühestens eine Stunde im Voraus. '
+        + 'Ohne Auswahl bereiten wir Ihre Bestellung sofort zu.';
     }
   }
 
@@ -164,6 +312,10 @@
     z.push('*Summe: ' + A.euro(A.summe()) + '*');
     z.push('');
     z.push(zustand.weg === 'abholung' ? 'Abholung im Laden' : 'Lieferung');
+    var wort = zustand.weg === 'abholung' ? 'Abholung' : 'Lieferung';
+    z.push('*' + wort + ':* ' + (zustand.zeit
+      ? (zustand.zeit.tag ? 'morgen ' : '') + 'um ' + zustand.zeit.text + ' Uhr'
+      : 'so schnell wie möglich'));
     if (zustand.weg === 'lieferung') {
       z.push('Ort: ' + (zustand.ort ? zustand.ort.ort : '—'));
       var str = $('#f-strasse'), plz = $('#f-plz');
