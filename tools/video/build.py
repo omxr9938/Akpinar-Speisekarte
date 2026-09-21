@@ -53,9 +53,17 @@ def kategorie(kat_id):
 # zusammenbleiben. Wichtiger noch: Die Karte steht durchgehend, nur der Streifen
 # unten wechselt - dadurch ist auf jedem Bildschirm jederzeit alles lesbar und
 # es spielt keine Rolle, ob die Geraete auseinanderlaufen.
-# Sechs Streifen, alle Videos exakt gleich lang:
-# 6 x 15,0 s - 5 x 1,0 s Ueberblendung = 85,0 s
-STANDZEIT = 15.0
+#
+# Die Standzeiten sind bewusst ungleich: Das Mittagsangebot hat Vorrang, das
+# Logo ist nur eine Erinnerung an den Namen und braucht keine 15 Sekunden.
+# 20 + 5 + 12 + 20 + 10 + 10 = 77,0 s, minus 5 x 1,0 s Ueberblendung = 72,0 s.
+# Das Angebot steht damit 40 von 77 Sekunden auf dem Schirm, das Logo 5.
+STAND_ANGEBOT = 20.0
+STAND_LOGO = 5.0
+STAND_STEMPEL = 12.0
+STAND_LIEFERUNG = 10.0
+STAND_SCHLUSS = 10.0
+STANDZEIT = 15.0          # nur noch fuer die Angebotsseite (siehe unten)
 
 BESTELL = json.loads((ROOT / "assets/data/bestellung.json").read_text(encoding="utf-8"))
 
@@ -66,17 +74,20 @@ BESTELL = json.loads((ROOT / "assets/data/bestellung.json").read_text(encoding="
 # Lieferdienst, Oeffnungszeiten.
 #
 # Das Mittagsangebot laeuft als Streifen auf allen vier Geraeten mit, zweimal je
-# Durchlauf (Platz 1 und 4, also etwa alle 45 s). Ein eigener Angebots-
-# Bildschirm waere der falsche Tausch gewesen: Er haette eine ganze Kategorie
-# vom Fernseher verdraengt, und das Angebot erreicht so ohnehin nur jeden
-# vierten Gast statt alle.
+# Durchlauf (Platz 1 und 4). Ein eigener Angebots-Bildschirm waere der falsche
+# Tausch gewesen: Er haette eine ganze Kategorie vom Fernseher verdraengt, und
+# das Angebot erreicht so ohnehin nur jeden vierten Gast statt alle.
 def baender(angebot_a, angebot_b, akzent=None):
-    return [slides.band_angebot(angebot_a),
-            slides.band_logo(),
-            slides.band_stempel(),
-            slides.band_angebot(angebot_b),
-            slides.band_lieferung(),
-            slides.band_spruch(*akzent) if akzent else slides.band_zeiten()]
+    """Liefert (Streifen, Standzeit) in der Reihenfolge, in der sie laufen."""
+    return [
+        (slides.band_angebot(angebot_a), STAND_ANGEBOT),
+        (slides.band_logo(), STAND_LOGO),
+        (slides.band_stempel(), STAND_STEMPEL),
+        (slides.band_angebot(angebot_b), STAND_ANGEBOT),
+        (slides.band_lieferung(), STAND_LIEFERUNG),
+        (slides.band_spruch(*akzent) if akzent else slides.band_zeiten(),
+         STAND_SCHLUSS),
+    ]
 
 
 def folge_angebote():
@@ -100,9 +111,8 @@ def block(kat_id, titel=None, pbreite=132):
 def folge_karte(titel, unterzeile, bloecke, angebote, akzent=None, notiz=None):
     """Die ganze Kategorie steht fest auf dem Bildschirm; nur der Streifen
     unten wechselt. Kein Gast muss warten, bis sein Gericht wieder erscheint."""
-    return [(slides.volllisteseite(titel, unterzeile, bloecke, band, notiz),
-             STANDZEIT)
-            for band in baender(angebote[0], angebote[1], akzent)]
+    return [(slides.volllisteseite(titel, unterzeile, bloecke, band, notiz), dauer)
+            for band, dauer in baender(angebote[0], angebote[1], akzent)]
 
 
 # Welches Angebot auf welchem Bildschirm: erst das thematisch passende, spaeter
@@ -162,6 +172,74 @@ def pfade_einsetzen(html_text):
     return html_text
 
 
+def anpassen(pg, i=0):
+    """Schrift so weit verkleinern, bis Karte und Angebotsstreifen passen.
+
+    Bewusst eine eigene Funktion und nicht in rendern() vergraben: Das
+    Pruefskript (tools/video/pruefen.py) misst die Seiten nach genau diesem
+    Schritt. Waere die Logik dort noch einmal hingeschrieben, wuerde der Test
+    seine eigene Kopie pruefen statt das, was spaeter im Video landet.
+    """
+    # Vollstaendige Karten automatisch so weit verkleinern, bis sie auf
+    # den Bildschirm passen. Ohne das wuerde bei langen Beschreibungen
+    # unten etwas abgeschnitten, ohne dass es jemand merkt.
+    passt = pg.evaluate("""() => {
+        const voll = document.getElementById('voll');
+        if (!voll) return null;
+        const wurzel = document.querySelector('.inhalt');
+        const passtBei = s => {
+            wurzel.style.setProperty('--s', s.toFixed(3));
+            return voll.scrollHeight <= voll.clientHeight + 1
+                && document.body.scrollHeight <= window.innerHeight + 1;
+        };
+        // Groesste Schrift suchen, die noch passt. Nach oben gedeckelt,
+        // damit kurze Kategorien wie Nudeln nicht ins Alberne wachsen.
+        let unten = 0.40, oben = 1.60;
+        if (!passtBei(unten)) return unten;
+        for (let i = 0; i < 22; i++) {
+            const mitte = (unten + oben) / 2;
+            if (passtBei(mitte)) unten = mitte; else oben = mitte;
+        }
+        passtBei(unten);
+        return unten;
+    }""")
+    if passt is not None:
+        print(f"    Seite {i}: Schriftgroesse {passt:.0%}")
+
+    # Der Angebotsstreifen darf nicht abgeschnitten werden. Er darf
+    # zweizeilig umbrechen - die Familien-Pizza mit vier Preisen und
+    # dem Hinweis "inkl. Salat oder Getraenk" passt in eine Zeile nicht,
+    # und der Hinweis ist das halbe Angebot. Gemessen wird deshalb die
+    # Hoehe; passt es auch dann nicht, wird die Schrift verkleinert.
+    bandmass = pg.evaluate("""() => {
+        const box = document.querySelector('.ainhalt[data-anpassen]');
+        if (!box) return null;
+        const band = box.parentElement;
+        const passtBei = s => {
+            box.style.setProperty('--bs', s.toFixed(3));
+            return box.scrollHeight <= band.clientHeight + 0.5
+                && box.scrollWidth <= band.clientWidth + 0.5;
+        };
+        if (passtBei(1)) return 1;
+        let unten = 0.55, oben = 1.0;
+        if (!passtBei(unten)) return unten;
+        for (let i = 0; i < 20; i++) {
+            const mitte = (unten + oben) / 2;
+            if (passtBei(mitte)) unten = mitte; else oben = mitte;
+        }
+        passtBei(unten);
+        return unten;
+    }""")
+    if bandmass is not None and bandmass < 1:
+        print(f"    Seite {i}: Angebotsstreifen {bandmass:.0%}")
+    if bandmass is not None and bandmass <= 0.55:
+        raise SystemExit(
+            f"Angebotsstreifen passt auf Seite {i} selbst bei 55 % nicht "
+            "in den Streifen - Angebotsgruppe kuerzen.")
+
+    return passt, bandmass
+
+
 def rendern(seiten, ordner):
     """Jede Seite als HTML-Datei ablegen und aufrufen. Bewusst nicht über
     set_content: Chromium laedt aus einer so gesetzten Seite keine lokalen
@@ -177,62 +255,7 @@ def rendern(seiten, ordner):
             htm.write_text(pfade_einsetzen(html_text), encoding="utf-8")
             pg.goto(htm.as_uri(), wait_until="load")
             pg.evaluate("() => document.fonts.ready")
-            # Vollständige Karten automatisch so weit verkleinern, bis sie auf
-            # den Bildschirm passen. Ohne das wuerde bei langen Beschreibungen
-            # unten etwas abgeschnitten, ohne dass es jemand merkt.
-            passt = pg.evaluate("""() => {
-                const voll = document.getElementById('voll');
-                if (!voll) return null;
-                const wurzel = document.querySelector('.inhalt');
-                const passtBei = s => {
-                    wurzel.style.setProperty('--s', s.toFixed(3));
-                    return voll.scrollHeight <= voll.clientHeight + 1
-                        && document.body.scrollHeight <= window.innerHeight + 1;
-                };
-                // Groesste Schrift suchen, die noch passt. Nach oben gedeckelt,
-                // damit kurze Kategorien wie Nudeln nicht ins Alberne wachsen.
-                let unten = 0.40, oben = 1.60;
-                if (!passtBei(unten)) return unten;
-                for (let i = 0; i < 22; i++) {
-                    const mitte = (unten + oben) / 2;
-                    if (passtBei(mitte)) unten = mitte; else oben = mitte;
-                }
-                passtBei(unten);
-                return unten;
-            }""")
-            if passt is not None:
-                print(f"    Seite {i}: Schriftgroesse {passt:.0%}")
-
-            # Der Angebotsstreifen darf nicht abgeschnitten werden. Er darf
-            # zweizeilig umbrechen - die Familien-Pizza mit vier Preisen und
-            # dem Hinweis "inkl. Salat oder Getraenk" passt in eine Zeile nicht,
-            # und der Hinweis ist das halbe Angebot. Gemessen wird deshalb die
-            # Hoehe; passt es auch dann nicht, wird die Schrift verkleinert.
-            bandmass = pg.evaluate("""() => {
-                const box = document.querySelector('.ainhalt[data-anpassen]');
-                if (!box) return null;
-                const band = box.parentElement;
-                const passtBei = s => {
-                    box.style.setProperty('--bs', s.toFixed(3));
-                    return box.scrollHeight <= band.clientHeight + 0.5
-                        && box.scrollWidth <= band.clientWidth + 0.5;
-                };
-                if (passtBei(1)) return 1;
-                let unten = 0.55, oben = 1.0;
-                if (!passtBei(unten)) return unten;
-                for (let i = 0; i < 20; i++) {
-                    const mitte = (unten + oben) / 2;
-                    if (passtBei(mitte)) unten = mitte; else oben = mitte;
-                }
-                passtBei(unten);
-                return unten;
-            }""")
-            if bandmass is not None and bandmass < 1:
-                print(f"    Seite {i}: Angebotsstreifen {bandmass:.0%}")
-            if bandmass is not None and bandmass <= 0.55:
-                raise SystemExit(
-                    f"Angebotsstreifen passt auf Seite {i} selbst bei 55 % nicht "
-                    "in den Streifen - Angebotsgruppe kuerzen.")
+            anpassen(pg, i)
             fehlend = pg.evaluate(
                 "() => [...document.images].filter(i => !i.complete || !i.naturalWidth)"
                 ".map(i => i.src)")

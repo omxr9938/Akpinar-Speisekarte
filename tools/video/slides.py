@@ -225,9 +225,14 @@ VOLLSTIL = """
             border:1px solid rgba(226,179,95,.30); border-radius:14px;
             background:rgba(226,179,95,.06);
             font-size:calc(26px * var(--s)); color:var(--text2); }
-  .vnotiz .nt { font-family:"Playfair Display",serif; font-style:italic;
-                font-weight:800; font-size:calc(31px * var(--s));
-                color:var(--gold); }
+  /* Dieselbe goldene Pille wie die Marke "Mittagsangebot" im Streifen
+     unten: Als blosser goldener Text ging der Menue-Aufpreis zwischen
+     Unterzeile und Preislegende unter und wirkte wie Kleingedrucktes. */
+  .vnotiz .nt { background:linear-gradient(180deg,#e9c987,#c8912f);
+                color:#241a08; border-radius:999px;
+                padding:calc(5px * var(--s)) calc(20px * var(--s));
+                font-family:"Playfair Display",serif; font-style:italic;
+                font-weight:800; font-size:calc(32px * var(--s)); }
   .vnotiz b { color:var(--gold); font-weight:700; }
 """
 
@@ -485,17 +490,34 @@ def band_spruch(bild, text):
             '</div>')
 
 
+_PREISMUSTER = re.compile(r"(\+\s?)?(\d{1,3},\d{2}\s*€)")
+
+
+def _preise_gold(text):
+    """Jeden Eurobetrag im Text gold und fett setzen.
+
+    Nötig, weil manche Angebotskarten ihren Preis nicht im Feld "preis" haben,
+    sondern im Untertitel: „Döner-Boxen klein 7,00 € · groß 8,00 €“. Die
+    standen dadurch als grauer Fließtext neben den goldenen Preisen der anderen
+    Karten — auf dem Fernseher sah es aus, als gehörten sie nicht zum Angebot.
+    "0,33 l" bleibt unberührt, das Muster verlangt das Eurozeichen.
+    """
+    return _PREISMUSTER.sub(
+        lambda m: "<b>" + (m.group(1) or "") + m.group(2) + "</b>", _e(text))
+
+
 def _angebotskarte_kurz(k):
     """Eine Angebotskarte auf eine Zeile eindampfen. Karten ohne eigenen Preis
-    tragen ihn im Untertitel (\u201eD\u00f6ner-Boxen klein 7,00 \u20ac \u00b7 gro\u00df 8,00 \u20ac\u201c) \u2014
-    dann bleibt nur der Text stehen."""
+    tragen ihn im Untertitel („Döner-Boxen klein 7,00 € · groß 8,00 €“) —
+    dann bleibt nur der Text stehen, die Beträge darin werden trotzdem
+    hervorgehoben."""
     titel = (k.get("titel") or "").strip()
     sub = (k.get("sub") or "").strip()
     preis = (k.get("preis") or "").strip()
     label = (titel + " " + sub).strip()
     if not preis:
-        return f'<span class="apos">{_e(label)}</span>'
-    return f'<span class="apos">{_e(label)} <b>{_e(preis)}</b></span>'
+        return f'<span class="apos">{_preise_gold(label)}</span>'
+    return f'<span class="apos">{_preise_gold(label)} <b>{_e(preis)}</b></span>'
 
 
 def band_angebot(gruppen_titel):
