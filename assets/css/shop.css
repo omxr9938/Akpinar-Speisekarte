@@ -77,7 +77,14 @@ body.bf-offen, body.korb-offen { overflow: hidden; }
 
 .bf {
   position: fixed;
-  inset: 0;
+  /* Nicht inset:0, sondern die tatsächlich sichtbare Höhe (siehe sichtHoehe()
+     in bestellung.js): Auf iOS schrumpft inset:0 nicht, wenn die Tastatur
+     aufgeht — der Rollbereich reicht dann hinter die Tastatur, und ein Tipp
+     auf einen Ausfüllvorschlag rollt die Seite bis ans Ende. */
+  top: var(--sichtoben, 0px);
+  left: 0;
+  right: 0;
+  height: var(--sichthoehe, 100%);
   z-index: 200;
   display: flex;
   align-items: flex-end;
@@ -252,7 +259,14 @@ body.bf-offen, body.korb-offen { overflow: hidden; }
 
 .korb {
   position: fixed;
-  inset: 0;
+  /* Nicht inset:0, sondern die tatsächlich sichtbare Höhe (siehe sichtHoehe()
+     in bestellung.js): Auf iOS schrumpft inset:0 nicht, wenn die Tastatur
+     aufgeht — der Rollbereich reicht dann hinter die Tastatur, und ein Tipp
+     auf einen Ausfüllvorschlag rollt die Seite bis ans Ende. */
+  top: var(--sichtoben, 0px);
+  left: 0;
+  right: 0;
+  height: var(--sichthoehe, 100%);
   z-index: 180;
   display: flex;
   justify-content: flex-end;

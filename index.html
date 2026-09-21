@@ -25,7 +25,7 @@
 
 <link rel="preload" href="assets/fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/playfair-display-latin-800-italic.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/shop.css?v=e5d8a093">
+<link rel="stylesheet" href="assets/css/shop.css?v=477dbbdf">
 <link rel="stylesheet" href="assets/css/styles.css?v=4c4d128a">
 </head>
 
@@ -143,7 +143,7 @@
       <a href="agb.html">AGB</a>
     </nav>
     <small>Alle Preise in Euro inkl. MwSt. Änderungen und Irrtümer vorbehalten.</small>
-    <small class="site-footer__stand" id="seiten-stand">Stand: 21.09.2026 18:26 UTC</small>
+    <small class="site-footer__stand" id="seiten-stand">Stand: 21.09.2026 18:34 UTC</small>
   </div>
 </footer>
 
@@ -174,6 +174,12 @@
       <div class="kasse" id="kasse">
         <div class="kasse__tabs" id="kasse-weg"></div>
 
+        <!-- Bewusst ein echtes <form>: Ohne Formular ordnet die automatische
+             Ausfüllhilfe auf dem iPhone die Felder nur nach Vermutung zu und
+             schlägt dann etwa eine E-Mail-Adresse fürs Namensfeld vor. Mit
+             Formular und den autocomplete-Angaben weiß sie, was zusammengehört.
+             Abgeschickt wird es nie — die Bestellung geht über den Knopf. -->
+        <form id="kasse-form" novalidate autocomplete="on">
         <div class="nur-lieferung">
           <div class="kasse__feld">
             <label for="f-ort">Lieferort</label>
@@ -195,11 +201,11 @@
 
         <div class="kasse__feld">
           <label for="f-name">Ihr Name</label>
-          <input id="f-name" type="text" autocomplete="name">
+          <input id="f-name" type="text" autocomplete="name" enterkeyhint="next">
         </div>
         <div class="kasse__feld">
           <label for="f-tel">Telefonnummer für Rückfragen</label>
-          <input id="f-tel" type="tel" autocomplete="tel">
+          <input id="f-tel" type="tel" autocomplete="tel" enterkeyhint="done">
         </div>
         <p class="bf__titel" id="zeit-titel">Wann?</p>
         <div class="kasse__zeit" id="kasse-zeit"></div>
@@ -209,6 +215,7 @@
           <label for="f-notiz">Anmerkung</label>
           <textarea id="f-notiz" placeholder="z. B. Klingel, Etage, zweiter Stock"></textarea>
         </div>
+        </form>
 
         <p class="kasse__min" id="kasse-min"></p>
         <div id="kasse-vorschlaege"></div>
@@ -243,8 +250,8 @@
   </div>
 </aside>
 
-<script src="assets/js/app.js?v=be185523"></script>
-<script src="assets/js/bestellung.js?v=a9d20a06"></script>
-<script src="assets/js/kasse.js?v=986d820e"></script>
+<script src="assets/js/app.js?v=4c2944a7"></script>
+<script src="assets/js/bestellung.js?v=d51c88ab"></script>
+<script src="assets/js/kasse.js?v=735fa0ff"></script>
 </body>
 </html>

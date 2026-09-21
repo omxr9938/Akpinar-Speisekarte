@@ -403,6 +403,13 @@
       $('#kasse-danach').hidden = false;
     });
 
+    // Das Formular dient nur der Ausfüllhilfe. Abgeschickt wird nie: Die
+    // Bestellung geht über den Knopf nach WhatsApp. Ohne diese Bremse würde
+    // die Eingabetaste im Adressfeld die Seite neu laden und den Warenkorb
+    // scheinbar verschwinden lassen.
+    var form = $('#kasse-form');
+    if (form) form.addEventListener('submit', function (e) { e.preventDefault(); });
+
     $('#kasse-leeren').addEventListener('click', function () {
       if (confirm('Warenkorb wirklich leeren?')) A.korbLeeren();
     });

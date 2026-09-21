@@ -42,6 +42,24 @@
     return n;
   }
 
+  /** Die Overlays auf die tatsächlich sichtbare Höhe setzen.
+
+      Ein fest positioniertes Fenster mit inset:0 behält auf iOS seine Höhe,
+      wenn die Tastatur aufgeht: Der sichtbare Bereich schrumpft, die Box
+      nicht. Der Rollbereich reicht dadurch hinter die Tastatur. Tippt man
+      dann auf einen Ausfüllvorschlag, rollt Safari das Feld in den sichtbaren
+      Bereich — und schießt dabei bis ans Ende der Seite.
+
+      visualViewport meldet, was wirklich zu sehen ist, samt Versatz nach oben,
+      wenn die Tastatur die Seite hochschiebt. Ohne die Schnittstelle bleibt es
+      beim alten Verhalten (CSS-Rückfallwert 100 %). */
+  function sichtHoehe() {
+    var vv = window.visualViewport;
+    var w = document.documentElement.style;
+    w.setProperty('--sichthoehe', (vv ? vv.height : window.innerHeight) + 'px');
+    w.setProperty('--sichtoben', (vv ? vv.offsetTop : 0) + 'px');
+  }
+
   /** Verweise auf andere Gerichte, die keine Zutat sind. */
   var VERWEIS = /^(D[öo]ner\s+Classic|Nr\.\s*\d+|Inhalt\s+wie|wie\s+Nr)/i;
 
@@ -708,6 +726,14 @@
     kasseAktualisieren();
   }
 
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', sichtHoehe);
+    window.visualViewport.addEventListener('scroll', sichtHoehe);
+  }
+  window.addEventListener('resize', sichtHoehe);
+  window.addEventListener('orientationchange', sichtHoehe);
+  sichtHoehe();
+
   window.AKPINAR = window.AKPINAR || {};
   window.AKPINAR.korbZeichnen = korbZeichnen;
   // Die Kasse braucht das für ihre Vorschlagsknöpfe: Ein Gericht mit
@@ -754,7 +780,7 @@
 
   document.addEventListener('karte-fertig', function () {
     daten = window.AKPINAR.daten;
-    fetch('assets/data/bestellung.json?v=bc93be9c')
+    fetch('assets/data/bestellung.json?v=b52f3e04')
       .then(function (r) { return r.json(); })
       .then(function (k) {
         konfig = k;

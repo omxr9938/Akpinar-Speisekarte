@@ -207,8 +207,17 @@ with sync_playwright() as p:
     # Die Basiszutaten des Standard-Doeners duerfen nur dort auftauchen, wo die
     # Beschreibung auf ein anderes Gericht verweist und die Fuellung deshalb
     # nicht selbst nennt.
+    # Die Box hat gar nichts zum Abwaehlen: Die Karte nennt nur die Beilage,
+    # und die ist eine Auswahl, keine Zutat. Eine Sosse stand hier zeitweise
+    # zusaetzlich drin - vom Laden wieder gestrichen, weil man sie dann
+    # gleichzeitig waehlen und abwaehlen konnte.
     w = wegliste("Döner-Box", "tuerkisch")
-    pruefe(w == ["Soße"], f"Döner-Box: nur Soße abwählbar  (ist: {w})")
+    pruefe(w == [], f"Döner-Box: nichts zum Abwählen  (ist: {w})")
+    w = wegliste("Chip Cheese Bolognese", "tuerkisch")
+    pruefe("Soße" not in w, f"Chip Cheese Bolognese ohne Soße  (ist: {w})")
+    w = wegliste("Gyros-Pizza", "pizza")
+    pruefe("Blaukraut" in w and "Kraut" not in w,
+           f"Gyros-Pizza sagt Blaukraut  (ist: {w})")
     w = wegliste("Döner-Teller", "tuerkisch")
     pruefe(w == ["Fleisch", "Soße"], f"Döner-Teller: Fleisch und Soße  (ist: {w})")
     w = wegliste("Pide Weichkäse", "tuerkisch")
