@@ -287,7 +287,16 @@
             b.classList.add('ist-an');
             extrasNeu();
             if (zutatenKonf.menue_bei_groesse) {
-              getraenkeZeigen(g.label === zutatenKonf.menue_bei_groesse);
+              if (g.label === zutatenKonf.menue_bei_groesse) {
+                // Menü-Spalte gewählt: gleich fragen, welches Getränk dazu
+                // gehört. Wird abgebrochen, bleibt die Spalte trotzdem stehen
+                // — der Preis stimmt ja, nur die Angabe fehlt dann noch.
+                getraenkWaehlen(function (name) {
+                  if (name) stand.getraenk = name;
+                });
+              } else {
+                stand.getraenk = null;
+              }
             }
             preisAktualisieren();
           }
@@ -396,63 +405,83 @@
     }
     extrasNeu();
 
-    // --- Getränkeauswahl, von beiden Menü-Arten genutzt
-    //     Döner/Dürüm: erscheint, wenn der Menü-Schalter an ist.
-    //     Burger: erscheint, wenn die Preisspalte "Menü" gewählt ist — dort
-    //     steht das Menü bereits in der Karte und braucht keinen Schalter.
-    var getraenkBox = el('div', { class: 'bf__getraenke', hidden: true });
-
-    function getraenkeBauen() {
+    // --- Getränk zum Menü
+    //
+    // Bewusst ein eigenes, kleines Fenster statt eines Blocks, der unten im
+    // Bestellfenster aufklappt. Der Block lag rund 630 Pixel tief, also unter
+    // dem Bildrand jedes Telefons, und wurde nur durch Scrollen sichtbar.
+    // Dreimal gemeldet, zweimal "repariert" — erst mit weicher Animation, dann
+    // mit direktem Rollen. Beides hängt davon ab, dass das Rollen im festen
+    // Overlay greift. Ein eigenes Fenster in der Bildmitte hängt von gar
+    // nichts ab: Es ist da, wo der Gast ohnehin hinsieht.
+    //
+    // Ein Tipp genügt: Getränk antippen wählt es aus und schließt das Fenster.
+    function getraenkWaehlen(fertig) {
       var liste = konfig.menue_getraenke || [];
-      if (!liste.length) return;
-      getraenkBox.appendChild(el('p', { class: 'bf__titel', text: 'Getränk zum Menü — bitte wählen' }));
-      var gListe = el('div', { class: 'bf__chips' });
-      liste.forEach(function (name) {
-        var b = el('button', { class: 'bf__chip', type: 'button' },
-          [document.createTextNode(name)]);
-        b.addEventListener('click', function () {
-          stand.getraenk = stand.getraenk === name ? null : name;
-          Array.prototype.forEach.call(gListe.children, function (c) {
-            c.classList.remove('ist-an');
-          });
-          if (stand.getraenk) b.classList.add('ist-an');
-          gListe.classList.remove('ist-fehlend');
-        });
-        gListe.appendChild(b);
-      });
-      getraenkBox.appendChild(gListe);
-    }
+      if (!liste.length) { fertig(null); return; }
 
-    function getraenkeZeigen(zeigen) {
-      getraenkBox.hidden = !zeigen;
-      if (!zeigen) {
-        stand.getraenk = null;
-        Array.prototype.forEach.call(getraenkBox.querySelectorAll('.bf__chip'),
-          function (c) { c.classList.remove('ist-an'); });
-        return;
+      var gewaehlt = null;
+      function zu() {
+        document.removeEventListener('keydown', beiTaste2);
+        fenster2.remove();
+        fertig(gewaehlt);
       }
-      // Die Auswahl klappt weit unten auf, auf einem Handy rund 630 Pixel tief
-      // — also unter dem Bildrand. Sie muss ins Bild geholt werden, sonst sieht
-      // der Gast überhaupt nicht, dass es sie gibt.
-      //
-      // Das lief früher über scrollIntoView mit weicher Animation. Das ist
-      // genau die Zeile, wegen der dieser Fehler zweimal gemeldet wurde: Läuft
-      // die Animation nicht — iOS Safari verschluckt sie in einem festen
-      // Overlay, und bei "Bewegung reduzieren" ist sie ganz aus — bleibt die
-      // Auswahl unsichtbar, ohne dass irgendetwas kaputt aussieht.
-      //
-      // Jetzt direkt und ohne Animation: scrollTop am Kartenelement setzen.
-      // Das wirkt sofort und überall, unabhängig von Animationen.
-      rollen(getraenkBox);
+      function beiTaste2(e) { if (e.key === 'Escape') zu(); }
+
+      var chips = el('div', { class: 'bf__chips bf__chips--gross' });
+      liste.forEach(function (name) {
+        var b = el('button', {
+          class: 'bf__chip' + (stand.getraenk === name ? ' ist-an' : ''),
+          type: 'button'
+        }, [document.createTextNode(name)]);
+        b.addEventListener('click', function () { gewaehlt = name; zu(); });
+        chips.appendChild(b);
+      });
+
+      var fenster2 = el('div', {
+        class: 'bf bf--klein', role: 'dialog', 'aria-modal': 'true',
+        'aria-label': 'Getränk zum Menü'
+      }, [
+        el('div', { class: 'bf__karte' }, [
+          el('div', { class: 'bf__kopf' }, [
+            el('h2', { class: 'bf__name', text: 'Getränk zum Menü' }),
+            el('button', { class: 'bf__zu', type: 'button',
+                           'aria-label': 'Schließen', onclick: zu }, ['×'])
+          ]),
+          el('div', { class: 'bf__body' }, [
+            el('p', { class: 'bf__klein',
+                      text: 'Im Menüpreis enthalten — bitte wählen.' }),
+            chips
+          ])
+        ])
+      ]);
+      fenster2.addEventListener('click', function (e) {
+        if (e.target === fenster2) zu();
+        e.stopPropagation();
+      });
+      document.addEventListener('keydown', beiTaste2);
+      document.body.appendChild(fenster2);
+      var erster = chips.querySelector('.bf__chip');
+      if (erster && erster.focus) erster.focus();
     }
 
     // --- Als Menü (Döner und Dürüm: Aufpreis-Schalter)
     var menueKonf = zutatenKonf.menue;
-    var menueText = (gericht.name || '') + ' ' + (gericht.beschreibung || '');
+    var menueKnopf = null;
+
+    function menueBeschriften() {
+      if (!menueKnopf) return;
+      var z = $('.bf__menuebesch', menueKnopf);
+      if (!z) return;
+      z.textContent = stand.getraenk
+        ? menueKonf.beschreibung + ' — ' + stand.getraenk
+        : menueKonf.beschreibung;
+    }
+
     if (menueKonf && new RegExp(menueKonf.gilt_fuer, 'i').test(gericht.name)) {
       menuePreis = zuZahl(menueKonf.preis) || 0;
 
-      var menueKnopf = el('button', { class: 'bf__menue', type: 'button' }, [
+      menueKnopf = el('button', { class: 'bf__menue', type: 'button' }, [
         el('span', { class: 'bf__menuehaken', 'aria-hidden': 'true' }, ['✓']),
         el('span', {}, [
           el('span', { class: 'bf__menuename', text: menueKonf.name }),
@@ -462,21 +491,36 @@
       ]);
 
       menueKnopf.addEventListener('click', function () {
-        stand.menue = !stand.menue;
-        menueKnopf.classList.toggle('ist-an', stand.menue);
-        getraenkeZeigen(stand.menue);
-        preisAktualisieren();
+        if (stand.menue) {
+          // Zweiter Tipp: Menü wieder aus.
+          stand.menue = false;
+          stand.getraenk = null;
+          menueKnopf.classList.remove('ist-an');
+          menueBeschriften();
+          preisAktualisieren();
+          return;
+        }
+        getraenkWaehlen(function (name) {
+          // Ohne Getränk kein Menü: Das Getränk ist im Preis enthalten, ein
+          // Menü ohne Angabe müsste der Laden nachfragen.
+          if (!name) return;
+          stand.menue = true;
+          stand.getraenk = name;
+          menueKnopf.classList.add('ist-an');
+          menueBeschriften();
+          preisAktualisieren();
+        });
       });
 
-      getraenkeBauen();
       inhalt.appendChild(menueKnopf);
-      inhalt.appendChild(getraenkBox);
+
     } else if (zutatenKonf.menue_bei_groesse) {
       // Burger: Das Menü steckt in der Preisspalte, der Preis stimmt also
-      // schon. Es fehlt nur die Angabe, welches Getränk dazugehört.
-      getraenkeBauen();
-      inhalt.appendChild(getraenkBox);
-      getraenkeZeigen(stand.groesse.label === zutatenKonf.menue_bei_groesse);
+      // schon. Es fehlt nur die Angabe, welches Getränk dazugehört. Die Frage
+      // kommt, sobald die Menü-Spalte gewählt wird — siehe groesseGewaehlt().
+      if (stand.groesse.label === zutatenKonf.menue_bei_groesse) {
+        getraenkWaehlen(function (name) { stand.getraenk = name || null; });
+      }
     }
 
     // --- Notiz
@@ -534,12 +578,13 @@
               return;
             }
             // Menü ohne Getränk: Das Getränk ist im Preis enthalten, wer es
-            // nicht angibt, verschenkt es. Früher stand dann "Getränk nach
-            // Wahl" im Warenkorb und der Laden musste nachfragen.
-            if (!getraenkBox.hidden && !stand.getraenk) {
-              var gr = getraenkBox.querySelector('.bf__chips');
-              if (gr) gr.classList.add('ist-fehlend');
-              rollen(getraenkBox);
+            // nicht angibt, verschenkt es. Beim Döner kann das gar nicht mehr
+            // passieren — dort gibt es kein Menü ohne Getränk. Beim Burger
+            // steckt das Menü in der Preisspalte, da wird hier nachgefragt.
+            var brauchtGetraenk = zutatenKonf.menue_bei_groesse
+              && stand.groesse.label === zutatenKonf.menue_bei_groesse;
+            if (brauchtGetraenk && !stand.getraenk) {
+              getraenkWaehlen(function (name) { if (name) stand.getraenk = name; });
               return;
             }
             stand.notiz = notiz.value.trim();
@@ -563,7 +608,12 @@
       fenster.remove();
       document.body.classList.remove('bf-offen');
     }
-    function beiTaste(e) { if (e.key === 'Escape') schliessen(); }
+    function beiTaste(e) {
+      // Nicht schließen, solange die Getränkewahl darüber offen ist: Sonst
+      // nimmt ein Escape beide Fenster mit und der Gast steht wieder in der
+      // Karte, obwohl er nur die Getränkewahl abbrechen wollte.
+      if (e.key === 'Escape' && !document.querySelector('.bf--klein')) schliessen();
+    }
 
     fenster.addEventListener('click', function (e) { if (e.target === fenster) schliessen(); });
     document.addEventListener('keydown', beiTaste);

@@ -275,9 +275,10 @@
       hinweis.textContent = 'Wir haben gerade geschlossen — bitte wählen Sie '
         + 'eine Zeit. Frühestens eine Stunde im Voraus.';
     } else {
-      hinweis.hidden = false;
-      hinweis.textContent = 'Feste Zeiten frühestens eine Stunde im Voraus. '
-        + 'Ohne Auswahl bereiten wir Ihre Bestellung sofort zu.';
+      // Im Normalfall kein Hinweis: Die Auswahl erklärt sich selbst, und der
+      // Kasten dazwischen hat nur Platz gekostet.
+      hinweis.hidden = true;
+      hinweis.textContent = '';
     }
   }
 

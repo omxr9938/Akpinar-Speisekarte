@@ -495,6 +495,32 @@ body.ist-abholung .nur-lieferung { display: none; }
   .bf__chips.ist-fehlend { animation: none; }
 }
 
+/* Kleines Fenster für die Getränkewahl zum Menü.
+
+   Mittig und nur so hoch wie nötig: Es darf unter keinen Umständen scrollen
+   müssen, denn genau daran ist die frühere Lösung dreimal gescheitert. Neun
+   Getränke in großen Feldern passen auch auf ein kleines Telefon. */
+.bf--klein { align-items: center; padding: 20px; }
+.bf--klein .bf__karte {
+  width: min(420px, 100%);
+  max-height: none;
+  overflow: visible;
+  border-radius: 20px;
+}
+.bf__chips--gross { gap: 10px; }
+.bf__chips--gross .bf__chip {
+  flex: 1 1 calc(50% - 5px);
+  padding: 15px 12px;
+  font-size: .98rem;
+  text-align: center;
+}
+.bf__chips--gross .bf__chip.ist-an {
+  border-color: var(--gold-2);
+  background: linear-gradient(180deg, #e9c987, #c8912f);
+  color: #241a08;
+  font-weight: 700;
+}
+
 /* Wunschzeit: genau eine Antwort, deshalb dieselbe gefüllte Optik wie die
    Auswahlfragen im Bestellfenster. Die Zeiten stehen in einem Raster statt
    nebeneinander — bei zehn Uhrzeiten ist eine Reihe zu unruhig. */

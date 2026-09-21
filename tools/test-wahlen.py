@@ -232,20 +232,25 @@ with sync_playwright() as p:
         kurz = [z for z in w if z.endswith(".")]
         pruefe(not kurz, f"{name}: ausgeschrieben  (abgekürzt: {kurz})")
 
-    # --- 11. Menue-Getraenke: erreichbar OHNE Animation
-    # Der Fehler wurde zweimal gemeldet und beide Male von einem Test
-    # uebersehen, der scrollIntoView mitlaufen liess. Die Getraenkebox klappt
-    # rund 630 Pixel tief auf, also unter dem Bildrand jedes Telefons; sichtbar
-    # wurde sie nur durch eine weiche Animation. Laeuft die nicht - iOS Safari
-    # im festen Overlay, oder "Bewegung reduzieren" - sieht der Gast nichts.
-    # Deshalb wird hier scrollIntoView stillgelegt.
-    print("\nMenü-Getränke ohne Animation")
-    for tag, bw, bh in (("Telefon klein", 375, 629), ("Telefon sehr klein", 320, 568)):
+    # --- 11. Menue-Getraenke: erreichbar OHNE jedes Scrollen
+    # Dreimal gemeldet, zweimal falsch repariert. Die Getraenke standen als
+    # Block rund 630 Pixel tief im Bestellfenster, also unter dem Bildrand
+    # jedes Telefons, und wurden nur durch Scrollen sichtbar. Jetzt ist es ein
+    # eigenes, mittiges Fenster. Der Test legt deshalb JEDE Art von Scrollen
+    # stumm - scrollIntoView, window.scrollTo und scrollTop: Was danach noch
+    # antippbar ist, haengt von keinem Rollen mehr ab.
+    print("\nMenü-Getränke ohne jedes Scrollen")
+    for tag, bw, bh in (("Telefon klein", 375, 629), ("Telefon sehr klein", 320, 480)):
         ctx = b.new_context(viewport={"width": bw, "height": bh})
         s2 = ctx.new_page()
+        s2.add_init_script("""
+            Element.prototype.scrollIntoView = function(){};
+            window.scrollTo = function(){};
+            Object.defineProperty(Element.prototype, 'scrollTop',
+              { get(){ return 0; }, set(v){}, configurable: true });
+        """)
         s2.goto("http://127.0.0.1:8931/index.html", wait_until="networkidle")
         s2.wait_for_timeout(700)
-        s2.evaluate("() => { Element.prototype.scrollIntoView = function(){}; }")
         gerichte = s2.evaluate("""() => [...document.querySelectorAll('.item')]
             .map(e => [e._kategorie.id, e._gericht.name])""")
         schlecht = []
@@ -275,9 +280,9 @@ with sync_playwright() as p:
                     .find(o => /men/i.test(o.textContent)).click()""")
             s2.wait_for_timeout(250)
             r = s2.evaluate("""() => {
-                const box = document.querySelector('.bf__getraenke');
-                if (!box || box.hidden) return {ok: 0, gesamt: 0};
-                const chips = [...box.querySelectorAll('.bf__chip')];
+                const f = document.querySelector('.bf--klein');
+                if (!f) return {ok: 0, gesamt: 0, fehler: 'Getränkefenster fehlt'};
+                const chips = [...f.querySelectorAll('.bf__chip')];
                 const ok = chips.filter(c => {
                   const r = c.getBoundingClientRect();
                   const o = document.elementFromPoint(r.left+r.width/2, r.top+r.height/2);
@@ -286,29 +291,44 @@ with sync_playwright() as p:
                 return {ok: ok.length, gesamt: chips.length};
             }""")
             if r["gesamt"] == 0 or r["ok"] != r["gesamt"]:
-                schlecht.append((gn, f"{r['ok']}/{r['gesamt']}"))
+                schlecht.append((gn, r.get("fehler") or f"{r['ok']}/{r['gesamt']}"))
+            s2.keyboard.press("Escape")
+            s2.wait_for_timeout(80)
         pruefe(geprueft >= 15,
                f"{tag}: {geprueft} Gerichte mit Menü gefunden (erwartet 15)")
         pruefe(not schlecht, f"{tag}: alle Getränke antippbar  (Problem: {schlecht[:4]})")
         s2.close(); ctx.close()
 
-    # --- 12. Menue ohne Getraenk kommt nicht in den Korb
+    # --- 12. Menue kommt nie ohne Getraenk in den Korb
     print("\nMenü ohne Getränk")
     oeffnen("Döner im Fladenbrot (Classic)", "tuerkisch")
+    pg.evaluate("() => localStorage.removeItem('akpinar-korb')")
     pg.evaluate("() => document.querySelector('.bf__menue').click()")
     pg.wait_for_timeout(300)
-    pg.evaluate("() => localStorage.removeItem('akpinar-korb')")
-    pg.click(".bf__rein"); pg.wait_for_timeout(400)
-    pruefe(pg.locator(".bf").count() == 1, "ohne Getränk: Fenster bleibt offen")
-    pruefe(pg.locator(".bf__getraenke .bf__chips.ist-fehlend").count() == 1,
-           "fehlende Getränkewahl wird markiert")
-    pg.evaluate("""() => document.querySelector('.bf__getraenke .bf__chip').click()""")
-    pg.wait_for_timeout(200)
+    pruefe(pg.locator(".bf--klein").count() == 1,
+           "Menü-Schalter öffnet sofort die Getränkewahl")
+    # Abbrechen -> Menue bleibt aus
+    pg.keyboard.press("Escape"); pg.wait_for_timeout(250)
+    aus = pg.evaluate("""() => !document.querySelector('.bf__menue').classList.contains('ist-an')""")
+    pruefe(aus, "Abbruch: Menü bleibt aus")
+    # Getraenk waehlen -> Menue an, Getraenk am Knopf sichtbar
+    pg.evaluate("() => document.querySelector('.bf__menue').click()")
+    pg.wait_for_timeout(250)
+    pg.evaluate("""() => [...document.querySelectorAll('.bf--klein .bf__chip')]
+        .find(c => c.textContent.trim() === 'Cola Zero').click()""")
+    pg.wait_for_timeout(300)
+    r = pg.evaluate("""() => ({
+        zu: !document.querySelector('.bf--klein'),
+        an: document.querySelector('.bf__menue').classList.contains('ist-an'),
+        text: document.querySelector('.bf__menuebesch').textContent
+    })""")
+    pruefe(r["zu"], "ein Tipp genügt: Fenster schließt sofort")
+    pruefe(r["an"], "Menü ist an")
+    pruefe("Cola Zero" in r["text"], f"Getränk steht am Menü-Knopf ({r['text']!r})")
     pg.click(".bf__rein"); pg.wait_for_timeout(500)
-    pruefe(pg.locator(".bf").count() == 0, "mit Getränk: Fenster schließt")
     korb = pg.evaluate("() => JSON.parse(localStorage.getItem('akpinar-korb')||'[]')")
-    pruefe(korb and korb[-1].get("menue") == "Cola",
-           f"Getränk steht im Warenkorb  (ist: {korb[-1].get('menue') if korb else None})")
+    pruefe(korb and korb[-1].get("menue") == "Cola Zero",
+           f"Getränk steht im Warenkorb ({korb[-1].get('menue') if korb else None})")
 
     # --- 13. Deutsche Sonderzeichen im Bestelltext
     # toUpperCase() machte im Deutschen aus "Sosse" ein "SOSSE" und aus der
