@@ -201,15 +201,14 @@ wechselt nur der schmale Streifen unten. So ist auf jedem Gerät zu jeder
 Sekunde die ganze Karte lesbar — und es spielt keine Rolle, ob die vier
 Fernseher synchron laufen.
 
-Das Mittagsangebot hat bewusst keinen eigenen Bildschirm: Der hätte eine
-ganze Kategorie verdrängt und das Angebot trotzdem nur jedem vierten Gast
-gezeigt. Stattdessen läuft es als Streifen auf allen vier Geräten mit,
-zweimal je Durchlauf, jeweils beginnend mit der Angebotsgruppe, die zum
-Bildschirm passt.
+Das Mittagsangebot hat mit Bildschirm 1 einen eigenen Fernseher. Auf den
+Kartenbildschirmen läuft es deshalb nicht noch einmal als Streifen mit — die
+beiden langen Streifenplätze gehören dort der Stempelkarte und dem
+Lieferdienst, also den Angaben, die einen Gast wiederbringen.
 
-Die Streifen stehen unterschiedlich lang: Das Angebot hat Vorrang (2 × 20 s),
-das Logo bekommt 5 s. Alle vier Videos sind exakt 72 Sekunden lang, damit sie
-bei gleichzeitigem Start zusammenbleiben.
+Die Streifen stehen unterschiedlich lang (2 × 20 s für die wichtigen Angaben,
+5 s fürs Logo). Alle vier Videos sind exakt 72 Sekunden lang, damit sie bei
+gleichzeitigem Start zusammenbleiben.
 
 Vor dem Bauen prüft `python3 tools/video/pruefen.py` alle 24 Seiten: ob alles
 in 1920×1080 passt, ob Text abgeschnitten wird, ob die Karte beim

@@ -36,12 +36,29 @@ DIE KARTE VERSCHWINDET NIE
 Die vollständige Liste steht durchgehend auf dem Bildschirm. Es wechselt
 nur der schmale Streifen ganz unten, im Wechsel:
 
-   Mittagsangebot (passend zum Bildschirm)   20 s
+   Stempelkarte                              20 s
    Logo mit "Qualität · Frisch · Lecker"      5 s
-   Stempelkarte                              12 s
-   Mittagsangebot (zweites Angebot)          20 s
-   Liefergebiete                             10 s
-   Öffnungszeiten bzw. Gerichtebild          10 s
+   Öffnungszeiten (Sommer und Winter)        12 s
+   Liefergebiete                             20 s
+   Gerichtebild mit Spruch                   10 s
+   Logo                                      10 s
+
+Die beiden langen Plätze gehören den Angaben, die einen Gast wiederbringen:
+Stempelkarte und Lieferdienst. Das Logo bekommt 5 Sekunden, mehr braucht
+der Name nicht.
+
+Auf Bildschirm 1 stehen an den beiden langen Plätzen stattdessen zwei
+Gerichtebilder — oben die Preise, unten der Appetit.
+
+DAS MITTAGSANGEBOT LÄUFT NUR AUF BILDSCHIRM 1
+---------------------------------------------
+Dort steht es groß und vollständig. Auf den drei Kartenbildschirmen läuft
+unten KEIN Angebotsstreifen mehr mit: Dieselbe Information zweimal zu
+zeigen nimmt nur den Dingen Platz weg, die sonst nirgends stehen.
+
+Auf Bildschirm 2 stehen zusätzlich die Aufpreise für Extra-Zutaten, auf
+Bildschirm 3 der Menü-Aufpreis von 5,00 € für kleine Pommes und ein
+0,33-l-Getränk (bei Nr. 30–32 und 34–40).
 
 Telefonnummer und Adresse stehen bewusst NICHT darauf: Die Bildschirme
 hängen im Laden. Wer davorsteht, ruft nicht an und sucht nicht die Adresse.

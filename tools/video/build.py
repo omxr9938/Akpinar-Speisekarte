@@ -70,23 +70,26 @@ BESTELL = json.loads((ROOT / "assets/data/bestellung.json").read_text(encoding="
 
 # Telefonnummer und Adresse stehen bewusst nicht mehr drauf: Die Bildschirme
 # haengen im Laden. Wer davorsteht, ruft nicht an und sucht nicht die Adresse.
-# Stattdessen Dinge, die er noch nicht weiss - Angebot, Stempelkarte,
-# Lieferdienst, Oeffnungszeiten.
+# Stattdessen Dinge, die er noch nicht weiss - Stempelkarte, Lieferdienst,
+# Oeffnungszeiten.
 #
-# Das Mittagsangebot laeuft als Streifen auf allen vier Geraeten mit, zweimal je
-# Durchlauf (Platz 1 und 4). Ein eigener Angebots-Bildschirm waere der falsche
-# Tausch gewesen: Er haette eine ganze Kategorie vom Fernseher verdraengt, und
-# das Angebot erreicht so ohnehin nur jeden vierten Gast statt alle.
-def baender(angebot_a, angebot_b, akzent=None):
+# Auf den Kartenbildschirmen laeuft kein Angebotsstreifen mehr: Das
+# Mittagsangebot hat mit Bildschirm 1 einen eigenen Fernseher, gross und
+# vollstaendig. Es unten noch einmal durchlaufen zu lassen, waere dieselbe
+# Information zweimal - und nimmt den Dingen Platz weg, die sonst nirgends
+# stehen.
+#
+# Die langen Plaetze bekommen deshalb die beiden Angaben, die einen Gast
+# wirklich wiederbringen: die Stempelkarte und der Lieferdienst.
+def baender(akzent):
     """Liefert (Streifen, Standzeit) in der Reihenfolge, in der sie laufen."""
     return [
-        (slides.band_angebot(angebot_a), STAND_ANGEBOT),
+        (slides.band_stempel(), STAND_ANGEBOT),
         (slides.band_logo(), STAND_LOGO),
-        (slides.band_stempel(), STAND_STEMPEL),
-        (slides.band_angebot(angebot_b), STAND_ANGEBOT),
-        (slides.band_lieferung(), STAND_LIEFERUNG),
-        (slides.band_spruch(*akzent) if akzent else slides.band_zeiten(),
-         STAND_SCHLUSS),
+        (slides.band_zeiten(), STAND_STEMPEL),
+        (slides.band_lieferung(), STAND_ANGEBOT),
+        (slides.band_spruch(*akzent), STAND_LIEFERUNG),
+        (slides.band_logo(), STAND_SCHLUSS),
     ]
 
 
@@ -119,19 +122,12 @@ def block(kat_id, titel=None, pbreite=132):
     return (titel, k["items"], k.get("spaltenKurz"), pbreite, hinweis)
 
 
-def folge_karte(titel, unterzeile, bloecke, angebote, akzent=None, notiz=None):
+def folge_karte(titel, unterzeile, bloecke, akzent, notiz=None):
     """Die ganze Kategorie steht fest auf dem Bildschirm; nur der Streifen
     unten wechselt. Kein Gast muss warten, bis sein Gericht wieder erscheint."""
     return [(slides.volllisteseite(titel, unterzeile, bloecke, band, notiz), dauer)
-            for band, dauer in baender(angebote[0], angebote[1], akzent)]
+            for band, dauer in baender(akzent)]
 
-
-# Welches Angebot auf welchem Bildschirm: erst das thematisch passende, spaeter
-# im Durchlauf die Familien-Pizza - das Zugpferd, an dem auch die Stempelkarte
-# haengt. Bildschirm 4 zeigt sie zuerst, weil dort Salat und Getraenk stehen,
-# die in dem Angebot enthalten sind.
-FAMILIE = "Familien-Pizza"
-TUERK = "Döner | Dürüm | Boxen"
 
 VIDEOS = {
     "angebote": ("1-Angebote", lambda: folge_angebote([
@@ -142,15 +138,13 @@ VIDEOS = {
     "pizza": ("2-Pizza", lambda: folge_karte(
         "Pizza", kategorie("pizza")["hinweis"],
         [block("pizza", pbreite=124)],
-        ("Pizzen", FAMILIE),
-        akzent=("@@IMG@@/pizza-hero.jpg", "Frisch aus dem Ofen"),
+        ("@@IMG@@/pizza-hero.jpg", "Frisch aus dem Ofen"),
         notiz=slides.notiz_extras(kategorie("pizza")["extras"]))),
 
     "tuerkisch": ("3-Tuerkisch", lambda: folge_karte(
         "Türkische Gerichte", "Döner · Dürüm · Boxen · Pide · Teller",
         [block("tuerkisch", pbreite=150)],
-        (TUERK, FAMILIE),
-        akzent=("@@IMG@@/doener-hero.jpg", "Täglich frisch gedreht"),
+        ("@@IMG@@/doener-hero.jpg", "Täglich frisch gedreht"),
         notiz=slides.notiz_menue(BESTELL["zutaten"]["tuerkisch"],
                                  kategorie("tuerkisch")["items"]))),
 
@@ -159,7 +153,7 @@ VIDEOS = {
         [block("nudeln", "Nudeln", 150),
          block("verschiedenes", "Verschiedenes", 150),
          block("burger", "Burger", 132)],
-        ("Nudeln", FAMILIE))),
+        ("@@IMG@@/burger.jpg", "Frisch gemacht"))),
 
     # Salate und Getraenke haben in dieser Aufteilung keinen eigenen
     # Bildschirm. Baubar bleiben sie:  python3 tools/video/build.py salate
@@ -167,7 +161,7 @@ VIDEOS = {
         "Salate · Getränke", None,
         [block("salate", "Salate", 132),
          block("getraenke", "Getränke", 118)],
-        (FAMILIE, TUERK))),
+        ("@@IMG@@/getraenke.jpg", "Frisch und kalt"))),
 }
 
 

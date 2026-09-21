@@ -117,8 +117,9 @@ KOPF = """<!doctype html>
 
   /* Angebotskarten */
   .gruppe { flex:1; display:flex; flex-direction:column; justify-content:center; }
-  .gruppe > h2 { font-family:"Playfair Display",serif; font-weight:800;
-      font-size:72px; color:var(--gold); text-align:center; letter-spacing:.02em; }
+  .gruppe > h2 { font-family:"Playfair Display",serif; font-style:italic;
+      font-weight:800; font-size:72px; color:var(--gold); text-align:center;
+      letter-spacing:.02em; }
   .gruppe > .hinweis { text-align:center; font-size:32px; color:var(--text2);
       margin-top:14px; }
   .karten { display:flex; flex-wrap:wrap; justify-content:center; gap:30px;
@@ -192,7 +193,7 @@ VOLLSTIL = """
       font-size:calc(32px * var(--s)); font-weight:700; color:var(--gold);
       font-variant-numeric:tabular-nums; white-space:nowrap; }
   .vz sup { font-size:.46em; color:var(--gold3); margin-left:.18em; }
-  .groessen { text-align:center; font-size:27px; color:var(--gold3);
+  .groessen { text-align:center; font-size:24px; color:var(--gold3);
               letter-spacing:.08em; margin:-8px 0 16px; }
 
   /* Zwischenueberschrift, wenn mehrere Kategorien auf einem Bildschirm stehen.
@@ -227,21 +228,26 @@ VOLLSTIL = """
                font-size:calc(30px * var(--s)); margin-left:calc(5px * var(--s)); }
 
   /* Hinweisleiste unter der Kopfzeile — Menue-Aufpreis, Extra-Zutaten. */
+  /* Die Hinweisleiste schrumpft nur begrenzt mit. Sie steht einmal oben und
+     kostet kaum Platz; ohne Untergrenze landete die Marke auf dem
+     Pizzabildschirm bei 17 Pixeln - halb so gross wie dieselbe goldene Marke
+     im Streifen unten, und auf einem Fernseher nicht mehr zu lesen. */
   .vnotiz { display:flex; flex-wrap:wrap; align-items:baseline;
-            justify-content:center; gap:calc(8px * var(--s)) calc(26px * var(--s));
-            margin:calc(2px * var(--s)) 0 calc(12px * var(--s));
-            padding:calc(10px * var(--s)) calc(20px * var(--s));
+            justify-content:center;
+            gap:max(6px, calc(8px * var(--s))) max(18px, calc(26px * var(--s)));
+            margin:2px 0 12px;
+            padding:max(8px, calc(10px * var(--s))) max(16px, calc(20px * var(--s)));
             border:1px solid rgba(226,179,95,.30); border-radius:14px;
             background:rgba(226,179,95,.06);
-            font-size:calc(26px * var(--s)); color:var(--text2); }
+            font-size:max(24px, calc(26px * var(--s))); color:var(--text2); }
   /* Dieselbe goldene Pille wie die Marke "Mittagsangebot" im Streifen
      unten: Als blosser goldener Text ging der Menue-Aufpreis zwischen
      Unterzeile und Preislegende unter und wirkte wie Kleingedrucktes. */
   .vnotiz .nt { background:linear-gradient(180deg,#e9c987,#c8912f);
                 color:#241a08; border-radius:999px;
-                padding:calc(5px * var(--s)) calc(20px * var(--s));
+                padding:max(4px, calc(5px * var(--s))) max(16px, calc(20px * var(--s)));
                 font-family:"Playfair Display",serif; font-style:italic;
-                font-weight:800; font-size:calc(32px * var(--s)); }
+                font-weight:800; font-size:max(30px, calc(32px * var(--s))); }
   .vnotiz b { color:var(--gold); font-weight:700; }
 """
 
@@ -407,12 +413,12 @@ BANNERSTIL = """
                  white-space:nowrap; }
   .band .vor { font-size:32px; color:var(--text2); margin-right:22px; }
   .band img.blogo { height:78px; mix-blend-mode:screen; }
-  .band .claim { font-size:28px; letter-spacing:.16em; color:var(--gold2);
+  .band .claim { font-size:24px; letter-spacing:.16em; color:var(--gold2);
                  margin-left:28px; }
   .band img.bfoto { height:84px; width:84px; object-fit:cover; border-radius:50%;
                     border:3px solid var(--gold2); }
   .band .spruchtext { font-family:"Playfair Display",serif; font-style:italic;
-                      font-weight:800; font-size:46px; color:var(--gold);
+                      font-weight:800; font-size:44px; color:var(--gold);
                       margin-left:26px; }
   .band .btitel { font-family:"Playfair Display",serif; font-style:italic;
                   font-weight:800; font-size:44px; color:var(--gold);
@@ -563,13 +569,19 @@ ANGEBOTSTIL = """
   /* min-height:0 wie bei der Gerichteliste: Ohne die Angabe draengt sich der
      Inhalt auf seine eigene Hoehe auf und schiebt den Streifen darunter unter
      den Bildrand - die Unterlaengen werden dann abgeschnitten. */
+  /* align-items:start - sonst zieht jede Gruppe ihren Rahmen auf die Hoehe
+     der hoechsten in derselben Zeile. Unter der Familien-Pizza stand dadurch
+     ein handbreiter leerer Kasten, weil die Doener-Gruppe daneben sechs
+     Karten hat. */
   .alle { flex:1; min-height:0; display:grid; grid-template-columns:1fr 1fr;
-          gap:calc(22px * var(--s)) 46px; align-content:start; }
+          gap:calc(22px * var(--s)) 46px;
+          align-content:start; align-items:start; }
   .agruppe { border:1px solid rgba(226,179,95,.22); border-radius:18px;
              padding:calc(18px * var(--s)) calc(22px * var(--s));
              background:rgba(255,255,255,.02); }
-  .agruppe h3 { font-family:"Playfair Display",serif; font-weight:800;
-      font-size:calc(44px * var(--s)); color:var(--gold); text-align:center; }
+  .agruppe h3 { font-family:"Playfair Display",serif; font-style:italic;
+      font-weight:800; font-size:calc(44px * var(--s)); color:var(--gold);
+      text-align:center; }
   .ghinweis { text-align:center; font-size:calc(24px * var(--s));
               color:var(--text2); margin-top:calc(6px * var(--s)); }
   .akarten { display:flex; flex-wrap:wrap; justify-content:center;

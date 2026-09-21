@@ -129,10 +129,14 @@
             "preis": "8,00 €"
           },
           {
-            "titel": "Döner-Boxen",
-            "sub": "klein 7,00 € · groß 8,00 €",
-            "preis": "",
-            "breit": true
+            "titel": "Döner-Box",
+            "sub": "klein",
+            "preis": "7,00 €"
+          },
+          {
+            "titel": "Döner-Box",
+            "sub": "groß",
+            "preis": "8,00 €"
           },
           {
             "titel": "Döner-Teller",
