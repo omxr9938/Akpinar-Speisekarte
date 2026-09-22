@@ -29,10 +29,16 @@ import build                                             # noqa: E402
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 TMP = ROOT / ".video-pruefung"
 
-# Breite eines 55-Zoll-Fernsehers in Millimetern. 1920 Bildpunkte verteilen
-# sich darauf, ein Punkt ist also rund 0,63 mm hoch. Faustregel fuer bequemes
-# Lesen: Schrifthoehe mindestens Betrachtungsabstand geteilt durch 200.
-TV_BREITE_MM = 1210.0
+# Bilddiagonale der Fernseher im Laden, in Zoll. Daraus ergibt sich, wie gross
+# die Schrift auf dem Geraet tatsaechlich wird: 1920 Bildpunkte verteilen sich
+# auf die Bildbreite, bei 40 Zoll sind das 88,6 cm. Steht ein anderes Geraet im
+# Laden, hier aendern - die Lesbarkeitswerte unten haengen daran.
+#
+# Ueber Umgebungsvariable uebersteuerbar:  TV_ZOLL=55 python3 tools/video/pruefen.py
+import math
+import os
+TV_ZOLL = float(os.environ.get("TV_ZOLL", "40"))
+TV_BREITE_MM = TV_ZOLL * 25.4 * math.cos(math.atan(9 / 16))
 MM_JE_PUNKT = TV_BREITE_MM / slides.BREITE
 
 fehler = []
@@ -337,6 +343,8 @@ def main():
            f"Videolaengen weichen ab: {laengen}")
 
     print("\n" + "=" * 62)
+    print(f"Gerechnet fuer {TV_ZOLL:.0f} Zoll "
+          f"({TV_BREITE_MM/10:.1f} cm Bildbreite)")
     print(f"Gerichte in der Karte:         {anzahl_karte}")
     print(f"Gerichte auf den Bildschirmen: {sum(gesehen.values())}  "
           + "  ".join(f"{k.split('-')[0]}:{v}" for k, v in gesehen.items()))
