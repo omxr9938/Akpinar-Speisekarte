@@ -351,13 +351,33 @@ def main():
     pruefe(len(set(laengen.values())) == 1,
            f"Videolaengen weichen ab: {laengen}")
 
+    # Der Kreis muss geschlossen sein: Das letzte Bild der Datei ist dasselbe
+    # wie das erste. Sonst springt das Bild sichtbar, wenn der Fernseher die
+    # Datei neu aufzieht - und die Wiederholungen in der Datei haetten Naehte.
+    for schluessel in SCHIRME:
+        name, macher = build.VIDEOS[schluessel]
+        roh = macher()
+        kreis = build.kreis_schliessen(roh)
+        pruefe(kreis[0][0] == kreis[-1][0],
+               f"{name}: letzte Seite ist nicht die erste")
+        laenge_kreis = (sum(d for _, d in kreis)
+                        - build.UEBERBLENDUNG * (len(kreis) - 1))
+        pruefe(abs(laenge_kreis - laengen[name]) < 0.001,
+               f"{name}: Schlussblende verschiebt die Laenge "
+               f"({laenge_kreis:.3f} statt {laengen[name]:.3f} s)")
+        pruefe(min(d for _, d in kreis) > build.UEBERBLENDUNG,
+               f"{name}: eine Standzeit ist kuerzer als die Ueberblendung")
+
     print("\n" + "=" * 62)
     print(f"Gerechnet fuer {TV_ZOLL:.0f} Zoll "
           f"({TV_BREITE_MM/10:.1f} cm Bildbreite)")
     print(f"Gerichte in der Karte:         {anzahl_karte}")
     print(f"Gerichte auf den Bildschirmen: {sum(gesehen.values())}  "
           + "  ".join(f"{k.split('-')[0]}:{v}" for k, v in gesehen.items()))
-    print(f"Videolaenge je Bildschirm: {list(laengen.values())[0]:.1f} s")
+    kreis = list(laengen.values())[0]
+    print(f"Durchlauf je Bildschirm:   {kreis:.1f} s, "
+          f"{build.WIEDERHOLUNGEN} x in der Datei "
+          f"= {kreis * build.WIEDERHOLUNGEN / 60:.0f} min Spielzeit")
     for w in warnungen:
         print(f"HINWEIS  {w}")
     if fehler:

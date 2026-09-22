@@ -13,7 +13,9 @@ seinen Inhalt:
                                                     10 x Verschiedenes,
                                                     5 Burger
 
-Alle vier Videos sind exakt 72 Sekunden lang.
+Alle vier Videos sind exakt gleich lang: 12 Minuten. Darin laeuft
+derselbe Durchlauf von 72 Sekunden zehnmal hintereinander - siehe
+"Schwarz beim Neustart" weiter unten.
 
 SALATE UND GETRÄNKE STEHEN AUF KEINEM BILDSCHIRM
 ------------------------------------------------
@@ -25,8 +27,10 @@ Falls Sie die doch zeigen wollen, gibt es zwei Wege:
    python3 tools/video/build.py salate
 
 erzeugt ein fünftes Video (Zusatz-Salate-Getraenke.mp4), ebenfalls
-72 Sekunden lang. Das können Sie auf einen der Sticks legen und die
-beiden Dateien im Fernseher abwechselnd laufen lassen.
+12 Minuten lang. Das können Sie auf einen der Sticks legen und die
+beiden Dateien im Fernseher abwechselnd laufen lassen — dann allerdings
+mit "Wiederholen: Alle", und beim Wechsel blendet das Gerät kurz schwarz
+(siehe "Schwarz beim Neustart").
 
 Oder Sie sagen Bescheid, dann verteilen wir die Kategorien anders, so
 dass alle 100 Gerichte auf die vier Bildschirme passen.
@@ -75,8 +79,39 @@ SO GEHT'S
    Liegt nur eine Datei drauf, starten die meisten Geräte sie von selbst.
 3. Stick in den Fernseher, Quelle auf USB stellen, Datei starten.
 4. Im Menü des Fernsehers "Wiederholen" bzw. "Repeat" auf
-   "Eine Datei" / "Alle" stellen — sonst läuft das Video nur einmal.
+   "Eine Datei" stellen — sonst läuft das Video nur einmal. Nicht "Alle":
+   Bei "Alle" blendet das Gerät zwischen den Dateien schwarz.
 5. Sticks beschriften, damit später klar ist, welcher wohin gehört.
+
+SCHWARZ BEIM NEUSTART
+---------------------
+Wenn ein Video durchgelaufen ist und der Fernseher es neu startet, blinkt
+der Bildschirm einen Sekundenbruchteil schwarz. Das ist der Fernseher, nicht
+die Datei: Er baut beim Neuaufziehen seinen Bilddecoder neu auf. Abschalten
+laesst sich das im Video nicht. Zwei Dinge nehmen es dem Gast aus dem Blick:
+
+1. Jede Datei endet auf genau dem Bild, auf dem sie anfaengt. Nach dem
+   Schwarz steht dasselbe da wie davor - es sieht nach einem Wimpernschlag
+   aus, nicht nach einem Sprung.
+
+2. In jeder Datei laeuft der Durchlauf zehnmal hintereinander. Aus "alle
+   72 Sekunden" wird "alle 12 Minuten". Innerhalb der Datei gibt es kein
+   Schwarz, die zehn Durchlaeufe gehen nahtlos ineinander ueber.
+
+Wie oft das passiert, steht in tools/video/build.py:
+
+    WIEDERHOLUNGEN = 10
+
+Hoeher heisst seltener schwarz und groessere Datei - rund 8 MB je
+Durchlauf. Mehr als 30 (rund 36 Minuten, 240 MB) sollte man nicht nehmen:
+Manche Fernseher brauchen dann lange, bis sie die Datei aufgeblaettert
+haben.
+
+Falls es trotzdem stoert, hilft oft eine Einstellung im Fernseher selbst -
+je nach Geraet "Nahtlose Wiedergabe", "Seamless", "Schnellstart" oder
+"Instant On". Und: Legen Sie NUR die eine Datei auf den Stick. Steht
+"Wiederholen: Alle" und liegen mehrere Dateien darauf, blendet das Geraet
+bei jedem Wechsel schwarz.
 
 ZUM GLEICHZEITIGEN LAUFEN
 -------------------------
@@ -85,7 +120,9 @@ Geräte gleichzeitig, laufen sie über Stunden weitgehend im Gleichtakt.
 
 Ganz exakt bleibt es trotzdem nicht: Jeder Fernseher braucht beim
 Wiederholen einen Sekundenbruchteil, und diese Bruchteile summieren sich.
-Das macht hier aber nichts aus, weil die Karte ohnehin immer steht.
+Weil jede Datei zwoelf Minuten laeuft statt 72 Sekunden, passiert das
+jetzt zehnmal seltener - die Geraete bleiben deutlich laenger beisammen.
+Das macht hier aber ohnehin nichts aus, weil die Karte immer steht.
 
 TECHNISCHE DATEN
 ----------------

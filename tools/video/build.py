@@ -35,6 +35,21 @@ D = slides.DATEN
 
 FPS = 30
 UEBERBLENDUNG = 1.0          # Sekunden
+
+# Der Fernseher blendet kurz schwarz, wenn er die Datei am Ende neu aufzieht -
+# er baut dabei seinen Decoder neu auf, das laesst sich in der Datei nicht
+# abschalten. Zwei Dinge nehmen es dem Gast trotzdem aus dem Blick:
+#
+# SCHLUSSBLENDE haengt die erste Seite hinten noch einmal an. Die Datei endet
+# damit auf genau dem Bild, auf dem sie anfaengt - nach dem Schwarz steht
+# dasselbe da wie davor, der Sprung faellt nicht mehr auf.
+#
+# WIEDERHOLUNGEN legt den fertigen Durchlauf mehrfach in dieselbe Datei. Aus
+# "alle 72 Sekunden" wird "alle zwoelf Minuten" - und weil der Kreis
+# geschlossen ist, sind die Uebergaenge innerhalb der Datei nahtlos.
+SCHLUSSBLENDE = 1.2          # Sekunden Rueckblende auf die erste Seite
+WIEDERHOLUNGEN = 10          # Durchlaeufe je Datei
+
 import imageio_ffmpeg
 FFMPEG = imageio_ffmpeg.get_ffmpeg_exe()
 
@@ -267,6 +282,46 @@ def anpassen(pg, i=0):
     return passt, bandmass
 
 
+def kreis_schliessen(seiten):
+    """Erste Seite hinten noch einmal anhaengen, damit das letzte Bild der
+    Datei exakt das erste ist.
+
+    Die Gesamtlaenge bleibt unveraendert: Was die Schlussblende hinten
+    braucht, wird der ersten Seite vorne abgezogen. Die vier Bildschirme
+    bleiben dadurch gleich lang.
+    """
+    seiten = list(seiten)
+    erste_html, erste_dauer = seiten[0]
+    zugabe = SCHLUSSBLENDE - UEBERBLENDUNG
+    seiten[0] = (erste_html, erste_dauer - zugabe)
+    seiten.append((erste_html, SCHLUSSBLENDE))
+    return seiten
+
+
+def verlaengern(ziel, mal):
+    """Den fertigen Durchlauf mehrfach hintereinander in dieselbe Datei legen.
+
+    Ohne Neucodierung: Die Bilder werden unveraendert kopiert, nur die
+    Zeitstempel laufen weiter. Kein Qualitaetsverlust, und der Decoder im
+    Fernseher laeuft durch, statt an jeder Naht neu anzulaufen.
+    """
+    if mal <= 1:
+        return
+    liste = ziel.with_suffix(".liste.txt")
+    liste.write_text("".join(f"file '{ziel.name}'\n" for _ in range(mal)),
+                     encoding="utf-8")
+    lang = ziel.with_suffix(".lang.mp4")
+    r = subprocess.run(
+        [FFMPEG, "-y", "-f", "concat", "-safe", "0", "-i", str(liste),
+         "-c", "copy", "-movflags", "+faststart", str(lang)],
+        capture_output=True, text=True, cwd=str(ziel.parent))
+    if r.returncode != 0:
+        print(r.stderr[-2500:])
+        raise SystemExit(f"Verlaengern fehlgeschlagen fuer {ziel.name}")
+    liste.unlink()
+    lang.replace(ziel)
+
+
 def rendern(seiten, ordner):
     """Jede Seite als HTML-Datei ablegen und aufrufen. Bewusst nicht über
     set_content: Chromium laedt aus einer so gesetzten Seite keine lokalen
@@ -277,7 +332,13 @@ def rendern(seiten, ordner):
     with sync_playwright() as p:
         b = p.chromium.launch(executable_path="/opt/pw-browsers/chromium-1194/chrome-linux/chrome")
         pg = b.new_page(viewport={"width": slides.BREITE, "height": slides.HOEHE})
+        fertig = {}
         for i, (html_text, _dauer) in enumerate(seiten):
+            # Die angehaengte Schlussseite ist dieselbe wie die erste - einmal
+            # rendern genuegt, und beide Bilder sind dann garantiert identisch.
+            if html_text in fertig:
+                bilder.append(fertig[html_text])
+                continue
             htm = ordner / f"seite-{i:02d}.html"
             htm.write_text(pfade_einsetzen(html_text), encoding="utf-8")
             pg.goto(htm.as_uri(), wait_until="load")
@@ -291,6 +352,7 @@ def rendern(seiten, ordner):
             pg.wait_for_timeout(150)
             datei = ordner / f"seite-{i:02d}.png"
             pg.screenshot(path=str(datei))
+            fertig[html_text] = datei
             bilder.append(datei)
         b.close()
     return bilder
@@ -340,7 +402,7 @@ def montieren(bilder, dauern, ziel):
 
 def bauen(schluessel):
     name, macher = VIDEOS[schluessel]
-    seiten = macher()
+    seiten = kreis_schliessen(macher())
     print(f"\n{name}: {len(seiten)} Seiten")
     ordner = TMP / schluessel
     if ordner.exists():
@@ -349,8 +411,10 @@ def bauen(schluessel):
     AUS.mkdir(exist_ok=True)
     ziel = AUS / f"{name}.mp4"
     laenge = montieren(bilder, [d for _, d in seiten], ziel)
+    verlaengern(ziel, WIEDERHOLUNGEN)
     mb = ziel.stat().st_size / 1024 / 1024
-    print(f"  -> {ziel.name}  {laenge:.0f} s  {mb:.1f} MB")
+    print(f"  -> {ziel.name}  {laenge:.1f} s x {WIEDERHOLUNGEN} = "
+          f"{laenge * WIEDERHOLUNGEN / 60:.0f} min  {mb:.0f} MB")
     return ziel
 
 
