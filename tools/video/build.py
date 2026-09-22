@@ -31,6 +31,7 @@ import slides                                            # noqa: E402
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 AUS = ROOT / "video"
 STICK = AUS / "stick"          # die langen Dateien fuer die USB-Sticks
+BILDER = ROOT / "bilder"       # dieselben vier Schirme als Bilddatei
 TMP = ROOT / ".video-tmp"
 D = slides.DATEN
 
@@ -292,6 +293,33 @@ def montieren(bild, ziel):
     return DAUER
 
 
+def bilder_ablegen(bild, name):
+    """Denselben Bildschirm zusaetzlich als Bilddatei ablegen.
+
+    Viele Fernseher zeigen vom USB-Stick auch Fotos an. Da sich auf diesen
+    Schirmen ohnehin nichts bewegt, ist das der einfachere Weg - eine Datei
+    von ein paar hundert Kilobyte statt eines Videos, und das kurze Schwarz
+    beim Neustart entfaellt ganz.
+
+    PNG ist verlustfrei, die Schrift steht damit exakt so da wie gerendert.
+    Aeltere Geraete koennen aber nur JPEG, deshalb liegt beides bereit.
+    JPEG bewusst ohne Farbunterabtastung (4:4:4): Bei 4:2:0 franst goldene
+    Schrift auf dunklem Grund sichtbar aus, und hier ist fast alles Schrift.
+    """
+    BILDER.mkdir(parents=True, exist_ok=True)
+    png = BILDER / f"{name}.png"
+    shutil.copy2(bild, png)
+    jpg = BILDER / f"{name}.jpg"
+    r = subprocess.run(
+        [FFMPEG, "-y", "-i", str(bild),
+         "-q:v", "2", "-huffman", "optimal", "-pix_fmt", "yuvj444p", str(jpg)],
+        capture_output=True, text=True)
+    if r.returncode != 0:
+        print(r.stderr[-2000:])
+        raise SystemExit(f"JPEG fehlgeschlagen fuer {name}")
+    return png, jpg
+
+
 def bauen(schluessel):
     name, macher = VIDEOS[schluessel]
     print(f"\n{name}")
@@ -303,10 +331,14 @@ def bauen(schluessel):
     ziel = AUS / f"{name}.mp4"
     laenge = montieren(bild, ziel)
     lang = verlaengern(ziel, WIEDERHOLUNGEN)
-    print(f"  -> {ziel.name}  Durchlauf {laenge:.1f} s  "
-          f"{ziel.stat().st_size / 1024 / 1024:.1f} MB")
-    print(f"     stick/{lang.name}  {laenge * WIEDERHOLUNGEN / 60:.0f} min  "
-          f"{lang.stat().st_size / 1024 / 1024:.1f} MB  <- auf den USB-Stick")
+    png, jpg = bilder_ablegen(bild, name)
+    kb = lambda f: f.stat().st_size / 1024
+    print(f"  -> bilder/{png.name}  {kb(png):.0f} kB   "
+          f"bilder/{jpg.name}  {kb(jpg):.0f} kB   <- auf den USB-Stick")
+    print(f"     video/{ziel.name}  Durchlauf {laenge:.1f} s  "
+          f"{kb(ziel)/1024:.1f} MB")
+    print(f"     video/stick/{lang.name}  {laenge * WIEDERHOLUNGEN / 60:.0f} min  "
+          f"{kb(lang)/1024:.1f} MB")
     return ziel
 
 
@@ -318,4 +350,5 @@ if __name__ == "__main__":
         bauen(w)
     if TMP.exists():
         shutil.rmtree(TMP)
-    print("\nFertig. Auf den USB-Stick kommen die Dateien aus video/stick/.")
+    print("\nFertig. Auf den USB-Stick kommt bilder/ - oder, wenn der "
+          "Fernseher\nkeine Fotos anzeigt, video/stick/.")

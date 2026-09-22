@@ -1,24 +1,39 @@
-AKPINAR DÖNER & PIZZA — Videos für die Fernseher
-================================================
+AKPINAR DÖNER & PIZZA — die vier Bildschirme
+============================================
 
-Vier Dateien, ein Stick pro Fernseher. Jeder Bildschirm behält dauerhaft
-seinen Inhalt:
+Vier Bildschirme, jeder behält dauerhaft seinen Inhalt:
 
-   Bildschirm 1   1-Angebote.mp4                    Mittagsangebot,
-                                                    alle vier Gruppen
-   Bildschirm 2   2-Pizza.mp4                       alle 28 Pizzen
-   Bildschirm 3   3-Tuerkisch.mp4                   alle 26 türkischen
+   Bildschirm 1   1-Angebote                        Mittagsangebot
+   Bildschirm 2   2-Pizza                           alle 28 Pizzen
+   Bildschirm 3   3-Tuerkisch                       alle 26 türkischen
                                                     Gerichte
-   Bildschirm 4   4-Nudeln-Verschiedenes-Burger.mp4 13 Nudelgerichte,
+   Bildschirm 4   4-Nudeln-Verschiedenes-Burger     13 Nudelgerichte,
                                                     10 x Verschiedenes,
                                                     5 Burger
 
-AUF DEN STICK KOMMEN DIE DATEIEN AUS video/stick/ - nicht die aus
-video/ daneben. Die vier Dateien in video/stick/ sind je 12 Minuten lang
-und rund 80 MB gross. Die gleichnamigen Dateien in video/ sind nur der
-72-Sekunden-Durchlauf, aus dem die langen entstehen; sie liegen dort,
-damit das Lager nicht bei jeder Preisaenderung um 300 MB waechst.
-Warum die Dateien so lang sind: siehe "Schwarz beim Neustart".
+Jeder Bildschirm ist ein stehendes Bild — es bewegt sich nichts. Deshalb
+gibt es jeden von ihnen in zwei Formen:
+
+   bilder/       PNG und JPG, je rund 0,5 MB      <- der einfache Weg
+   video/stick/  MP4, 12 Minuten, 31 bis 45 MB    <- wenn der Fernseher
+                                                     keine Fotos anzeigt
+
+NEHMEN SIE ZUERST DIE BILDER. Eine Bilddatei ist kleiner, das kurze
+Schwarz beim Neustart entfällt ganz, und der Fernseher hat nichts zu
+decodieren. PNG zuerst probieren (verlustfrei); zeigt das Gerät es nicht
+an, das gleichnamige JPG nehmen — ältere Geräte können oft nur JPEG.
+
+WENN DIE BILDER NICHT TAUGEN, NEHMEN SIE DAS VIDEO. Manche Fernseher
+schalten in der Fotoanzeige nach einigen Minuten den Bildschirmschoner
+ein, blenden eine Bedienleiste ein oder springen automatisch zum nächsten
+Bild. Bei laufendem Video passiert das in der Regel nicht. Probieren Sie
+die Bilder deshalb erst einen Nachmittag lang aus, bevor Sie die Sticks
+endgültig beschriften.
+
+Die Dateien in video/ daneben sind nur der 72-Sekunden-Durchlauf, aus dem
+die langen in video/stick/ entstehen. Sie liegen dort, damit das Lager
+nicht bei jeder Preisänderung um Hunderte Megabyte wächst — auf den Stick
+gehören sie nicht.
 
 SALATE UND GETRÄNKE STEHEN AUF KEINEM BILDSCHIRM
 ------------------------------------------------
@@ -29,11 +44,9 @@ Falls Sie die doch zeigen wollen, gibt es zwei Wege:
 
    python3 tools/video/build.py salate
 
-erzeugt ein fünftes Video (Zusatz-Salate-Getraenke.mp4), ebenfalls
-12 Minuten lang. Das können Sie auf einen der Sticks legen und die
-beiden Dateien im Fernseher abwechselnd laufen lassen — dann allerdings
-mit "Wiederholen: Alle", und beim Wechsel blendet das Gerät kurz schwarz
-(siehe "Schwarz beim Neustart").
+erzeugt einen fünften Bildschirm (Zusatz-Salate-Getraenke), wieder als
+Bild und als Video. Den können Sie auf einen der Sticks dazulegen und das
+Gerät zwischen beiden wechseln lassen.
 
 Oder Sie sagen Bescheid, dann verteilen wir die Kategorien anders, so
 dass alle 100 Gerichte auf die vier Bildschirme passen.
@@ -75,14 +88,17 @@ SO GEHT'S
 ---------
 1. USB-Stick als FAT32 oder exFAT formatieren.
    Manche Fernseher lesen NTFS nicht.
-2. Eine einzige MP4-Datei AUS video/stick/ auf den Stick kopieren,
-   sonst nichts. Liegt nur eine Datei drauf, starten die meisten Geräte
-   sie von selbst.
-3. Stick in den Fernseher, Quelle auf USB stellen, Datei starten.
-4. Im Menü des Fernsehers "Wiederholen" bzw. "Repeat" auf
-   "Eine Datei" stellen — sonst läuft das Video nur einmal. Nicht "Alle":
-   Bei "Alle" blendet das Gerät zwischen den Dateien schwarz.
+2. EINE einzige Datei auf den Stick kopieren, sonst nichts — die PNG aus
+   bilder/ für diesen Bildschirm. Liegt nur eine Datei drauf, zeigen die
+   meisten Geräte sie von selbst an.
+3. Stick in den Fernseher, Quelle auf USB stellen, Datei öffnen.
+4. Falls das Gerät die PNG nicht anzeigt: das gleichnamige JPG nehmen.
+   Falls es nach einigen Minuten abschaltet, eine Leiste einblendet oder
+   weiterspringt: stattdessen die MP4 aus video/stick/ nehmen und
+   "Wiederholen" bzw. "Repeat" auf "Eine Datei" stellen — nicht auf
+   "Alle", dabei blendet das Gerät zwischen den Dateien schwarz.
 5. Sticks beschriften, damit später klar ist, welcher wohin gehört.
+6. Einen Nachmittag laufen lassen und nachsehen, ob das Bild noch steht.
 
 SCHWARZ BEIM NEUSTART
 ---------------------
