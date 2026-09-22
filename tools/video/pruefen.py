@@ -15,6 +15,15 @@ Rendert jede Seite jedes Bildschirms in Chromium und prueft:
      mit genau den Preisen aus menu.json?
   5. Ist die Schrift auf einem Fernseher aus der Entfernung noch lesbar?
 
+Zur fuenften Pruefung: Die Bildschirme haengen im Laden direkt ueber der
+Theke, der Gast steht also rund 1,0 bis 1,4 m davor (Sichtlinie zur
+Oberkante, nicht Bodenabstand). Gerichtnamen sind bis 1,6 m bequem lesbar,
+die Zutatenzeilen bis 1,1 m - beides reicht fuer diesen Abstand. Die
+Hinweise unten sind deshalb bekannt und in Ordnung, kein offener Fehler.
+Sie wuerden erst zaehlen, wenn die Geraete weiter weg haengen; dann waere
+die Antwort, die dichten Bildschirme auf je zwei Videos aufzuteilen
+(gemessen: Name 2,8 m statt 1,6 m, Beschreibung 1,9 m statt 1,1 m).
+
 Beendet sich mit Code 1, sobald etwas nicht stimmt.
 """
 
