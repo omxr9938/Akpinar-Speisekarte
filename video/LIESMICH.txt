@@ -38,41 +38,38 @@ mit "Wiederholen: Alle", und beim Wechsel blendet das Gerät kurz schwarz
 Oder Sie sagen Bescheid, dann verteilen wir die Kategorien anders, so
 dass alle 100 Gerichte auf die vier Bildschirme passen.
 
-DIE KARTE VERSCHWINDET NIE
---------------------------
-Die vollständige Liste steht durchgehend auf dem Bildschirm. Es wechselt
-nur der schmale Streifen ganz unten, im Wechsel:
+VIER STEHENDE BILDER
+--------------------
+Jeder Bildschirm zeigt EIN Bild, das sich nicht verändert. Kein Logo, keine
+Überschrift, kein wechselnder Streifen unten — die haben zusammen rund 300
+der 1080 Bildzeilen gekostet und dem Gast nichts gesagt, was er nicht schon
+wusste: Er steht im Laden, vor der Theke, unter dem Bildschirm.
 
-   Stempelkarte                              20 s
-   Logo mit "Qualität · Frisch · Lecker"      5 s
-   Öffnungszeiten (Sommer und Winter)        12 s
-   Liefergebiete                             20 s
-   Gerichtebild mit Spruch                   10 s
-   Logo                                      10 s
+Der Platz gehört jetzt der Schrift. Auf 40 Zoll:
 
-Die beiden langen Plätze gehören den Angaben, die einen Gast wiederbringen:
-Stempelkarte und Lieferdienst. Das Logo bekommt 5 Sekunden, mehr braucht
-der Name nicht.
+   Bildschirm        Gerichtname      bequem lesbar bis
+   1 Angebote        "Mittagsangebot" 50 mm
+   2 Pizza           11,5 mm          2,3 m
+   3 Türkisch        13,0 mm          2,6 m
+   4 Nudeln u. a.    11,0 mm          2,2 m
 
-Auf Bildschirm 1 stehen an den beiden langen Plätzen stattdessen zwei
-Gerichtebilder — oben die Preise, unten der Appetit.
+Der Gast steht rund 1,0 bis 1,4 m vor der Theke. Das ist reichlich.
 
-DAS MITTAGSANGEBOT LÄUFT NUR AUF BILDSCHIRM 1
----------------------------------------------
-Dort steht es groß und vollständig. Auf den drei Kartenbildschirmen läuft
-unten KEIN Angebotsstreifen mehr mit: Dieselbe Information zweimal zu
-zeigen nimmt nur den Dingen Platz weg, die sonst nirgends stehen.
+Was auf den Bildschirmen NICHT mehr steht: Stempelkarte, Öffnungszeiten,
+Liefergebiete, die Gerichtebilder und das Logo. Die liefen vorher unten im
+Streifen durch. Wenn Sie eines davon zurückhaben wollen, sagen Sie Bescheid —
+es kostet dann Schriftgröße, und zwar spürbar.
 
-Auf Bildschirm 2 stehen zusätzlich die Aufpreise für Extra-Zutaten, auf
-Bildschirm 3 der Menü-Aufpreis von 5,00 € für kleine Pommes und ein
-0,33-l-Getränk (bei Nr. 30–32 und 34–40).
+Auf Bildschirm 3 steht oben weiterhin die Zeile "Als Menü + 5,00 €". Auf
+Bildschirm 2 und 4 steht unten eine kleine Zeile zu den hochgestellten
+Ziffern; die verlangt § 9 ZZulV, sie ist die kleinste Schrift auf dem Schirm.
+Auf Bildschirm 3 fehlt sie, weil dort kein Gericht gekennzeichnet ist.
 
-Telefonnummer und Adresse stehen bewusst NICHT darauf: Die Bildschirme
-hängen im Laden. Wer davorsteht, ruft nicht an und sucht nicht die Adresse.
-Der Platz gehört Dingen, die der Gast noch nicht weiß.
-
-Deshalb ist es egal, ob die vier Geräte synchron laufen — auf jedem
-Bildschirm ist zu jeder Sekunde die komplette Karte lesbar.
+DIE FAMILIEN-PIZZA STEHT NICHT MEHR IM ANGEBOT
+----------------------------------------------
+Auf Bildschirm 1 ist die Gruppe "Familien-Pizza" entfernt. Auf der Website
+und der gedruckten Karte steht sie unverändert. Soll sie dort auch weg,
+sagen Sie Bescheid.
 
 SO GEHT'S
 ---------
@@ -94,13 +91,14 @@ der Bildschirm einen Sekundenbruchteil schwarz. Das ist der Fernseher, nicht
 die Datei: Er baut beim Neuaufziehen seinen Bilddecoder neu auf. Abschalten
 laesst sich das im Video nicht. Zwei Dinge nehmen es dem Gast aus dem Blick:
 
-1. Jede Datei endet auf genau dem Bild, auf dem sie anfaengt. Nach dem
-   Schwarz steht dasselbe da wie davor - es sieht nach einem Wimpernschlag
-   aus, nicht nach einem Sprung.
+1. Auf dem Bildschirm steht ein stehendes Bild. Vor und nach dem Schwarz
+   steht also GENAU dasselbe - es sieht nach einem Wimpernschlag aus, nicht
+   nach einem Sprung. Seit die Videos nichts mehr durchlaufen lassen, ist
+   das der Hauptgrund, warum es kaum noch auffaellt.
 
 2. In jeder Datei laeuft der Durchlauf zehnmal hintereinander. Aus "alle
    72 Sekunden" wird "alle 12 Minuten". Innerhalb der Datei gibt es kein
-   Schwarz, die zehn Durchlaeufe gehen nahtlos ineinander ueber.
+   Schwarz.
 
 Deshalb gibt es zwei Ordner: video/ enthaelt den Durchlauf (72 s, rund
 8 MB), video/stick/ die lange Datei daraus (12 min, rund 80 MB). Auf den
@@ -110,10 +108,9 @@ Wie oft der Durchlauf wiederholt wird, steht in tools/video/build.py:
 
     WIEDERHOLUNGEN = 10
 
-Hoeher heisst seltener schwarz und groessere Datei - rund 8 MB je
-Durchlauf. Mehr als 30 (rund 36 Minuten, 240 MB) sollte man nicht nehmen:
-Manche Fernseher brauchen dann lange, bis sie die Datei aufgeblaettert
-haben.
+Hoeher heisst seltener schwarz. Ein stehendes Bild kostet kaum Speicher,
+die Dateien sind deshalb klein geblieben - weit unter dem, was ein
+durchlaufendes Video gebraucht haette.
 
 Falls es trotzdem stoert, hilft oft eine Einstellung im Fernseher selbst -
 je nach Geraet "Nahtlose Wiedergabe", "Seamless", "Schnellstart" oder
@@ -123,14 +120,11 @@ bei jedem Wechsel schwarz.
 
 ZUM GLEICHZEITIGEN LAUFEN
 -------------------------
-Die vier Videos sind absichtlich exakt gleich lang. Starten Sie alle vier
-Geräte gleichzeitig, laufen sie über Stunden weitgehend im Gleichtakt.
+Die vier Videos sind exakt gleich lang. Das spielt jetzt allerdings kaum
+noch eine Rolle: Weil auf jedem Bildschirm ein stehendes Bild läuft, ist es
+völlig egal, ob die Geräte auseinanderlaufen.
 
-Ganz exakt bleibt es trotzdem nicht: Jeder Fernseher braucht beim
-Wiederholen einen Sekundenbruchteil, und diese Bruchteile summieren sich.
-Weil jede Datei zwoelf Minuten laeuft statt 72 Sekunden, passiert das
-jetzt zehnmal seltener - die Geraete bleiben deutlich laenger beisammen.
-Das macht hier aber ohnehin nichts aus, weil die Karte immer steht.
+Es ist auf jedem Bildschirm zu jeder Sekunde die komplette Karte lesbar.
 
 TECHNISCHE DATEN
 ----------------

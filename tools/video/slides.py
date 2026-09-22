@@ -59,12 +59,6 @@ KOPF = """<!doctype html>
             width:100%; height:100%; padding:54px 76px; }
 
   /* Kopfzeile */
-  .kopf { display:flex; align-items:center; justify-content:space-between;
-          margin-bottom:18px; }
-  .kopf img { height:66px; mix-blend-mode:screen; }
-  .kopf .kat { font-family:"Playfair Display",serif; font-style:italic;
-               font-weight:800; font-size:54px; color:var(--gold);
-               letter-spacing:.01em; }
 
   /* Gerichte */
   .liste { flex:1; display:flex; flex-direction:column; justify-content:center;
@@ -151,13 +145,8 @@ def _e(s):
     return html.escape(str(s or ""))
 
 
-def seite(inhalt_html: str) -> str:
-    return KOPF + f'<div class="flaeche"></div><div class="inhalt">{inhalt_html}</div>'
 
 
-def kopf(kategorie: str) -> str:
-    return (f'<div class="kopf"><img src="@@LOGO@@" alt="">'
-            f'<span class="kat">{_e(kategorie)}</span></div>')
 
 
 # --------------------------------------------------------------- Seitentypen --
@@ -198,30 +187,36 @@ VOLLSTIL = """
       font-size:calc(32px * var(--s)); font-weight:700; color:var(--gold);
       font-variant-numeric:tabular-nums; white-space:nowrap; }
   .vz sup { font-size:.46em; color:var(--gold3); margin-left:.18em; }
-  /* Auf den Kartenseiten faellt der Seitenkopf kleiner aus als auf den
-     Angebotsseiten: Dort ist er das Hauptmotiv, hier nur die Beschriftung
-     ueber einer dichten Liste. Die gesparten Pixel gehen an die Gerichte. */
-  .inhalt--liste .kopf { margin-bottom:12px; }
-  .inhalt--liste .kopf img { height:54px; }
-  .inhalt--liste .kopf .kat { font-size:46px; }
-  .vunter { text-align:center; font-size:26px; color:var(--text2);
-            margin:-4px 0 10px; }
-  .groessen { text-align:center; font-size:24px; color:var(--gold3);
-              letter-spacing:.08em; margin:-8px 0 16px; }
+  /* Kein Seitenkopf und kein Streifen mehr: Die Bildschirme haengen im
+     Laden, ueber der Theke. Wer davorsteht, weiss, wo er ist - Logo und
+     Ueberschrift haben ihm nichts gesagt, was er nicht schon wusste, und
+     kosteten zusammen mit dem Streifen unten rund 300 der 1080 Zeilen.
+     Die gehoeren den Gerichten. */
+  .groessen { text-align:center; font-size:calc(30px * var(--s));
+              color:var(--gold3); letter-spacing:.08em;
+              margin:0 0 calc(10px * var(--s)); }
+  /* Einzeiliger Fuss. Auf den Gerichten stehen hochgestellte Ziffern; ohne
+     einen Hinweis, wo sie erklaert sind, waeren sie Rauschen - und § 9 ZZulV
+     verlangt die Kenntlichmachung. Eine Zeile, die kleinste auf dem Schirm. */
+  .fuss { text-align:center; font-size:calc(19px * var(--s)); color:var(--text3);
+          margin-top:calc(8px * var(--s)); }
 
   /* Zwischenueberschrift, wenn mehrere Kategorien auf einem Bildschirm stehen.
      break-after verhindert, dass eine Ueberschrift allein am Spaltenende
      haengen bleibt und ihre Gerichte erst in der naechsten Spalte folgen. */
-  .vkat { margin:calc(22px * var(--s)) 0 calc(4px * var(--s));
-          padding-bottom:calc(7px * var(--s));
-          border-bottom:2px solid var(--gold2);
+  .vkat { margin:calc(26px * var(--s)) 0 calc(6px * var(--s));
+          padding-bottom:calc(9px * var(--s));
+          border-bottom:3px solid var(--gold2);
           break-inside:avoid; -webkit-column-break-inside:avoid;
           break-after:avoid-column; }
   .vkat:first-child { margin-top:0; }
   .vkat .vkkopf { display:flex; align-items:baseline;
           justify-content:space-between; gap:20px; }
   .vkat .vkname { font-family:"Playfair Display",serif; font-style:italic;
-          font-weight:800; font-size:calc(36px * var(--s)); color:var(--gold);
+                  /* Auf dem Nudelbildschirm trennen diese drei Ueberschriften
+                     drei Kategorien. Sie muessen aus der Liste herausstechen,
+                     sonst liest sich die Seite als ein einziger Block. */
+          font-weight:800; font-size:calc(58px * var(--s)); color:var(--gold);
           white-space:nowrap; }
   .vkat .vkleg { font-size:calc(21px * var(--s)); color:var(--text3);
           letter-spacing:.07em; white-space:nowrap; }
@@ -302,19 +297,23 @@ def _legende(spalten_kurz):
     return "  \u00b7  ".join(echte) if len(echte) > 1 else ""
 
 
-def volllisteseite(kategorie, unterzeile, bloecke, band=None, notiz=None):
-    """Eine oder mehrere Kategorien vollst\u00e4ndig auf einer Seite, zweispaltig.
+def volllisteseite(bloecke, notiz=None):
+    """Eine oder mehrere Kategorien vollständig auf einer Seite, zweispaltig.
 
-    G\u00e4ste sollen ihr Gericht sofort finden und nicht warten, bis die n\u00e4chste
-    Seite umbl\u00e4ttert. Die Schriftgr\u00f6\u00dfe wird beim Rendern automatisch so weit
-    verkleinert, bis alles auf den Bildschirm passt (--s).
+    Auf der Seite steht nur die Karte: keine Überschrift, kein Logo, kein
+    Streifen. Der Bildschirm hängt über der Theke — wer davorsteht, weiß, in
+    welchem Laden er ist und dass das eine Speisekarte ist. Die Zeilen, die
+    ihm das noch einmal gesagt haben, sind jetzt Schriftgröße.
+
+    Gäste sollen ihr Gericht sofort finden und nicht warten, bis die nächste
+    Seite umblättert. Die Schriftgröße wird beim Rendern automatisch so weit
+    gesucht, dass alles gerade noch auf den Bildschirm passt (--s).
 
     bloecke: Liste von (titel|None, gerichte, spalten_kurz, pbreite, hinweis).
-    Steht nur
-    ein Block ohne Titel drin, sieht die Seite aus wie bisher: Gr\u00f6\u00dfenlegende
-    einmal oben. Bei mehreren Kategorien bekommt jede eine Zwischen\u00fcberschrift
-    mit ihrer eigenen Legende \u2014 Nudeln haben einen Preis, Burger zwei,
-    Getr\u00e4nke drei, das l\u00e4sst sich nicht gemeinsam oben abhandeln.
+    Steht nur ein Block ohne Titel drin, steht die Größenlegende einmal oben.
+    Bei mehreren Kategorien bekommt jede eine Zwischenüberschrift mit ihrer
+    eigenen Legende — Nudeln haben einen Preis, Burger zwei, das lässt sich
+    nicht gemeinsam oben abhandeln.
     """
     einzeln = len(bloecke) == 1 and not bloecke[0][0]
 
@@ -331,27 +330,43 @@ def volllisteseite(kategorie, unterzeile, bloecke, band=None, notiz=None):
                 + '</div>')
         teile += [_vzeile(g, pbreite) for g in gerichte]
 
-    # Gr\u00f6\u00dfenlegende einmal oben statt \u00fcber jeder Spalte \u2014 spart Platz und
-    # bleibt eindeutig, weil die Preise immer in derselben Reihenfolge stehen.
-    # Unterzeile und Preislegende stehen in EINER Zeile. Getrennt waren es
-    # zwei schmale graue Zeilen direkt uebereinander - zusammen rund 60 Pixel,
-    # die auf dem Pizzabildschirm der Liste fehlten. Die ist dort die engste
-    # von allen: 28 Pizzen mit drei Preisspalten.
+    # Die Größenlegende bleibt, auch wenn sonst alles über der Liste weg ist:
+    # Ohne sie stehen auf dem Pizzabildschirm drei Preise nebeneinander und
+    # niemand weiß, welcher zu welchem Durchmesser gehört. Bei einer einzigen
+    # Preisspalte ist sie überflüssig und fällt weg.
     leg = _legende(bloecke[0][2]) if einzeln else ""
-    zeile = [x for x in (unterzeile, f"Preise in Euro: {leg}" if leg else "") if x]
-    unter = (f'<div class="vunter">{" · ".join(_e(x) for x in zeile)}</div>'
-             if zeile else '')
-    groessen = ""
+    groessen = f'<div class="groessen">Preise in Euro: {_e(leg)}</div>' if leg else ""
 
-    return (KOPF + f'<style>{VOLLSTIL}{BANNERSTIL}</style>'
+    return (KOPF + f'<style>{VOLLSTIL}</style>'
             + '<div class="flaeche"></div>'
-            + '<div class="inhalt inhalt--liste" style="--s:1;padding:20px 58px">'
-            + kopf(kategorie) + unter + (notiz or "") + groessen
+            + '<div class="inhalt inhalt--liste" style="--s:1;padding:26px 48px">'
+            + groessen + (notiz or "")
             + f'<div class="voll" id="voll">{"".join(teile)}</div>'
-            + (band if band is not None else band_logo()) + '</div>')
+            + _fuss(bloecke) + '</div>')
 
 
 # ------------------------------------------------------------- Hinweisleisten --
+
+def _fuss(bloecke):
+    """Die einzige Zeile unter der Karte — und nur, wenn sie gebraucht wird.
+
+    Auf manchen Gerichten stehen hochgestellte Ziffern. Ohne einen Hinweis,
+    was sie bedeuten, sind sie für den Gast nur Rauschen — und § 9 ZZulV
+    verlangt die Kenntlichmachung. Alle zwölf Zusatzstoffe auf den Bildschirm
+    zu schreiben, ginge nicht; dafür gibt es den Aushang, den dieselbe
+    Vorschrift ohnehin verlangt. Diese Zeile verbindet beides.
+
+    Steht auf dem Bildschirm kein einziges gekennzeichnetes Gericht — wie auf
+    dem türkischen —, entfällt die Zeile. Eine Erklärung für Zeichen, die
+    nirgends stehen, kostet nur Schriftgröße.
+    """
+    markiert = any(g.get("zusatz") for _t, gerichte, *_r in bloecke
+                   for g in gerichte)
+    if not markiert:
+        return ""
+    return ('<div class="fuss">Hochgestellte Ziffern: Zusatzstoffe und '
+            'Allergene — erklärt der Aushang im Laden</div>')
+
 
 def _nummernbereiche(nummern):
     """[30,31,32,34,35,36,37] -> "30\u201332, 34\u201337". Eine Aufz\u00e4hlung von elf
@@ -395,219 +410,43 @@ def notiz_menue(zutaten_konf, gerichte):
             + '</div>')
 
 
-def notiz_extras(extras):
-    """Die Aufpreise f\u00fcr Extra-Zutaten \u2014 auf der gedruckten Karte stehen sie
-    unter der Pizzaliste, auf dem Bildschirm passt nur eine Zeile."""
-    teile = [f'<span class="nt">{_e(extras["titel"])}</span>']
-    for z in extras.get("zeilen", []):
-        preise = "  \u00b7  ".join(p for p in z.get("preise", []) if p)
-        teile.append(f'<span>{_e(z["name"])} <b>{_e(preise)}</b></span>')
-    for f in extras.get("fussnoten", []):
-        if not f.strip().startswith("*"):
-            teile.append(f'<span>{_e(f)}</span>')
-    return '<div class="vnotiz">' + "".join(teile) + '</div>'
 
 
 # ------------------------------------------------------- wechselnder Streifen --
 
-BANNERSTIL = """
-  /* Feste Hoehe, nicht min-height: Die vier Streifen sind unterschiedlich hoch
-     (Logo, Foto, Text). Bei variabler Hoehe verschoebe sich die Gerichteliste
-     darueber um ein paar Pixel und die Karte wuerde beim Wechsel springen. */
-  .band { display:flex; align-items:center; justify-content:space-between;
-          gap:40px; height:112px; flex:none; box-sizing:border-box;
-          margin-top:16px; padding-top:16px; overflow:hidden;
-          border-top:1px solid rgba(226,179,95,.24); }
-  .band--mitte { justify-content:center; }
-  .band .adr { font-size:30px; color:var(--text2); }
-  .band .tel { font-size:36px; color:var(--text2); }
-  .band .tel b { color:var(--gold); font-size:42px; }
-  .band .gross { font-family:"Playfair Display",serif; font-style:italic;
-                 font-weight:800; font-size:62px; color:var(--gold);
-                 white-space:nowrap; }
-  .band .vor { font-size:32px; color:var(--text2); margin-right:22px; }
-  .band img.blogo { height:78px; mix-blend-mode:screen; }
-  .band .claim { font-size:24px; letter-spacing:.16em; color:var(--gold2);
-                 margin-left:28px; }
-  .band img.bfoto { height:84px; width:84px; object-fit:cover; border-radius:50%;
-                    border:3px solid var(--gold2); }
-  .band .spruchtext { font-family:"Playfair Display",serif; font-style:italic;
-                      font-weight:800; font-size:44px; color:var(--gold);
-                      margin-left:26px; }
-  .band .btitel { font-family:"Playfair Display",serif; font-style:italic;
-                  font-weight:800; font-size:44px; color:var(--gold);
-                  white-space:nowrap; margin-right:26px; }
-  .band .btext { font-size:32px; color:var(--text2); white-space:nowrap; }
-  .band .bklein { font-size:24px; color:var(--text3); margin-left:22px;
-                  white-space:nowrap; }
-
-  /* Angebotsstreifen. Er darf zweizeilig umbrechen: Die Familien-Pizza mit
-     ihren vier Preisen und dem Hinweis "inkl. Salat oder Getraenk" passt in
-     einer Zeile nicht, und der Hinweis ist das halbe Angebot. Gemessen und
-     verkleinert wird deshalb ueber die Hoehe (--bs), nicht ueber die Breite.
-     Die einzelnen Angaben brechen nicht in sich um (nowrap), damit kein Preis
-     von seiner Bezeichnung getrennt wird. */
-  .ainhalt { display:flex; flex-wrap:wrap; align-items:center;
-             justify-content:center; max-width:100%;
-             gap:calc(4px * var(--bs,1)) calc(22px * var(--bs,1)); }
-  .ainhalt > * { white-space:nowrap; }
-  /* Im Streifen skalieren auch Titel, Text und Kleingedrucktes mit, sonst
-     schrumpft nur der Fliesstext und die Ueberschrift ragt heraus. */
-  .ainhalt .btitel { font-size:calc(44px * var(--bs,1)); margin-right:0; }
-  .ainhalt .btext  { font-size:calc(32px * var(--bs,1)); white-space:normal; }
-  .ainhalt .bklein { font-size:calc(24px * var(--bs,1)); margin-left:0;
-                     white-space:normal; }
-  .ainhalt .amarke { background:linear-gradient(180deg,#e9c987,#c8912f);
-      color:#241a08; border-radius:999px;
-      padding:calc(7px * var(--bs,1)) calc(22px * var(--bs,1));
-      font-family:"Playfair Display",serif; font-style:italic; font-weight:800;
-      font-size:calc(33px * var(--bs,1)); }
-  .ainhalt .azeit { font-size:calc(24px * var(--bs,1)); color:var(--text3);
-      letter-spacing:.04em; }
-  .ainhalt .agtitel { font-size:calc(31px * var(--bs,1)); font-weight:700;
-      color:var(--gold); }
-  .ainhalt .apos { font-size:calc(29px * var(--bs,1)); color:var(--text2); }
-  .ainhalt .apos b { color:var(--gold); font-weight:700;
-      font-variant-numeric:tabular-nums; }
-  .ainhalt .ahinweis { font-size:calc(24px * var(--bs,1)); color:var(--text3);
-      font-style:italic; }
-  .ainhalt .atrenner { width:calc(2px * var(--bs,1));
-      height:calc(44px * var(--bs,1)); background:rgba(226,179,95,.28); }
-"""
 
 
-def band_logo():
-    return ('<div class="band band--mitte">'
-            '<img class="blogo" src="@@LOGO@@" alt="">'
-            '<span class="claim">QUALITÄT · FRISCH · LECKER</span>'
-            '</div>')
 
 
-def band_stempel():
-    """Stempelkarte — für jemanden im Laden die nützlichste Information:
-    Sie bringt ihn beim nächsten Mal wieder."""
-    st = DATEN["stempelkarte"]
-    # Der Satz kommt aus menu.json, nicht aus dem Programm: Sonst haette eine
-    # Aenderung an der Karte den Fernseher stehen lassen. "Familien-Pizza"
-    # steht nur noch im Titel, nicht auch noch im Satz daneben.
-    return ('<div class="band band--mitte">'
-            f'<span class="btitel">{_e(st["titel"])}</span>'
-            f'<span class="btext">{_e(st.get("kurz", ""))}</span>'
-            f'<span class="bklein">{_e(st["hinweis"])}</span>'
-            '</div>')
 
 
-def band_lieferung():
-    """Viele Laufkunden wissen nicht, dass es einen Lieferdienst gibt."""
-    orte = []
-    for z in DATEN["lieferung"]["zonen"]:
-        orte += [o.strip() for o in z["orte"].replace("…", "").split(",") if o.strip()]
-    # Alle Orte, nicht nur die ersten acht: Burgkirchen stand sonst auf keinem
-    # Bildschirm, obwohl es eigens ins Liefergebiet aufgenommen wurde. Der
-    # Streifen darf dafuer umbrechen und verkleinert sich notfalls.
-    return ('<div class="band band--mitte">'
-            '<div class="ainhalt" style="--bs:1" data-anpassen>'
-            '<span class="btitel">Wir liefern</span>'
-            f'<span class="btext">{_e(" · ".join(orte))}</span>'
-            '</div></div>')
 
 
-def band_zeiten():
-    """Bewusst beide Jahreszeiten nennen: Das Video ist eine feste Datei und
-    wuerde im Winter sonst eine falsche Uhrzeit zeigen."""
-    o = DATEN["oeffnungszeiten"]
-    sommer = o["saisons"][0]["zeiten"][0]["zeit"]
-    winter = o["saisons"][1]["zeiten"][0]["zeit"]
-    return ('<div class="band band--mitte">'
-            '<span class="btitel">Täglich geöffnet</span>'
-            f'<span class="btext">{_e(sommer)} · im Winter {_e(winter)}</span>'
-            '</div>')
 
 
-def band_zusatzstoffe():
-    """Auf den Gerichten stehen hochgestellte Ziffern und Sternchen. Ohne einen
-    Hinweis darauf, was sie bedeuten und wo die Erklaerung haengt, sind sie
-    fuer den Gast nur Rauschen. Alle zwoelf Zusatzstoffe auf den Bildschirm zu
-    schreiben, ginge nicht - dafuer gibt es den Aushang, den § 9 ZZulV ohnehin
-    verlangt. Dieser Streifen verbindet beides."""
-    # Zwei Teile statt drei: Mit einer dritten Zeile endete der Streifen einen
-    # Pixel vor der Bildkante - rechnerisch drin, aber ohne jeden Spielraum.
-    return ('<div class="band band--mitte">'
-            '<div class="ainhalt" style="--bs:1" data-anpassen>'
-            '<span class="btitel">Zusatzstoffe &amp; Allergene</span>'
-            '<span class="btext">Ziffern und Sternchen erklärt der Aushang '
-            'im Laden — bei Fragen sprechen Sie uns bitte an</span>'
-            '</div></div>')
 
 
-def band_spruch(bild, text):
-    return ('<div class="band band--mitte">'
-            f'<img class="bfoto" src="{bild}" alt="">'
-            f'<span class="spruchtext">{_e(text)}</span>'
-            '</div>')
 
 
 _PREISMUSTER = re.compile(r"(\+\s?)?(\d{1,3},\d{2}\s*€)")
 
 
-def _preise_gold(text):
-    """Jeden Eurobetrag im Text gold und fett setzen.
-
-    Nötig, weil manche Angebotskarten ihren Preis nicht im Feld "preis" haben,
-    sondern im Untertitel: „Döner-Boxen klein 7,00 € · groß 8,00 €“. Die
-    standen dadurch als grauer Fließtext neben den goldenen Preisen der anderen
-    Karten — auf dem Fernseher sah es aus, als gehörten sie nicht zum Angebot.
-    "0,33 l" bleibt unberührt, das Muster verlangt das Eurozeichen.
-    """
-    return _PREISMUSTER.sub(
-        lambda m: "<b>" + (m.group(1) or "") + m.group(2) + "</b>", _e(text))
 
 
-def _angebotskarte_kurz(k):
-    """Eine Angebotskarte auf eine Zeile eindampfen. Karten ohne eigenen Preis
-    tragen ihn im Untertitel („Döner-Boxen klein 7,00 € · groß 8,00 €“) —
-    dann bleibt nur der Text stehen, die Beträge darin werden trotzdem
-    hervorgehoben."""
-    titel = (k.get("titel") or "").strip()
-    sub = (k.get("sub") or "").strip()
-    preis = (k.get("preis") or "").strip()
-    label = (titel + " " + sub).strip()
-    if not preis:
-        return f'<span class="apos">{_preise_gold(label)}</span>'
-    return f'<span class="apos">{_preise_gold(label)} <b>{_e(preis)}</b></span>'
 
 
-def band_angebot(gruppen_titel):
-    """Das Mittagsangebot als schmaler Streifen unter der Karte.
-
-    Bewusst kein eigener Angebots-Bildschirm mehr: Der h\u00e4tte die Speisekarte
-    verdeckt, und wer vor einem Bildschirm steht, soll nicht warten, bis seine
-    Kategorie wieder erscheint. Als Streifen l\u00e4uft das Angebot auf allen vier
-    Ger\u00e4ten mit, ohne der Karte auch nur eine Zeile wegzunehmen.
-
-    Die Schrift wird beim Rendern verkleinert, bis der Streifen in die Breite
-    passt (--bs); reicht das nicht, f\u00e4llt zuerst der Zusatzhinweis weg.
-    """
-    a = DATEN["angebote"]
-    g = next(x for x in a["gruppen"] if x["titel"] == gruppen_titel)
-    zeit = a["gueltigkeit"].split(" \u00b7 ")[0]
-
-    teile = [f'<span class="amarke">{_e(a["titel"])}</span>',
-             f'<span class="azeit">{_e(zeit)}</span>',
-             '<span class="atrenner"></span>',
-             f'<span class="agtitel">{_e(g["titel"])}</span>']
-    teile += [_angebotskarte_kurz(k) for k in g.get("karten", [])]
-    if g.get("hinweis"):
-        teile.append(f'<span class="ahinweis">{_e(g["hinweis"])}</span>')
-
-    return ('<div class="band band--mitte">'
-            '<div class="ainhalt" style="--bs:1" data-anpassen>'
-            + "".join(teile) + '</div></div>')
 
 
 ANGEBOTSTIL = """
+  /* Die einzige Ueberschrift, die geblieben ist - und sie steht mittig,
+     nicht mehr neben einem Logo am Rand. Sie sagt dem Gast etwas, was er
+     sonst nicht sieht: dass diese Preise nur mittags gelten. */
+  .atitel { text-align:center; font-family:"Playfair Display",serif;
+      font-style:italic; font-weight:800; font-size:calc(86px * var(--s));
+      color:var(--gold); line-height:1.05; }
   .zeitleiste { text-align:center; font-size:calc(40px * var(--s));
-      font-weight:700; color:var(--gold2); letter-spacing:.03em; margin:-6px 0 14px; }
+      font-weight:700; color:var(--gold2); letter-spacing:.03em;
+      margin:calc(4px * var(--s)) 0 calc(16px * var(--s)); }
   /* min-height:0 wie bei der Gerichteliste: Ohne die Angabe draengt sich der
      Inhalt auf seine eigene Hoehe auf und schiebt den Streifen darunter unter
      den Bildrand - die Unterlaengen werden dann abgeschnitten. */
@@ -615,9 +454,14 @@ ANGEBOTSTIL = """
      der hoechsten in derselben Zeile. Unter der Familien-Pizza stand dadurch
      ein handbreiter leerer Kasten, weil die Doener-Gruppe daneben sechs
      Karten hat. */
+  /* Die groesste Gruppe steht links und reicht ueber beide Reihen, die
+     kleineren stapeln sich rechts daneben. Ohne das blieb rechts unten ein
+     leeres Viertel des Bildschirms stehen, seit die Familien-Pizza weg ist -
+     und leere Flaeche ist auf einem Fernseher nur ungenutzte Schriftgroesse. */
   .alle { flex:1; min-height:0; display:grid; grid-template-columns:1fr 1fr;
           gap:calc(22px * var(--s)) 46px;
           align-content:start; align-items:start; }
+  .agruppe--gross { grid-row:span 2; }
   .agruppe { border:1px solid rgba(226,179,95,.22); border-radius:18px;
              padding:calc(18px * var(--s)) calc(22px * var(--s));
              background:rgba(255,255,255,.02); }
@@ -643,13 +487,21 @@ ANGEBOTSTIL = """
 """
 
 
-def alleangeboteseite(band=None):
-    """Alle Angebotsgruppen auf einer Seite. Damit steht auch auf dem
-    Angebots-Bildschirm durchgehend alles — kein Gast muss warten, bis seine
-    Gruppe wieder drankommt."""
+def alleangeboteseite(ohne=()):
+    """Alle Angebotsgruppen auf einer Seite, ohne Kopf und ohne Streifen.
+
+    "Mittagsangebot" steht groß und mittig oben — es ist die einzige
+    Überschrift, die auf den vier Bildschirmen geblieben ist, und zwar weil
+    sie hier etwas sagt, was der Gast nicht sieht: dass diese Preise nur
+    mittags gelten. Direkt darunter steht, wann.
+
+    ohne: Titel von Gruppen, die nicht auf den Bildschirm sollen.
+    """
     a = DATEN["angebote"]
     gruppen = []
     for g in a["gruppen"]:
+        if g["titel"] in ohne:
+            continue
         karten = []
         for k in g.get("karten", []):
             titel = f'<div class="kt">{_e(k["titel"])}</div>' if k.get("titel") else ""
@@ -658,14 +510,21 @@ def alleangeboteseite(band=None):
             karten.append(f'<div class="akarte">{titel}{sub}{preis}</div>')
         hinweis = (f'<p class="ghinweis">{_e(g["hinweis"])}</p>'
                    if g.get("hinweis") else "")
-        gruppen.append(f'<div class="agruppe"><h3>{_e(g["titel"])}</h3>{hinweis}'
-                       f'<div class="akarten">{"".join(karten)}</div></div>')
+        gruppen.append((len(karten),
+                        f'<h3>{_e(g["titel"])}</h3>{hinweis}'
+                        f'<div class="akarten">{"".join(karten)}</div>'))
 
-    return (KOPF + f'<style>{ANGEBOTSTIL}{BANNERSTIL}</style>'
+    # Die Gruppe mit den meisten Karten bekommt die hohe Spalte. Bewusst
+    # ueber die Kartenzahl und nicht ueber die Position: Kommt eine Gruppe
+    # dazu oder faellt eine weg, sitzt die grosse weiterhin richtig.
+    groesste = max(range(len(gruppen)), key=lambda i: gruppen[i][0]) if gruppen else -1
+    gruppen = [f'<div class="agruppe{" agruppe--gross" if i == groesste else ""}">'
+               f'{inhalt}</div>' for i, (_n, inhalt) in enumerate(gruppen)]
+
+    return (KOPF + f'<style>{ANGEBOTSTIL}</style>'
             + '<div class="flaeche"></div>'
-            + '<div class="inhalt" style="--s:1;padding:28px 56px">'
-            + kopf(a["titel"])
+            + '<div class="inhalt inhalt--angebot" style="--s:1;padding:26px 48px">'
+            + f'<h1 class="atitel">{_e(a["titel"])}</h1>'
             + f'<p class="zeitleiste">{_e(a["gueltigkeit"])}</p>'
             + f'<div class="alle" id="voll">{"".join(gruppen)}</div>'
-            + f'<p class="bedingung">{_e(a["zusatz"])}</p>'
-            + (band if band is not None else band_logo()) + '</div>')
+            + f'<p class="bedingung">{_e(a["zusatz"])}</p>' + '</div>')

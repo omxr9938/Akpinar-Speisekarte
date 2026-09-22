@@ -6,16 +6,17 @@ Prueft die Fernseher-Seiten, bevor sie zu Videos werden.
 
 Rendert jede Seite jedes Bildschirms in Chromium und prueft:
 
-  1. Passt alles in 1920x1080, ohne Ueberlauf in irgendeiner Richtung?
-  2. Wird irgendwo Text abgeschnitten?
-  3. Steht die Karte still, wenn der Streifen unten wechselt?
-     (Schriftgroesse, Listenanfang und Streifenhoehe muessen auf allen
-     Seiten eines Bildschirms identisch sein - sonst springt das Bild.)
-  4. Steht jedes Gericht der Karte genau einmal auf genau einem Bildschirm,
-     mit genau den Preisen aus menu.json?
-  5. Ist die Schrift auf einem Fernseher aus der Entfernung noch lesbar?
+Jeder Bildschirm ist ein stehendes Bild - eine Seite, kein Wechsel.
+Geprueft wird:
 
-Zur fuenften Pruefung: Die Bildschirme haengen im Laden direkt ueber der
+  1. Passt alles in 1920x1080, ohne Ueberlauf in irgendeiner Richtung?
+  2. Wird irgendwo Text abgeschnitten, und bleibt jeder Inhalt in seinem
+     eigenen Kasten (ein Raster darf nicht ueber die Zeile darunter wachsen)?
+  3. Steht jedes Gericht der Karte genau einmal auf genau einem Bildschirm,
+     mit genau den Preisen aus menu.json?
+  4. Ist die Schrift auf einem Fernseher aus der Entfernung noch lesbar?
+
+Zur vierten Pruefung: Die Bildschirme haengen im Laden direkt ueber der
 Theke, der Gast steht also rund 1,0 bis 1,4 m davor (Sichtlinie zur
 Oberkante, nicht Bodenabstand). Gerichtnamen sind bis 1,6 m bequem lesbar,
 die Zutatenzeilen bis 1,1 m - beides reicht fuer diesen Abstand. Die
@@ -63,7 +64,6 @@ def pruefe(bedingung, text):
 MESSUNG = """() => {
   const norm = t => (t || '').replace(/\\s+/g, ' ').trim();
   const voll = document.getElementById('voll');
-  const band = document.querySelector('.band');
   const wurzel = document.querySelector('.inhalt');
 
   // Abgeschnittener Text: Ein Element, dessen Inhalt breiter oder hoeher ist
@@ -137,11 +137,13 @@ MESSUNG = """() => {
     skala: parseFloat(getComputedStyle(wurzel).getPropertyValue('--s')) || 1,
     vollOben: Math.round(voll ? voll.getBoundingClientRect().top * 100 : 0) / 100,
     vollUnten: Math.round(voll ? voll.getBoundingClientRect().bottom * 100 : 0) / 100,
-    vollPasst: voll ? voll.scrollHeight <= voll.clientHeight + 1 : true,
-    bandOben: Math.round(band ? band.getBoundingClientRect().top * 100 : 0) / 100,
-    bandHoehe: Math.round(band ? band.getBoundingClientRect().height * 100 : 0) / 100,
-    bandPasst: band ? (band.scrollHeight <= band.clientHeight + 1
-                       && band.scrollWidth <= band.clientWidth + 1) : true,
+    // Der Inhalt muss in SEINEN Kasten passen, nicht nur irgendwo aufs Bild:
+    // Ein Raster mit flex:1 laesst seine Kacheln sonst ueber den eigenen Rand
+    // hinauswachsen - sie stehen dann noch im Bild, aber ueber der Zeile
+    // darunter. Genau so ueberdeckte die Nudel-Gruppe die Bedingungszeile.
+    vollPasst: voll ? [...voll.children].every(
+        e => e.getBoundingClientRect().bottom <= voll.getBoundingClientRect().bottom + 1)
+        : true,
     namePx: (() => { const e = document.querySelector('.vz .vname');
                      return e ? parseFloat(getComputedStyle(e).fontSize) : 0; })(),
     beschPx: (() => { const e = document.querySelector('.vz .vbesch');
@@ -196,74 +198,58 @@ def main():
 
         for schluessel in SCHIRME:
             name, macher = build.VIDEOS[schluessel]
-            seiten = macher()
-            laengen[name] = (sum(d for _, d in seiten)
-                             - build.UEBERBLENDUNG * (len(seiten) - 1))
-            print(f"\n{name}  ({len(seiten)} Seiten)")
-            messungen = []
+            datei = TMP / f"{schluessel}.html"
+            datei.write_text(build.pfade_einsetzen(macher()), encoding="utf-8")
+            pg.goto(datei.as_uri(), wait_until="load")
+            pg.evaluate("() => document.fonts.ready")
+            build.anpassen(pg)
+            pg.wait_for_timeout(60)
+            m = pg.evaluate(MESSUNG)
+            print(f"\n{name}")
 
-            for i, (html_text, dauer) in enumerate(seiten):
-                datei = TMP / f"{schluessel}-{i:02d}.html"
-                datei.write_text(build.pfade_einsetzen(html_text), encoding="utf-8")
-                pg.goto(datei.as_uri(), wait_until="load")
-                pg.evaluate("() => document.fonts.ready")
-                build.anpassen(pg, i)
-                pg.wait_for_timeout(60)
-                m = pg.evaluate(MESSUNG)
-                messungen.append(m)
+            v = name
+            pruefe(m["seiteBreit"] <= slides.BREITE,
+                   f"{v}: Seite ist {m['seiteBreit']} px breit statt {slides.BREITE}")
+            pruefe(m["seiteHoch"] <= slides.HOEHE,
+                   f"{v}: Seite ist {m['seiteHoch']} px hoch statt {slides.HOEHE}")
+            pruefe(m["tiefsteKante"] <= slides.HOEHE,
+                   f"{v}: etwas reicht bis y={m['tiefsteKante']}, das Bild ist "
+                   f"nur {slides.HOEHE} hoch - unten wird abgeschnitten")
+            pruefe(m["weitesteKante"] <= slides.BREITE,
+                   f"{v}: etwas reicht bis x={m['weitesteKante']}, das Bild ist "
+                   f"nur {slides.BREITE} breit - rechts wird abgeschnitten")
+            pruefe(m["vollPasst"],
+                   f"{v}: Inhalt waechst ueber seinen eigenen Kasten hinaus")
+            pruefe(not m["bilderFehlen"],
+                   f"{v}: Bild laedt nicht: {m['bilderFehlen']}")
+            for art, klasse, text in m["beschnitten"]:
+                fehler.append(f"{v}: Text abgeschnitten ({art}, .{klasse}): {text}")
 
-                v = f"{name} Seite {i}"
-                pruefe(m["seiteBreit"] <= slides.BREITE,
-                       f"{v}: Seite ist {m['seiteBreit']} px breit statt {slides.BREITE}")
-                pruefe(m["seiteHoch"] <= slides.HOEHE,
-                       f"{v}: Seite ist {m['seiteHoch']} px hoch statt {slides.HOEHE}")
-                pruefe(m["tiefsteKante"] <= slides.HOEHE,
-                       f"{v}: etwas reicht bis y={m['tiefsteKante']}, das Bild ist "
-                       f"nur {slides.HOEHE} hoch - unten wird abgeschnitten")
-                pruefe(m["weitesteKante"] <= slides.BREITE,
-                       f"{v}: etwas reicht bis x={m['weitesteKante']}, das Bild ist "
-                       f"nur {slides.BREITE} breit - rechts wird abgeschnitten")
-                pruefe(m["vollPasst"], f"{v}: Gerichteliste passt nicht in ihren Bereich")
-                pruefe(m["bandPasst"], f"{v}: Streifen unten laeuft ueber")
-                pruefe(not m["bilderFehlen"],
-                       f"{v}: Bild laedt nicht: {m['bilderFehlen']}")
-                for art, klasse, text in m["beschnitten"]:
-                    fehler.append(f"{v}: Text abgeschnitten ({art}, .{klasse}): {text}")
+            # Gerichtnamen muessen in der Flucht stehen. Zwei Spalten
+            # heisst zwei erlaubte Startpositionen, mehr nicht.
+            spalten = sorted(m["flucht"].items(), key=lambda a: -a[1])
+            if len(spalten) > 2:
+                aus_der_reihe = spalten[2:]
+                fehler.append(
+                    f"{v}: Gerichtnamen stehen nicht in der Flucht - "
+                    f"{len(aus_der_reihe)} abweichende Startposition(en): "
+                    f"{[x for x, _ in aus_der_reihe]} "
+                    f"(erwartet {[x for x, _ in spalten[:2]]})")
 
-                # Gerichtnamen muessen in der Flucht stehen. Zwei Spalten
-                # heisst zwei erlaubte Startpositionen, mehr nicht.
-                spalten = sorted(m["flucht"].items(), key=lambda a: -a[1])
-                if len(spalten) > 2:
-                    aus_der_reihe = spalten[2:]
-                    fehler.append(
-                        f"{v}: Gerichtnamen stehen nicht in der Flucht - "
-                        f"{len(aus_der_reihe)} abweichende Startposition(en): "
-                        f"{[x for x, _ in aus_der_reihe]} (erwartet {[x for x, _ in spalten[:2]]})")
+            # Schreibweisen: einheitlich Eurozeichen und Doppelpunkt-Uhrzeit
+            import re as _re
+            for t in m["texte"]:
+                # Nur Betraege: "Preise in Euro:" ist eine Ueberschrift,
+                # "Preise in €" waere dort schlechteres Deutsch.
+                if _re.search(r'\d\s*Euro\b', t):
+                    fehler.append(f"{v}: Betrag mit 'Euro' statt €: {t!r}")
+                if _re.search(r'\d{1,2}\.\d{2}\s*Uhr', t):
+                    fehler.append(f"{v}: Uhrzeit mit Punkt statt Doppelpunkt: {t!r}")
+                if _re.search(r'\bgross\b|\bweiss\b|\bMenue\b', t):
+                    fehler.append(f"{v}: Ersatzschreibung statt ß/ü: {t!r}")
 
-                # Schreibweisen: einheitlich Eurozeichen und Doppelpunkt-Uhrzeit
-                import re as _re
-                for t in m["texte"]:
-                    # Nur Betraege: "Preise in Euro:" ist eine Ueberschrift,
-                    # "Preise in \u20ac" waere dort schlechteres Deutsch.
-                    if _re.search(r'\d\s*Euro\b', t):
-                        fehler.append(f"{v}: Betrag mit 'Euro' statt \u20ac: {t!r}")
-                    if _re.search(r'\d{1,2}\.\d{2}\s*Uhr', t):
-                        fehler.append(f"{v}: Uhrzeit mit Punkt statt Doppelpunkt: {t!r}")
-                    if _re.search(r'\bgross\b|\bweiss\b|\bMenue\b', t):
-                        fehler.append(f"{v}: Ersatzschreibung statt \u00df/\u00fc: {t!r}")
-
-            # Steht die Karte still, wenn der Streifen wechselt?
-            for feld, beschreibung in (("skala", "Schriftgroesse"),
-                                       ("vollOben", "Listenanfang"),
-                                       ("vollUnten", "Listenende"),
-                                       ("bandOben", "Streifenoberkante"),
-                                       ("bandHoehe", "Streifenhoehe")):
-                werte = {m[feld] for m in messungen}
-                pruefe(len(werte) == 1,
-                       f"{name}: {beschreibung} springt zwischen den Seiten: "
-                       f"{sorted(werte)}")
-
-            m0 = messungen[0]
+            m0 = m
+            laengen[name] = build.DAUER
             print(f"  Schriftgroesse {m0['skala']:.0%}  "
                   f"Name {m0['namePx']:.0f} px  "
                   f"Beschreibung {m0['beschPx']:.0f} px  "
@@ -282,6 +268,7 @@ def main():
                     warnungen.append(
                         f"{name}: {was} nur {mm:.1f} mm - bequem nur bis "
                         f"{max_m:.1f} m Abstand lesbar")
+
 
             # Gerichte gegen menu.json
             erwartet = erwartete_gerichte(SCHIRME[schluessel])
@@ -307,19 +294,6 @@ def main():
             gesehen[name] = len(ist)
 
         b.close()
-
-    # Alle Lieferorte muessen auf dem Streifen stehen. Vorher waren es nur die
-    # ersten acht von zwoelf - Burgkirchen fehlte, obwohl es eigens ins
-    # Liefergebiet aufgenommen worden war.
-    orte = []
-    for z in slides.DATEN["lieferung"]["zonen"]:
-        orte += [o.strip() for o in z["orte"].replace("\u2026", "").split(",") if o.strip()]
-    streifen = slides.band_lieferung()
-    fehlende_orte = [o for o in orte if o not in streifen]
-    pruefe(not fehlende_orte,
-           f"Lieferstreifen nennt diese Orte nicht: {fehlende_orte}")
-    print(f"\nLieferstreifen: {len(orte)} Orte, alle genannt"
-          if not fehlende_orte else "")
 
     # Keine Kategorie doppelt, keine vergessen. Bewusst ueber die Kategorien
     # und nicht ueber die Gerichtnamen: "Tonno" gibt es zweimal, als Pizza
@@ -350,23 +324,6 @@ def main():
     # Gleiche Laenge, sonst laufen die vier Geraete auseinander
     pruefe(len(set(laengen.values())) == 1,
            f"Videolaengen weichen ab: {laengen}")
-
-    # Der Kreis muss geschlossen sein: Das letzte Bild der Datei ist dasselbe
-    # wie das erste. Sonst springt das Bild sichtbar, wenn der Fernseher die
-    # Datei neu aufzieht - und die Wiederholungen in der Datei haetten Naehte.
-    for schluessel in SCHIRME:
-        name, macher = build.VIDEOS[schluessel]
-        roh = macher()
-        kreis = build.kreis_schliessen(roh)
-        pruefe(kreis[0][0] == kreis[-1][0],
-               f"{name}: letzte Seite ist nicht die erste")
-        laenge_kreis = (sum(d for _, d in kreis)
-                        - build.UEBERBLENDUNG * (len(kreis) - 1))
-        pruefe(abs(laenge_kreis - laengen[name]) < 0.001,
-               f"{name}: Schlussblende verschiebt die Laenge "
-               f"({laenge_kreis:.3f} statt {laengen[name]:.3f} s)")
-        pruefe(min(d for _, d in kreis) > build.UEBERBLENDUNG,
-               f"{name}: eine Standzeit ist kuerzer als die Ueberblendung")
 
     print("\n" + "=" * 62)
     print(f"Gerechnet fuer {TV_ZOLL:.0f} Zoll "
