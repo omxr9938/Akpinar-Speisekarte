@@ -780,7 +780,7 @@
 
   document.addEventListener('karte-fertig', function () {
     daten = window.AKPINAR.daten;
-    fetch('assets/data/bestellung.json?v=b52f3e04')
+    fetch('assets/data/bestellung.json?v=ed73a564')
       .then(function (r) { return r.json(); })
       .then(function (k) {
         konfig = k;

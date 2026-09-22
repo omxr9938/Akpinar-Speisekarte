@@ -9,3 +9,6 @@ __pycache__/
 
 # Zwischenordner beim Videobau
 .video-tmp/
+
+# Pruefberichte beim Videobau
+.video-pruefung/

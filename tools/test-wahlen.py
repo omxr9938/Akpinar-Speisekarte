@@ -376,6 +376,44 @@ with sync_playwright() as p:
                     "Käse", "Gemüse", "süß-sauer", "Ø 32"):
         pruefe(richtig in bt, f"'{richtig}' steht richtig im Bestelltext")
 
+    # --- 14. Soßen
+    # Drei statt zwei, und mehrere gleichzeitig waehlbar: Knoblauch und scharf
+    # zusammen ist eine gaengige Bestellung.
+    print("\nSoßen")
+    oeffnen("Döner im Fladenbrot (Classic)", "tuerkisch")
+    c = chips("Soße")
+    pruefe(c and [x["text"] for x in c] ==
+           ["Knoblauchsoße", "Soße ohne Knoblauch", "Scharfe Soße"],
+           f"drei Soßen zur Wahl  (ist: {[x['text'] for x in c] if c else None})")
+    pruefe(c and not any(x["an"] for x in c), "keine Soße vorausgewählt")
+    # zwei gleichzeitig
+    pg.evaluate("""() => {
+        const t = [...document.querySelectorAll('.bf__titel')]
+          .find(e => e.textContent.trim().startsWith('Soße'));
+        let x = t.nextElementSibling;
+        while (x && !x.classList.contains('bf__chips')) x = x.nextElementSibling;
+        const c = [...x.querySelectorAll('.bf__chip')];
+        c[0].click(); c[2].click();
+    }""")
+    pg.wait_for_timeout(200)
+    an = pg.evaluate("""() => {
+        const t = [...document.querySelectorAll('.bf__titel')]
+          .find(e => e.textContent.trim().startsWith('Soße'));
+        let x = t.nextElementSibling;
+        while (x && !x.classList.contains('bf__chips')) x = x.nextElementSibling;
+        return [...x.querySelectorAll('.bf__chip.ist-an')].map(c => c.textContent.trim());
+    }""")
+    pruefe(an == ["Knoblauchsoße", "Scharfe Soße"],
+           f"zwei Soßen gleichzeitig wählbar  (ist: {an})")
+    pg.evaluate("() => localStorage.removeItem('akpinar-korb')")
+    pg.click(".bf__rein"); pg.wait_for_timeout(500)
+    korb = pg.evaluate("() => JSON.parse(localStorage.getItem('akpinar-korb')||'[]')")
+    pruefe(korb and korb[-1].get("sossen") == ["Knoblauchsoße", "Scharfe Soße"],
+           f"beide Soßen im Warenkorb  (ist: {korb[-1].get('sossen') if korb else None})")
+    # "Special Soße" darf nirgends mehr auftauchen
+    quelle = pg.evaluate("() => JSON.stringify(window.AKPINAR.konfig)")
+    pruefe("Special So" not in quelle, "alte 'Special Soße' ist überall ersetzt")
+
     echt = [k for k in konsole if "pageerror" in k or k.startswith("error")]
     pruefe(not echt, f"keine JavaScript-Fehler  ({echt[:3]})")
     b.close()

@@ -77,13 +77,14 @@
         "Soße"
       ],
       "sossen": {
-        "frage": "Soße — beides möglich",
+        "frage": "Soße — mehrere möglich",
         "mehrfach": true,
         "optionen": [
           "Knoblauchsoße",
-          "Special Soße"
+          "Soße ohne Knoblauch",
+          "Scharfe Soße"
         ],
-        "_hinweis": "Mehrfachauswahl: Der Gast kann beide Soßen nehmen. Wer gar keine Soße will, waehlt oben bei \"Zutaten weglassen\" die Soße ab."
+        "_hinweis": "Mehrfachauswahl: Der Gast kann mehrere Soßen nehmen, etwa Knoblauch und scharf. Wer gar keine Soße will, waehlt oben bei \"Zutaten weglassen\" die Soße ab. \"Soße ohne Knoblauch\" ist bewusst nach dem benannt, was sie NICHT enthaelt - das stimmt immer. Heisst die Soße im Laden anders (Kraeutersoße, Joghurtsoße), hier umbenennen; sie steht dann auch auf dem Bon und im Bestelltext so."
       },
       "_hinweis": "Bewusst keine Extras: Die Karte bildet die Varianten bereits als eigene Gerichte ab (Döner Weichkäse, Döner Chili-Cheese, Döner Saray und so weiter). Ein zusätzlicher Aufpreis-Konfigurator würde dieselbe Sache zweimal anbieten, mit widersprüchlichen Preisen.",
       "basis_nicht_bei": {

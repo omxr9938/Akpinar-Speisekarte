@@ -141,8 +141,12 @@ VIDEOS = {
         ("@@IMG@@/pizza-hero.jpg", "Frisch aus dem Ofen"),
         notiz=slides.notiz_extras(kategorie("pizza")["extras"]))),
 
+    # Die Unterzeile kommt aus der Karte, nicht aus dem Programm: Dort stehen
+    # die Soßen. "Döner · Dürüm · Boxen · Pide · Teller" stand hier vorher und
+    # war verschenkter Platz - die Kategorien sieht der Gast in der Liste
+    # darunter ohnehin. Welche Soßen es gibt, sieht er sonst nirgends.
     "tuerkisch": ("3-Tuerkisch", lambda: folge_karte(
-        "Türkische Gerichte", "Döner · Dürüm · Boxen · Pide · Teller",
+        "Türkische Gerichte", kategorie("tuerkisch")["hinweis"],
         [block("tuerkisch", pbreite=150)],
         ("@@IMG@@/doener-hero.jpg", "Täglich frisch gedreht"),
         notiz=slides.notiz_menue(BESTELL["zutaten"]["tuerkisch"],
