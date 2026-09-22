@@ -7,11 +7,8 @@ __pycache__/
 *.pyc
 .venv/
 
-# Zwischenordner beim Videobau
-.video-tmp/
+# Zwischenordner beim Bau der Bildschirmbilder
+.bildschirm-tmp/
 
-# Pruefberichte beim Videobau
-.video-pruefung/
-
-# Die langen Stickdateien entstehen aus den Durchlaeufen daneben
-video/stick/
+# Pruefberichte beim Bau der Bildschirmbilder
+.bildschirm-pruefung/

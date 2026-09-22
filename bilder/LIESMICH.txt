@@ -1,0 +1,141 @@
+AKPINAR DÖNER & PIZZA — die vier Bildschirme
+============================================
+
+Vier Bildschirme, jeder behält dauerhaft seinen Inhalt:
+
+   Bildschirm 1   1-Angebote                        Mittagsangebot
+   Bildschirm 2   2-Pizza                           alle 28 Pizzen
+   Bildschirm 3   3-Tuerkisch                       alle 26 türkischen
+                                                    Gerichte
+   Bildschirm 4   4-Nudeln-Verschiedenes-Burger     13 Nudelgerichte,
+                                                    10 x Verschiedenes,
+                                                    5 Burger
+
+Jeder Bildschirm ist ein stehendes Bild — es bewegt sich nichts. Deshalb
+ist jeder von ihnen schlicht eine Bilddatei, kein Video:
+
+   1-Angebote.png   und   1-Angebote.jpg      je 0,4 bis 0,7 MB
+   2-Pizza.png      und   2-Pizza.jpg
+   3-Tuerkisch.png  und   3-Tuerkisch.jpg
+   4-Nudeln-Verschiedenes-Burger.png / .jpg
+
+NEHMEN SIE DIE PNG. Die ist verlustfrei, die Schrift steht darin genau so
+da, wie sie gerendert wurde. Zeigt der Fernseher sie nicht an, nehmen Sie
+das gleichnamige JPG — ältere Geräte können oft nur JPEG.
+
+VIER STEHENDE BILDER
+--------------------
+Jeder Bildschirm zeigt EIN Bild, das sich nicht verändert. Kein Logo, keine
+Überschrift, kein wechselnder Streifen unten — die haben zusammen rund 300
+der 1080 Bildzeilen gekostet und dem Gast nichts gesagt, was er nicht schon
+wusste: Er steht im Laden, vor der Theke, unter dem Bildschirm.
+
+Der Platz gehört jetzt der Schrift. Auf 40 Zoll:
+
+   Bildschirm        Gerichtname      bequem lesbar bis
+   1 Angebote        "Mittagsangebot" 50 mm
+   2 Pizza           11,5 mm          2,3 m
+   3 Türkisch        13,0 mm          2,6 m
+   4 Nudeln u. a.    11,0 mm          2,2 m
+
+Der Gast steht rund 1,0 bis 1,4 m vor der Theke. Das ist reichlich.
+
+Was auf den Bildschirmen NICHT steht: Stempelkarte, Öffnungszeiten,
+Liefergebiete, die Gerichtebilder und das Logo. Wenn Sie eines davon
+draufhaben wollen, sagen Sie Bescheid — es kostet dann Schriftgröße, und
+zwar spürbar.
+
+Auf Bildschirm 3 steht oben weiterhin die Zeile "Als Menü + 5,00 €". Auf
+Bildschirm 2 und 4 steht unten eine kleine Zeile zu den hochgestellten
+Ziffern; die verlangt § 9 ZZulV, sie ist die kleinste Schrift auf dem Schirm.
+Auf Bildschirm 3 fehlt sie, weil dort kein Gericht gekennzeichnet ist.
+
+SALATE UND GETRÄNKE STEHEN AUF KEINEM BILDSCHIRM
+------------------------------------------------
+In dieser Aufteilung bleiben 18 Gerichte ohne Fernseher: 12 Salate und
+6 Getränke. Auf der gedruckten Karte und im Internet stehen sie natürlich.
+
+Falls Sie die doch zeigen wollen, gibt es zwei Wege:
+
+   python3 tools/bildschirme/build.py salate
+
+erzeugt einen fünften Bildschirm (Zusatz-Salate-Getraenke), wieder als PNG
+und JPG. Den können Sie auf einen der Sticks dazulegen und das Gerät
+zwischen beiden wechseln lassen.
+
+Oder Sie sagen Bescheid, dann verteilen wir die Kategorien anders, so
+dass alle 100 Gerichte auf die vier Bildschirme passen.
+
+DIE FAMILIEN-PIZZA STEHT NICHT MEHR IM ANGEBOT
+----------------------------------------------
+Auf Bildschirm 1 ist die Gruppe "Familien-Pizza" entfernt. Auf der Website
+und der gedruckten Karte steht sie unverändert. Soll sie dort auch weg,
+sagen Sie Bescheid.
+
+SO GEHT'S
+---------
+1. USB-Stick als FAT32 oder exFAT formatieren.
+   Manche Fernseher lesen NTFS nicht.
+2. EINE einzige Datei auf den Stick kopieren, sonst nichts — die PNG für
+   diesen Bildschirm. Liegt nur eine Datei drauf, zeigen die meisten
+   Geräte sie von selbst an.
+3. Stick in den Fernseher, Quelle auf USB stellen, Datei öffnen.
+4. Falls das Gerät die PNG nicht anzeigt: das gleichnamige JPG nehmen.
+5. Sticks beschriften, damit später klar ist, welcher wohin gehört.
+6. Einen Nachmittag laufen lassen und nachsehen, ob das Bild noch steht.
+
+WENN DER BILDSCHIRM NACH EINIGER ZEIT ABSCHALTET
+------------------------------------------------
+Manche Fernseher behandeln die Fotoanzeige wie eine Diaschau: Sie blenden
+nach ein paar Minuten eine Bedienleiste ein, schalten den Bildschirmschoner
+an oder springen zum nächsten Bild. Dagegen hilft am Gerät selbst:
+
+- In der Fotoanzeige "Diaschau" ausschalten oder das Bild als Einzelbild
+  öffnen, nicht als Diaschau starten.
+- Ist eine Anzeigedauer einstellbar, die längste wählen (oft "unbegrenzt",
+  "dauerhaft" oder "kein Wechsel").
+- Bildschirmschoner und automatische Abschaltung im Menü des Fernsehers
+  abschalten — meist unter "Energie sparen", "Eco" oder "Zeitschaltuhr".
+  Viele Geräte schalten nach 4 Stunden ohne Tastendruck von selbst ab.
+- Nur EINE Datei auf den Stick legen. Liegen mehrere darauf, springt das
+  Gerät zwischen ihnen und blendet dabei schwarz.
+
+Wenn ein Gerät sich partout nicht überreden lässt, sagen Sie Bescheid —
+für so ein Gerät lässt sich aus demselben Bild eine Videodatei bauen, die
+es in Ruhe abspielt.
+
+WENN DER FERNSEHER DIE DATEI NICHT ANNIMMT
+------------------------------------------
+- Erst die JPG statt der PNG probieren
+- Stick neu formatieren, diesmal FAT32
+- Datei umbenennen, ohne Umlaute und Sonderzeichen
+- Prüfen, ob der Fernseher den USB-Anschluss für Medien freigibt
+  (manche Geräte haben einen Anschluss nur für Service)
+- Stromausfall testen: Stecker ziehen und wieder einstecken. Manche Geräte
+  vergessen die Einstellung. Dann hilft meist eine Option wie
+  "Letzte Quelle wiederherstellen" oder "USB-Autostart".
+
+TECHNISCHE DATEN
+----------------
+1920 x 1080 (Full HD). PNG verlustfrei, JPG in Qualität 92 und ohne
+Farbunterabtastung (4:4:4) — bei 4:2:0 franst die goldene Schrift auf dem
+dunklen Grund sichtbar aus, und hier ist fast alles Schrift.
+
+ÄNDERUNGEN
+----------
+Preise ändern sich in assets/data/menu.json. Danach:
+
+    python3 tools/bildschirme/build.py
+
+erzeugt alle vier Bilder neu, als PNG und als JPG.
+Einzeln geht auch:
+
+    python3 tools/bildschirme/build.py pizza
+
+Vorher prüfen lohnt sich:
+
+    python3 tools/bildschirme/pruefen.py
+
+Das rendert alle Seiten und meldet, wenn etwas nicht mehr auf den
+Bildschirm passt, Text abgeschnitten wird oder ein Preis nicht mehr zur
+Speisekarte passt.

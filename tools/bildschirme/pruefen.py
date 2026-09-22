@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Prueft die Fernseher-Seiten, bevor sie zu Videos werden.
+Prueft die Fernseher-Seiten, bevor sie zu Bilddateien werden.
 
-    python3 tools/video/pruefen.py
+    python3 tools/bildschirme/pruefen.py
 
 Rendert jede Seite jedes Bildschirms in Chromium und prueft:
 
@@ -22,7 +22,7 @@ Oberkante, nicht Bodenabstand). Gerichtnamen sind bis 1,6 m bequem lesbar,
 die Zutatenzeilen bis 1,1 m - beides reicht fuer diesen Abstand. Die
 Hinweise unten sind deshalb bekannt und in Ordnung, kein offener Fehler.
 Sie wuerden erst zaehlen, wenn die Geraete weiter weg haengen; dann waere
-die Antwort, die dichten Bildschirme auf je zwei Videos aufzuteilen
+die Antwort, die dichten Bildschirme auf je zwei Bilder aufzuteilen
 (gemessen: Name 2,8 m statt 1,6 m, Beschreibung 1,9 m statt 1,1 m).
 
 Beendet sich mit Code 1, sobald etwas nicht stimmt.
@@ -37,14 +37,14 @@ import slides                                            # noqa: E402
 import build                                             # noqa: E402
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
-TMP = ROOT / ".video-pruefung"
+TMP = ROOT / ".bildschirm-pruefung"
 
 # Bilddiagonale der Fernseher im Laden, in Zoll. Daraus ergibt sich, wie gross
 # die Schrift auf dem Geraet tatsaechlich wird: 1920 Bildpunkte verteilen sich
 # auf die Bildbreite, bei 40 Zoll sind das 88,6 cm. Steht ein anderes Geraet im
 # Laden, hier aendern - die Lesbarkeitswerte unten haengen daran.
 #
-# Ueber Umgebungsvariable uebersteuerbar:  TV_ZOLL=55 python3 tools/video/pruefen.py
+# Ueber Umgebungsvariable uebersteuerbar:  TV_ZOLL=55 python3 tools/bildschirme/pruefen.py
 import math
 import os
 TV_ZOLL = float(os.environ.get("TV_ZOLL", "40"))
@@ -175,7 +175,8 @@ def erwartete_gerichte(kat_ids):
 
 
 # Welche Kategorien auf welchem Bildschirm stehen - dieselbe Zuordnung wie
-# in build.VIDEOS, hier aber unabhaengig noch einmal hingeschrieben. Waere sie
+# in build.BILDSCHIRME, hier aber unabhaengig noch einmal hingeschrieben.
+# Waere sie
 # aus build.py abgeleitet, wuerde der Test einen Tippfehler dort mitmachen.
 SCHIRME = {
     "angebote": [],                  # zeigt das Mittagsangebot, keine Kategorie
@@ -189,7 +190,6 @@ def main():
     from playwright.sync_api import sync_playwright
     TMP.mkdir(parents=True, exist_ok=True)
     gesehen = {}
-    laengen = {}
 
     with sync_playwright() as p:
         b = p.chromium.launch(
@@ -197,7 +197,7 @@ def main():
         pg = b.new_page(viewport={"width": slides.BREITE, "height": slides.HOEHE})
 
         for schluessel in SCHIRME:
-            name, macher = build.VIDEOS[schluessel]
+            name, macher = build.BILDSCHIRME[schluessel]
             datei = TMP / f"{schluessel}.html"
             datei.write_text(build.pfade_einsetzen(macher()), encoding="utf-8")
             pg.goto(datei.as_uri(), wait_until="load")
@@ -249,7 +249,6 @@ def main():
                     fehler.append(f"{v}: Ersatzschreibung statt ß/ü: {t!r}")
 
             m0 = m
-            laengen[name] = build.DAUER
             print(f"  Schriftgroesse {m0['skala']:.0%}  "
                   f"Name {m0['namePx']:.0f} px  "
                   f"Beschreibung {m0['beschPx']:.0f} px  "
@@ -321,20 +320,12 @@ def main():
            f"{sum(gesehen.values())} Gerichte auf den Bildschirmen, "
            f"{gezeigt} laut Zuordnung")
 
-    # Gleiche Laenge, sonst laufen die vier Geraete auseinander
-    pruefe(len(set(laengen.values())) == 1,
-           f"Videolaengen weichen ab: {laengen}")
-
     print("\n" + "=" * 62)
     print(f"Gerechnet fuer {TV_ZOLL:.0f} Zoll "
           f"({TV_BREITE_MM/10:.1f} cm Bildbreite)")
     print(f"Gerichte in der Karte:         {anzahl_karte}")
     print(f"Gerichte auf den Bildschirmen: {sum(gesehen.values())}  "
           + "  ".join(f"{k.split('-')[0]}:{v}" for k, v in gesehen.items()))
-    kreis = list(laengen.values())[0]
-    print(f"Durchlauf je Bildschirm:   {kreis:.1f} s, "
-          f"{build.WIEDERHOLUNGEN} x in der Datei "
-          f"= {kreis * build.WIEDERHOLUNGEN / 60:.0f} min Spielzeit")
     for w in warnungen:
         print(f"HINWEIS  {w}")
     if fehler:

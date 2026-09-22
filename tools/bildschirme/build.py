@@ -1,61 +1,33 @@
 #!/usr/bin/env python3
 """
-Erzeugt die vier Fernseher-Videos für die USB-Sticks.
+Erzeugt die vier Fernseher-Bilder für die USB-Sticks.
 
-    python3 tools/video/build.py            # alle vier
-    python3 tools/video/build.py pizza      # nur eines
+    python3 tools/bildschirme/build.py            # alle vier
+    python3 tools/bildschirme/build.py pizza      # nur eines
 
-Ergebnis in video/ :
-    1-Angebote.mp4  2-Pizza.mp4  3-Tuerkisch.mp4
-    4-Nudeln-Verschiedenes-Burger.mp4
+Ergebnis in bilder/ , je Bildschirm eine PNG und eine JPG:
+    1-Angebote  2-Pizza  3-Tuerkisch  4-Nudeln-Verschiedenes-Burger
 
-Ablauf: Jede Bildschirmseite wird als HTML gebaut, mit Chromium zu einem
-Standbild gerendert und anschließend in ffmpeg mit weichen Überblendungen
-aneinandergereiht. Bewusst Standbilder statt Einzelbild-Animation — Text auf
+Ablauf: Jede Bildschirmseite wird als HTML gebaut und mit Chromium zu einem
+Standbild gerendert. Auf jedem Schirm steht ein stehendes Bild - Text auf
 einem Fernseher soll ruhig stehen und lesbar sein, nicht wandern.
 
-Format: 1920x1080, 30 Bilder/s, H.264 (yuv420p) plus stille Tonspur. Diese
-Kombination spielen praktisch alle Fernseher vom USB-Stick ab; manche Geräte
-verweigern Dateien komplett ohne Tonspur, deshalb die stille Spur.
+Format: 1920x1080. PNG ist verlustfrei und die erste Wahl; die JPG liegt
+daneben, weil aeltere Geraete oft nur JPEG anzeigen.
 """
 
 import json
 import pathlib
 import shutil
-import subprocess
 import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import slides                                            # noqa: E402
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
-AUS = ROOT / "video"
-STICK = AUS / "stick"          # die langen Dateien fuer die USB-Sticks
-BILDER = ROOT / "bilder"       # dieselben vier Schirme als Bilddatei
-TMP = ROOT / ".video-tmp"
+BILDER = ROOT / "bilder"       # hier liegen die vier Schirme als Bilddatei
+TMP = ROOT / ".bildschirm-tmp"
 D = slides.DATEN
-
-FPS = 30
-
-# Jeder Bildschirm ist ein stehendes Bild. DAUER ist die Laenge eines
-# Durchlaufs, WIEDERHOLUNGEN legt ihn mehrfach in dieselbe Datei.
-#
-# Der Fernseher blendet kurz schwarz, wenn er die Datei am Ende neu aufzieht -
-# er baut dabei seinen Decoder neu auf, das laesst sich in der Datei nicht
-# abschalten. Weil vor und nach dem Umbruch aber dasselbe Bild steht, faellt
-# es kaum noch auf; die Wiederholungen machen aus "alle 72 Sekunden" zusaetzlich
-# "alle zwoelf Minuten".
-#
-# GOP: Bei einem stehenden Bild kostet nur das Schluesselbild etwas, die Bilder
-# dazwischen sind praktisch leer. Ein langer Abstand macht die Datei darum um
-# ein Vielfaches kleiner, ohne dass man etwas sieht - gesprungen wird in diesen
-# Dateien ohnehin nie.
-DAUER = 72.0                 # Sekunden je Durchlauf
-WIEDERHOLUNGEN = 10          # Durchlaeufe je Datei
-GOP = FPS * 5                # Schluesselbild alle fuenf Sekunden
-
-import imageio_ffmpeg
-FFMPEG = imageio_ffmpeg.get_ffmpeg_exe()
 
 
 # ------------------------------------------------------------ Seitenfolgen --
@@ -68,19 +40,11 @@ def kategorie(kat_id):
 BESTELL = json.loads((ROOT / "assets/data/bestellung.json").read_text(encoding="utf-8"))
 
 
-# Telefonnummer und Adresse stehen bewusst nicht mehr drauf: Die Bildschirme
-# haengen im Laden. Wer davorsteht, ruft nicht an und sucht nicht die Adresse.
-# Stattdessen Dinge, die er noch nicht weiss - Stempelkarte, Lieferdienst,
-# Oeffnungszeiten.
-#
-# Auf den Kartenbildschirmen laeuft kein Angebotsstreifen mehr: Das
-# Mittagsangebot hat mit Bildschirm 1 einen eigenen Fernseher, gross und
-# vollstaendig. Es unten noch einmal durchlaufen zu lassen, waere dieselbe
-# Information zweimal - und nimmt den Dingen Platz weg, die sonst nirgends
-# stehen.
-#
-# Die langen Plaetze bekommen deshalb die beiden Angaben, die einen Gast
-# wirklich wiederbringen: die Stempelkarte und der Lieferdienst.
+# Telefonnummer und Adresse stehen bewusst nicht drauf: Die Bildschirme haengen
+# im Laden. Wer davorsteht, ruft nicht an und sucht nicht die Adresse. Auf den
+# Kartenbildschirmen steht auch das Mittagsangebot nicht noch einmal - es hat
+# mit Bildschirm 1 einen eigenen Fernseher, gross und vollstaendig. Der Platz
+# gehoert hier ganz den Gerichten.
 def block(kat_id, titel=None, pbreite=132):
     """Ein Kartenblock fuer volllisteseite: (Ueberschrift, Gerichte, Legende,
     Preisspaltenbreite, Kategoriehinweis). titel=None heisst: einzelne
@@ -95,13 +59,13 @@ def block(kat_id, titel=None, pbreite=132):
 # gekostet und dem Gast nichts gesagt, was er nicht schon wusste: Er steht im
 # Laden, vor der Theke, unter dem Bildschirm.
 #
-# Dass nichts mehr wechselt, loest nebenbei das Schwarzblenden beim Neustart
-# vollstaendig: Vor und nach dem Umbruch steht dasselbe Bild.
+# Dass nichts wechselt, ist der Grund, warum eine Bilddatei genuegt: Ein Video
+# muesste genau dasselbe Bild minutenlang wiederholen.
 #
 # Einzige Ausnahme ist die Ueberschrift "Mittagsangebot" auf Bildschirm 1.
 # Die sagt etwas, was man dem Bild sonst nicht ansieht - dass diese Preise
 # nur mittags gelten.
-VIDEOS = {
+BILDSCHIRME = {
     "angebote": ("1-Angebote",
                  lambda: slides.alleangeboteseite(ohne=("Familien-Pizza",))),
 
@@ -121,7 +85,7 @@ VIDEOS = {
                     block("burger", "Burger", 132)])),
 
     # Salate und Getraenke haben keinen eigenen Bildschirm. Baubar bleiben sie:
-    #     python3 tools/video/build.py salate
+    #     python3 tools/bildschirme/build.py salate
     "salate": ("Zusatz-Salate-Getraenke",
                lambda: slides.volllisteseite(
                    [block("salate", "Salate", 132),
@@ -151,9 +115,9 @@ def anpassen(pg, i=0):
     """Die groesste Schrift suchen, bei der die Seite noch ganz drauf ist.
 
     Bewusst eine eigene Funktion und nicht in rendern() vergraben: Das
-    Pruefskript (tools/video/pruefen.py) misst die Seiten nach genau diesem
-    Schritt. Waere die Logik dort noch einmal hingeschrieben, wuerde der Test
-    seine eigene Kopie pruefen statt das, was spaeter im Video landet.
+    Pruefskript (tools/bildschirme/pruefen.py) misst die Seiten nach genau
+    diesem Schritt. Waere die Logik dort noch einmal hingeschrieben, wuerde der
+    Test seine eigene Kopie pruefen statt das, was spaeter auf dem Stick landet.
 
     Gemessen wird die tatsaechliche Unterkante des tiefsten Elements, nicht
     scrollHeight. Letzteres laesst die Unterlaengen von g, ss und p aus und
@@ -210,39 +174,6 @@ def anpassen(pg, i=0):
 
 
 
-def verlaengern(ziel, mal):
-    """Den Durchlauf mehrfach hintereinander nach video/stick/ legen.
-
-    Ohne Neucodierung: Die Bilder werden unveraendert kopiert, nur die
-    Zeitstempel laufen weiter. Kein Qualitaetsverlust, und der Decoder im
-    Fernseher laeuft durch, statt an jeder Naht neu anzulaufen.
-
-    Bewusst eine zweite Datei und nicht dieselbe: Der Durchlauf hat rund
-    8 MB, zehn Durchlaeufe haben 80. Im Git liegt der Durchlauf, denn aus
-    ihm entsteht die lange Datei in Sekunden wieder. Lagen die langen
-    Dateien darin, waere das Lager nach ein paar Preisaenderungen im
-    Gigabytebereich - und GitHub nimmt einzelne Dateien ueber 100 MB gar
-    nicht erst an. Auf den USB-Stick kommt die Datei aus video/stick/.
-    """
-    lang = STICK / ziel.name
-    STICK.mkdir(parents=True, exist_ok=True)
-    if mal <= 1:
-        shutil.copy2(ziel, lang)
-        return lang
-    liste = ziel.with_suffix(".liste.txt")
-    liste.write_text("".join(f"file '{ziel.name}'\n" for _ in range(mal)),
-                     encoding="utf-8")
-    r = subprocess.run(
-        [FFMPEG, "-y", "-f", "concat", "-safe", "0", "-i", str(liste),
-         "-c", "copy", "-movflags", "+faststart", str(lang)],
-        capture_output=True, text=True, cwd=str(ziel.parent))
-    liste.unlink()
-    if r.returncode != 0:
-        print(r.stderr[-2500:])
-        raise SystemExit(f"Verlaengern fehlgeschlagen fuer {ziel.name}")
-    return lang
-
-
 def rendern(html_text, ordner):
     """Die Seite als HTML-Datei ablegen, aufrufen und abfotografieren.
 
@@ -271,84 +202,54 @@ def rendern(html_text, ordner):
     return datei
 
 
-def montieren(bild, ziel):
-    """Aus dem Standbild ein Video von DAUER Sekunden machen.
-
-    Die stille Tonspur ist Absicht: Manche Fernseher weigern sich, Dateien
-    ganz ohne Ton abzuspielen."""
-    befehl = [FFMPEG, "-y",
-              "-loop", "1", "-t", f"{DAUER:.3f}", "-i", str(bild),
-              "-f", "lavfi", "-t", f"{DAUER:.3f}", "-i",
-              "anullsrc=channel_layout=stereo:sample_rate=48000",
-              "-vf", f"scale=1920:1080:flags=lanczos,format=yuv420p,fps={FPS},setsar=1",
-              "-c:v", "libx264", "-preset", "medium", "-crf", "20",
-              "-profile:v", "high", "-level", "4.0", "-pix_fmt", "yuv420p",
-              "-movflags", "+faststart", "-g", str(GOP),
-              "-c:a", "aac", "-b:a", "96k", "-shortest",
-              str(ziel)]
-    r = subprocess.run(befehl, capture_output=True, text=True)
-    if r.returncode != 0:
-        print(r.stderr[-2500:])
-        raise SystemExit(f"ffmpeg fehlgeschlagen für {ziel.name}")
-    return DAUER
-
-
 def bilder_ablegen(bild, name):
-    """Denselben Bildschirm zusaetzlich als Bilddatei ablegen.
+    """Den gerenderten Schirm als PNG und als JPG in bilder/ ablegen.
 
-    Viele Fernseher zeigen vom USB-Stick auch Fotos an. Da sich auf diesen
-    Schirmen ohnehin nichts bewegt, ist das der einfachere Weg - eine Datei
-    von ein paar hundert Kilobyte statt eines Videos, und das kurze Schwarz
-    beim Neustart entfaellt ganz.
+    Auf diesen Schirmen bewegt sich nichts, deshalb ist eine Bilddatei alles,
+    was der Fernseher braucht - ein paar hundert Kilobyte statt eines Videos,
+    kein Decoder, und kein kurzes Schwarz, wenn das Geraet die Datei am Ende
+    neu aufzieht.
 
     PNG ist verlustfrei, die Schrift steht damit exakt so da wie gerendert.
     Aeltere Geraete koennen aber nur JPEG, deshalb liegt beides bereit.
-    JPEG bewusst ohne Farbunterabtastung (4:4:4): Bei 4:2:0 franst goldene
-    Schrift auf dunklem Grund sichtbar aus, und hier ist fast alles Schrift.
+    JPEG bewusst ohne Farbunterabtastung (subsampling=0, also 4:4:4): Bei
+    4:2:0 franst goldene Schrift auf dunklem Grund sichtbar aus, und hier ist
+    fast alles Schrift. Qualitaet 95 aus demselben Grund - darunter setzen
+    sich sichtbare Rasterkanten an die Buchstabenraender.
     """
+    from PIL import Image
     BILDER.mkdir(parents=True, exist_ok=True)
     png = BILDER / f"{name}.png"
     shutil.copy2(bild, png)
     jpg = BILDER / f"{name}.jpg"
-    r = subprocess.run(
-        [FFMPEG, "-y", "-i", str(bild),
-         "-q:v", "2", "-huffman", "optimal", "-pix_fmt", "yuvj444p", str(jpg)],
-        capture_output=True, text=True)
-    if r.returncode != 0:
-        print(r.stderr[-2000:])
-        raise SystemExit(f"JPEG fehlgeschlagen fuer {name}")
+    with Image.open(bild) as im:
+        im.convert("RGB").save(jpg, "JPEG", quality=95, subsampling=0,
+                               optimize=True)
     return png, jpg
 
 
 def bauen(schluessel):
-    name, macher = VIDEOS[schluessel]
+    name, macher = BILDSCHIRME[schluessel]
     print(f"\n{name}")
     ordner = TMP / schluessel
     if ordner.exists():
         shutil.rmtree(ordner)
     bild = rendern(macher(), ordner)
-    AUS.mkdir(exist_ok=True)
-    ziel = AUS / f"{name}.mp4"
-    laenge = montieren(bild, ziel)
-    lang = verlaengern(ziel, WIEDERHOLUNGEN)
     png, jpg = bilder_ablegen(bild, name)
     kb = lambda f: f.stat().st_size / 1024
     print(f"  -> bilder/{png.name}  {kb(png):.0f} kB   "
           f"bilder/{jpg.name}  {kb(jpg):.0f} kB   <- auf den USB-Stick")
-    print(f"     video/{ziel.name}  Durchlauf {laenge:.1f} s  "
-          f"{kb(ziel)/1024:.1f} MB")
-    print(f"     video/stick/{lang.name}  {laenge * WIEDERHOLUNGEN / 60:.0f} min  "
-          f"{kb(lang)/1024:.1f} MB")
-    return ziel
+    return png
 
 
 if __name__ == "__main__":
     wunsch = sys.argv[1:] or ["angebote", "pizza", "tuerkisch", "nudeln"]
     for w in wunsch:
-        if w not in VIDEOS:
-            raise SystemExit(f"Unbekannt: {w}. Möglich: {', '.join(VIDEOS)}")
+        if w not in BILDSCHIRME:
+            raise SystemExit(f"Unbekannt: {w}. Möglich: {', '.join(BILDSCHIRME)}")
         bauen(w)
     if TMP.exists():
         shutil.rmtree(TMP)
-    print("\nFertig. Auf den USB-Stick kommt bilder/ - oder, wenn der "
-          "Fernseher\nkeine Fotos anzeigt, video/stick/.")
+    print("\nFertig. Auf den USB-Stick kommt je eine Datei aus bilder/ - "
+          "die PNG,\nund wenn der Fernseher die nicht anzeigt, die JPG "
+          "daneben.")

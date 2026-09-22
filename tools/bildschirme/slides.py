@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Baut die einzelnen Bildschirmseiten ("Slides") für die Fernseher-Videos als
-HTML. Jede Seite wird später zu einem Standbild gerendert und in ffmpeg mit
-Überblendungen zu einem Video zusammengesetzt.
+Baut die Bildschirmseiten für die Fernseher im Laden als HTML. Jede Seite
+wird später mit Chromium zu einem Standbild gerendert und als PNG und JPG in
+bilder/ abgelegt — das ist die Datei, die auf den USB-Stick kommt.
 
 Gestaltung folgt Karte und Website: dunkler Grund, Gold, Playfair Display für
 Überschriften, Inter für alles andere. Schriftgrößen sind bewusst groß — ein

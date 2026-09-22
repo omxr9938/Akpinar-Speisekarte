@@ -175,55 +175,56 @@ der Domain als Inhalt, beim Anbieter einen CNAME-Eintrag auf
 
 ---
 
-## Videos für die Fernseher
+## Bilder für die Fernseher
 
-Vier Endlosvideos für USB-Sticks, je eines pro Fernseher im Laden:
+Vier Bilder für USB-Sticks, je eines pro Fernseher im Laden:
 
-```
-python3 tools/video/build.py            # alle vier
-python3 tools/video/build.py pizza      # nur eines
+```bash
+pip install playwright pillow
+python3 tools/bildschirme/build.py            # alle vier
+python3 tools/bildschirme/build.py pizza      # nur eines
 ```
 
 | Bildschirm | Datei | Inhalt |
 | --- | --- | --- |
-| 1 | `1-Angebote.mp4` | Mittagsangebot, alle vier Gruppen |
-| 2 | `2-Pizza.mp4` | 28 Pizzen, dazu die Aufpreise für Extra-Zutaten |
-| 3 | `3-Tuerkisch.mp4` | 26 türkische Gerichte, dazu „Als Menü + 5,00 €“ |
-| 4 | `4-Nudeln-Verschiedenes-Burger.mp4` | 13 Nudeln, 10 × Verschiedenes, 5 Burger |
+| 1 | `1-Angebote` | Mittagsangebot, alle vier Gruppen |
+| 2 | `2-Pizza` | 28 Pizzen, dazu die Aufpreise für Extra-Zutaten |
+| 3 | `3-Tuerkisch` | 26 türkische Gerichte, dazu „Als Menü + 5,00 €“ |
+| 4 | `4-Nudeln-Verschiedenes-Burger` | 13 Nudeln, 10 × Verschiedenes, 5 Burger |
+
+Jeder Bildschirm liegt als PNG und als JPG in [`bilder/`](bilder/), je 0,4
+bis 0,7 MB. **Auf den Stick gehört die PNG** — sie ist verlustfrei. Zeigt ein
+älteres Gerät sie nicht an, nimmt man die gleichnamige JPG; viele Fernseher
+können nur JPEG. Bedienhinweise stehen in
+[`bilder/LIESMICH.txt`](bilder/LIESMICH.txt).
+
+Auf jedem Bildschirm steht ein stehendes Bild — es bewegt sich nichts, es
+wechselt nichts. Deshalb genügt eine Bilddatei: Ein Video müsste dasselbe Bild
+nur minutenlang wiederholen, wäre um ein Vielfaches größer und würde beim
+Neuaufziehen der Datei kurz schwarz blenden. Weil nichts läuft, spielt es
+auch keine Rolle, ob die vier Geräte auseinanderlaufen.
 
 Salate und Getränke (18 Gerichte) haben in dieser Aufteilung keinen eigenen
-Bildschirm; `python3 tools/video/build.py salate` baut dafür ein fünftes
-Video. Ergebnis in [`video/`](video/), Bedienhinweise in
-[`video/LIESMICH.txt`](video/LIESMICH.txt).
-
-Die vollständigen Kategorien stehen durchgehend auf dem Bildschirm; es
-wechselt nur der schmale Streifen unten. So ist auf jedem Gerät zu jeder
-Sekunde die ganze Karte lesbar — und es spielt keine Rolle, ob die vier
-Fernseher synchron laufen.
+Bildschirm; `python3 tools/bildschirme/build.py salate` baut dafür ein fünftes
+Bild.
 
 Das Mittagsangebot hat mit Bildschirm 1 einen eigenen Fernseher. Auf den
-Kartenbildschirmen läuft es deshalb nicht noch einmal als Streifen mit — die
-beiden langen Streifenplätze gehören dort der Stempelkarte und dem
-Lieferdienst, also den Angaben, die einen Gast wiederbringen.
+Kartenbildschirmen steht es deshalb nicht noch einmal — der Platz gehört dort
+ganz der Schrift.
 
-Die Streifen stehen unterschiedlich lang (2 × 20 s für die wichtigen Angaben,
-5 s fürs Logo). Alle vier Videos sind exakt 72 Sekunden lang, damit sie bei
-gleichzeitigem Start zusammenbleiben.
+Vor dem Bauen prüft `python3 tools/bildschirme/pruefen.py` alle vier Seiten:
+ob alles in 1920×1080 passt, ob Text abgeschnitten wird, ob die Gerichtnamen
+in der Flucht stehen, ob jedes Gericht genau einmal mit genau den Preisen aus
+`menu.json` dasteht, und wie groß die Schrift auf einem 40-Zoll-Fernseher
+tatsächlich ist.
 
-Vor dem Bauen prüft `python3 tools/video/pruefen.py` alle 24 Seiten: ob alles
-in 1920×1080 passt, ob Text abgeschnitten wird, ob die Karte beim
-Streifenwechsel wirklich stillsteht, ob jedes Gericht genau einmal mit genau
-den Preisen aus `menu.json` dasteht, und wie groß die Schrift auf einem
-55-Zoll-Fernseher tatsächlich ist.
+Jede Bildschirmseite entsteht als HTML und wird mit Chromium zu einem
+Standbild gerendert. Der Renderer sucht per Intervallhalbierung die größte
+Schriftgröße, bei der die Kategorie noch vollständig auf den Bildschirm passt.
 
-Jede Bildschirmseite entsteht als HTML, wird mit Chromium zu einem Standbild
-gerendert und in ffmpeg mit weichen Überblendungen aneinandergereiht. Der
-Renderer sucht per Intervallhalbierung die größte Schriftgröße, bei der die
-Kategorie noch vollständig auf den Bildschirm passt — und getrennt davon die
-größte, bei der der Angebotsstreifen in seine feste Höhe passt.
-
-Ausgabe ist 1920×1080, H.264 mit stiller Tonspur — manche Fernseher spielen
-Dateien ohne Tonspur nicht ab.
+Ausgabe ist 1920×1080. Die JPG wird ohne Farbunterabtastung (4:4:4)
+geschrieben: Bei 4:2:0 franst goldene Schrift auf dunklem Grund sichtbar aus,
+und auf diesen Schirmen ist fast alles Schrift.
 
 ## Lokal ansehen
 
@@ -250,6 +251,8 @@ assets/img/logo-original.jpg  Logo im Original, unbearbeitet
 assets/img/emblem-180.png   Emblem als App-Icon, favicon-32.png als Favicon
 assets/img/                 Fotos und Hintergrund, aus der PDF-Karte übernommen
 qr/                         QR-Codes, Druckvorlagen und das Erzeugungs-Skript
+bilder/                     die vier Fernseherbilder für die USB-Sticks
+tools/bildschirme/          erzeugt und prüft diese vier Bilder
 ```
 
 Kein Framework, kein Build-Schritt, keine externen Abhängigkeiten zur Laufzeit außer den
