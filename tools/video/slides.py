@@ -198,6 +198,14 @@ VOLLSTIL = """
       font-size:calc(32px * var(--s)); font-weight:700; color:var(--gold);
       font-variant-numeric:tabular-nums; white-space:nowrap; }
   .vz sup { font-size:.46em; color:var(--gold3); margin-left:.18em; }
+  /* Auf den Kartenseiten faellt der Seitenkopf kleiner aus als auf den
+     Angebotsseiten: Dort ist er das Hauptmotiv, hier nur die Beschriftung
+     ueber einer dichten Liste. Die gesparten Pixel gehen an die Gerichte. */
+  .inhalt--liste .kopf { margin-bottom:12px; }
+  .inhalt--liste .kopf img { height:54px; }
+  .inhalt--liste .kopf .kat { font-size:46px; }
+  .vunter { text-align:center; font-size:26px; color:var(--text2);
+            margin:-4px 0 10px; }
   .groessen { text-align:center; font-size:24px; color:var(--gold3);
               letter-spacing:.08em; margin:-8px 0 16px; }
 
@@ -239,20 +247,20 @@ VOLLSTIL = """
      im Streifen unten, und auf einem Fernseher nicht mehr zu lesen. */
   .vnotiz { display:flex; flex-wrap:wrap; align-items:baseline;
             justify-content:center;
-            gap:max(6px, calc(8px * var(--s))) max(18px, calc(26px * var(--s)));
-            margin:2px 0 12px;
-            padding:max(8px, calc(10px * var(--s))) max(16px, calc(20px * var(--s)));
+            gap:max(4px, calc(8px * var(--s))) max(14px, calc(26px * var(--s)));
+            margin:2px 0 8px;
+            padding:max(5px, calc(10px * var(--s))) max(14px, calc(20px * var(--s)));
             border:1px solid rgba(226,179,95,.30); border-radius:14px;
             background:rgba(226,179,95,.06);
-            font-size:max(24px, calc(26px * var(--s))); color:var(--text2); }
+            font-size:max(19px, calc(26px * var(--s))); color:var(--text2); }
   /* Dieselbe goldene Pille wie die Marke "Mittagsangebot" im Streifen
      unten: Als blosser goldener Text ging der Menue-Aufpreis zwischen
      Unterzeile und Preislegende unter und wirkte wie Kleingedrucktes. */
   .vnotiz .nt { background:linear-gradient(180deg,#e9c987,#c8912f);
                 color:#241a08; border-radius:999px;
-                padding:max(4px, calc(5px * var(--s))) max(16px, calc(20px * var(--s)));
+                padding:max(3px, calc(5px * var(--s))) max(13px, calc(20px * var(--s)));
                 font-family:"Playfair Display",serif; font-style:italic;
-                font-weight:800; font-size:max(30px, calc(32px * var(--s))); }
+                font-weight:800; font-size:max(24px, calc(32px * var(--s))); }
   .vnotiz b { color:var(--gold); font-weight:700; }
 """
 
@@ -325,18 +333,19 @@ def volllisteseite(kategorie, unterzeile, bloecke, band=None, notiz=None):
 
     # Gr\u00f6\u00dfenlegende einmal oben statt \u00fcber jeder Spalte \u2014 spart Platz und
     # bleibt eindeutig, weil die Preise immer in derselben Reihenfolge stehen.
+    # Unterzeile und Preislegende stehen in EINER Zeile. Getrennt waren es
+    # zwei schmale graue Zeilen direkt uebereinander - zusammen rund 60 Pixel,
+    # die auf dem Pizzabildschirm der Liste fehlten. Die ist dort die engste
+    # von allen: 28 Pizzen mit drei Preisspalten.
+    leg = _legende(bloecke[0][2]) if einzeln else ""
+    zeile = [x for x in (unterzeile, f"Preise in Euro: {leg}" if leg else "") if x]
+    unter = (f'<div class="vunter">{" · ".join(_e(x) for x in zeile)}</div>'
+             if zeile else '')
     groessen = ""
-    if einzeln:
-        leg = _legende(bloecke[0][2])
-        if leg:
-            groessen = f'<div class="groessen">Preise in Euro: {_e(leg)}</div>'
-
-    unter = (f'<div style="text-align:center;font-size:28px;color:var(--text2);'
-             f'margin:-6px 0 10px">{_e(unterzeile)}</div>' if unterzeile else '')
 
     return (KOPF + f'<style>{VOLLSTIL}{BANNERSTIL}</style>'
             + '<div class="flaeche"></div>'
-            + '<div class="inhalt" style="--s:1;padding:30px 58px">'
+            + '<div class="inhalt inhalt--liste" style="--s:1;padding:20px 58px">'
             + kopf(kategorie) + unter + (notiz or "") + groessen
             + f'<div class="voll" id="voll">{"".join(teile)}</div>'
             + (band if band is not None else band_logo()) + '</div>')
