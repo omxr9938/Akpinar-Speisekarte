@@ -12,3 +12,6 @@ __pycache__/
 
 # Pruefberichte beim Videobau
 .video-pruefung/
+
+# Die langen Stickdateien entstehen aus den Durchlaeufen daneben
+video/stick/

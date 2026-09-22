@@ -30,6 +30,7 @@ import slides                                            # noqa: E402
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 AUS = ROOT / "video"
+STICK = AUS / "stick"          # die langen Dateien fuer die USB-Sticks
 TMP = ROOT / ".video-tmp"
 D = slides.DATEN
 
@@ -299,27 +300,36 @@ def kreis_schliessen(seiten):
 
 
 def verlaengern(ziel, mal):
-    """Den fertigen Durchlauf mehrfach hintereinander in dieselbe Datei legen.
+    """Den Durchlauf mehrfach hintereinander nach video/stick/ legen.
 
     Ohne Neucodierung: Die Bilder werden unveraendert kopiert, nur die
     Zeitstempel laufen weiter. Kein Qualitaetsverlust, und der Decoder im
     Fernseher laeuft durch, statt an jeder Naht neu anzulaufen.
+
+    Bewusst eine zweite Datei und nicht dieselbe: Der Durchlauf hat rund
+    8 MB, zehn Durchlaeufe haben 80. Im Git liegt der Durchlauf, denn aus
+    ihm entsteht die lange Datei in Sekunden wieder. Lagen die langen
+    Dateien darin, waere das Lager nach ein paar Preisaenderungen im
+    Gigabytebereich - und GitHub nimmt einzelne Dateien ueber 100 MB gar
+    nicht erst an. Auf den USB-Stick kommt die Datei aus video/stick/.
     """
+    lang = STICK / ziel.name
+    STICK.mkdir(parents=True, exist_ok=True)
     if mal <= 1:
-        return
+        shutil.copy2(ziel, lang)
+        return lang
     liste = ziel.with_suffix(".liste.txt")
     liste.write_text("".join(f"file '{ziel.name}'\n" for _ in range(mal)),
                      encoding="utf-8")
-    lang = ziel.with_suffix(".lang.mp4")
     r = subprocess.run(
         [FFMPEG, "-y", "-f", "concat", "-safe", "0", "-i", str(liste),
          "-c", "copy", "-movflags", "+faststart", str(lang)],
         capture_output=True, text=True, cwd=str(ziel.parent))
+    liste.unlink()
     if r.returncode != 0:
         print(r.stderr[-2500:])
         raise SystemExit(f"Verlaengern fehlgeschlagen fuer {ziel.name}")
-    liste.unlink()
-    lang.replace(ziel)
+    return lang
 
 
 def rendern(seiten, ordner):
@@ -411,10 +421,11 @@ def bauen(schluessel):
     AUS.mkdir(exist_ok=True)
     ziel = AUS / f"{name}.mp4"
     laenge = montieren(bilder, [d for _, d in seiten], ziel)
-    verlaengern(ziel, WIEDERHOLUNGEN)
-    mb = ziel.stat().st_size / 1024 / 1024
-    print(f"  -> {ziel.name}  {laenge:.1f} s x {WIEDERHOLUNGEN} = "
-          f"{laenge * WIEDERHOLUNGEN / 60:.0f} min  {mb:.0f} MB")
+    lang = verlaengern(ziel, WIEDERHOLUNGEN)
+    print(f"  -> {ziel.name}  Durchlauf {laenge:.1f} s  "
+          f"{ziel.stat().st_size / 1024 / 1024:.0f} MB")
+    print(f"     stick/{lang.name}  {laenge * WIEDERHOLUNGEN / 60:.0f} min  "
+          f"{lang.stat().st_size / 1024 / 1024:.0f} MB  <- auf den USB-Stick")
     return ziel
 
 
@@ -426,4 +437,4 @@ if __name__ == "__main__":
         bauen(w)
     if TMP.exists():
         shutil.rmtree(TMP)
-    print("\nFertig. Dateien liegen in video/")
+    print("\nFertig. Auf den USB-Stick kommen die Dateien aus video/stick/.")

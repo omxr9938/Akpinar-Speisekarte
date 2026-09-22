@@ -13,9 +13,12 @@ seinen Inhalt:
                                                     10 x Verschiedenes,
                                                     5 Burger
 
-Alle vier Videos sind exakt gleich lang: 12 Minuten. Darin laeuft
-derselbe Durchlauf von 72 Sekunden zehnmal hintereinander - siehe
-"Schwarz beim Neustart" weiter unten.
+AUF DEN STICK KOMMEN DIE DATEIEN AUS video/stick/ - nicht die aus
+video/ daneben. Die vier Dateien in video/stick/ sind je 12 Minuten lang
+und rund 80 MB gross. Die gleichnamigen Dateien in video/ sind nur der
+72-Sekunden-Durchlauf, aus dem die langen entstehen; sie liegen dort,
+damit das Lager nicht bei jeder Preisaenderung um 300 MB waechst.
+Warum die Dateien so lang sind: siehe "Schwarz beim Neustart".
 
 SALATE UND GETRÄNKE STEHEN AUF KEINEM BILDSCHIRM
 ------------------------------------------------
@@ -75,8 +78,9 @@ SO GEHT'S
 ---------
 1. USB-Stick als FAT32 oder exFAT formatieren.
    Manche Fernseher lesen NTFS nicht.
-2. Eine einzige MP4-Datei auf den Stick kopieren, sonst nichts.
-   Liegt nur eine Datei drauf, starten die meisten Geräte sie von selbst.
+2. Eine einzige MP4-Datei AUS video/stick/ auf den Stick kopieren,
+   sonst nichts. Liegt nur eine Datei drauf, starten die meisten Geräte
+   sie von selbst.
 3. Stick in den Fernseher, Quelle auf USB stellen, Datei starten.
 4. Im Menü des Fernsehers "Wiederholen" bzw. "Repeat" auf
    "Eine Datei" stellen — sonst läuft das Video nur einmal. Nicht "Alle":
@@ -98,7 +102,11 @@ laesst sich das im Video nicht. Zwei Dinge nehmen es dem Gast aus dem Blick:
    72 Sekunden" wird "alle 12 Minuten". Innerhalb der Datei gibt es kein
    Schwarz, die zehn Durchlaeufe gehen nahtlos ineinander ueber.
 
-Wie oft das passiert, steht in tools/video/build.py:
+Deshalb gibt es zwei Ordner: video/ enthaelt den Durchlauf (72 s, rund
+8 MB), video/stick/ die lange Datei daraus (12 min, rund 80 MB). Auf den
+Stick gehoert die lange.
+
+Wie oft der Durchlauf wiederholt wird, steht in tools/video/build.py:
 
     WIEDERHOLUNGEN = 10
 
@@ -146,7 +154,8 @@ Preise ändern sich in assets/data/menu.json. Danach:
 
     python3 tools/video/build.py
 
-erzeugt alle vier Videos neu. Einzeln geht auch:
+erzeugt alle vier Videos neu - beides, Durchlauf und Stickdatei.
+Einzeln geht auch:
 
     python3 tools/video/build.py pizza
 
