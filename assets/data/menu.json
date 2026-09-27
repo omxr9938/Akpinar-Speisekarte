@@ -1467,7 +1467,10 @@
           "nr": "",
           "name": "Red Bull",
           "beschreibung": "",
-          "zusatz": [],
+          "zusatz": [
+            "1",
+            "9"
+          ],
           "preise": [
             "3,00",
             null
