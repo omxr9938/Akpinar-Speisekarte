@@ -47,7 +47,7 @@
   "lieferung": {
     "mindestbestellwert_standard": "20,00",
     "_hinweis": "Die Zonen und ihre Orte stehen in menu.json unter lieferung.zonen. Der Gast waehlt im Bestellvorgang seinen Ort aus dieser Liste. Steht sein Ort nicht darin, greift der Standardwert oben und es erscheint der Hinweis, telefonisch nachzufragen.",
-    "plz_hinweis": "84508 Burgkirchen gehört zu Zone 4. Die Zonenzuordnung selbst steht in menu.json."
+    "plz_hinweis": "84508 Burgkirchen wird nicht mehr beliefert und steht deshalb in keiner Zone. Wer von dort bestellt, findet seinen Ort nicht in der Liste und bekommt den Hinweis, telefonisch nachzufragen."
   },
   "zutaten": {
     "_hinweis": "basis = Zutaten, die immer drauf sind und abgewählt werden können (kostenlos). extras = Zutaten, die gegen Aufpreis dazukommen.",

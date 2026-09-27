@@ -67,7 +67,7 @@
       },
       {
         "zone": "Zone 4",
-        "orte": "Unterneukirchen, Alzgern, Burgkirchen",
+        "orte": "Unterneukirchen, Alzgern",
         "mindestbestellung": "40,00 €"
       }
     ]
@@ -1399,7 +1399,7 @@
         {
           "nr": "",
           "name": "Fanta Exotic",
-          "beschreibung": "grün",
+          "beschreibung": "",
           "zusatz": [
             "1",
             "2"
