@@ -12,7 +12,8 @@
     "Ayran"
   ],
   "_menue_getraenke_hinweis": "Gemeinsame Getränkeliste für alle Menüs — Döner/Dürüm und Burger. An einer Stelle gepflegt, damit die beiden nicht auseinanderlaufen.",
-  "aktiv": true,
+  "_aktiv_hinweis": "Schaltet die Bestellfunktion der Website an und aus. false = die Karte ist reine Ansicht: keine Plus-Knoepfe an den Gerichten, kein Warenkorb, keine Kasse. Der gesamte Code dafuer bleibt erhalten (bestellung.js, kasse.js, shop.css und die Abschnitte in index.html) - true setzen und die Seite neu laden genuegt, dann ist alles wieder da. Bitte danach auch AGB und Datenschutz pruefen: Dort ist der Online-Bestellvorgang beschrieben.",
+  "aktiv": false,
   "bestellweg": {
     "typ": "whatsapp",
     "nummer": "4917681267409",

@@ -15,7 +15,25 @@ Startet einen eigenen Webserver, beendet sich mit Code 1 bei Fehlern.
 
 import sys, pathlib, http.server, socketserver, threading, functools, json
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-H = functools.partial(http.server.SimpleHTTPRequestHandler, directory=str(ROOT))
+# Die Bestellfunktion ist auf der Website abgeschaltet (aktiv: false in
+# bestellung.json). Dieser Test prueft den Code dahinter, nicht den Schalter -
+# deshalb liefert der Testserver die Datei mit gesetztem Schalter aus. Die
+# Datei im Lager bleibt unangetastet.
+class MitBestellung(http.server.SimpleHTTPRequestHandler):
+    def do_GET(self):
+        if self.path.split("?")[0].endswith("/assets/data/bestellung.json"):
+            k = json.loads((ROOT / "assets/data/bestellung.json").read_text(encoding="utf-8"))
+            k["aktiv"] = True
+            leib = json.dumps(k, ensure_ascii=False).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Content-Length", str(len(leib)))
+            self.end_headers()
+            self.wfile.write(leib)
+            return
+        super().do_GET()
+
+H = functools.partial(MitBestellung, directory=str(ROOT))
 socketserver.TCPServer.allow_reuse_address = True
 srv = socketserver.TCPServer(("127.0.0.1", 8931), H)
 threading.Thread(target=srv.serve_forever, daemon=True).start()
