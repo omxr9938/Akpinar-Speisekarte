@@ -1398,6 +1398,16 @@
         },
         {
           "nr": "",
+          "name": "Sprite",
+          "beschreibung": "",
+          "zusatz": [],
+          "preise": [
+            null,
+            "3,50"
+          ]
+        },
+        {
+          "nr": "",
           "name": "Fanta Exotic",
           "beschreibung": "",
           "zusatz": [
@@ -1433,16 +1443,6 @@
           "preise": [
             "2,50",
             null
-          ]
-        },
-        {
-          "nr": "",
-          "name": "Sprite",
-          "beschreibung": "",
-          "zusatz": [],
-          "preise": [
-            null,
-            "3,50"
           ]
         },
         {

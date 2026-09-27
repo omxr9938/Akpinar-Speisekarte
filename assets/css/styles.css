@@ -557,7 +557,6 @@ main { padding-bottom: 40px; }
   font-size: 1rem;
   color: var(--gold-2);
 }
-.item__price--empty { color: var(--text-3); font-weight: 400; }
 .item__price .cur { font-size: .74em; font-weight: 600; opacity: .72; margin-left: 2px; }
 
 .item__price-label {

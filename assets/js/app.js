@@ -31,14 +31,15 @@
 
   /* ---------------------------------------------------------- rendering -- */
 
-  /** One price cell, with a small label on narrow screens. */
+  /** One price cell, with a small label on narrow screens.
+   *
+   * Gibt es das Gericht in dieser Groesse nicht, entsteht gar keine Zelle.
+   * Frueher stand dort "1,00 l –". Bei den Getraenken waren das sieben
+   * Striche in einer Liste von zehn Zeilen - der Blick blieb an Luecken
+   * haengen statt an Preisen. Die Groesse steht an jedem Preis selbst dran,
+   * also geht ohne den Strich keine Information verloren. */
   function priceCell(value, label) {
-    if (!value) {
-      return el('span', { class: 'item__price item__price--empty' }, [
-        label ? el('span', { class: 'item__price-label', text: label }) : null,
-        '–'
-      ]);
-    }
+    if (!value) return null;
     return el('span', { class: 'item__price' }, [
       label ? el('span', { class: 'item__price-label', text: label }) : null,
       value,
@@ -548,7 +549,7 @@
     }
   }
 
-  fetch('assets/data/menu.json?v=9686c170')
+  fetch('assets/data/menu.json?v=0c4a7b73')
     .then(function (r) {
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return r.json();
