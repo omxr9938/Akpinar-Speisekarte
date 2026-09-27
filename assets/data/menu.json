@@ -1427,7 +1427,9 @@
           "nr": "",
           "name": "Gazoz",
           "beschreibung": "",
-          "zusatz": [],
+          "zusatz": [
+            "2"
+          ],
           "preise": [
             "2,50",
             null
