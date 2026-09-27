@@ -4,14 +4,13 @@
     "Cola",
     "Cola Zero",
     "Fanta",
-    "Sprite",
-    "Spezi",
-    "Mezzo-Mix",
-    "Uludag",
+    "Fanta Exotic",
+    "Mezzo Mix",
+    "Gazoz",
     "Wasser",
     "Ayran"
   ],
-  "_menue_getraenke_hinweis": "Gemeinsame Getränkeliste für alle Menüs — Döner/Dürüm und Burger. An einer Stelle gepflegt, damit die beiden nicht auseinanderlaufen.",
+  "_menue_getraenke_hinweis": "Gemeinsame Getränkeliste für alle Menüs — Döner/Dürüm und Burger. An einer Stelle gepflegt, damit die beiden nicht auseinanderlaufen. Es stehen nur Sorten drin, die es in 0,33 l gibt, denn das Menü enthält ein 0,33-l-Getränk: Sprite fehlt deshalb (nur noch als Liter), Red Bull fehlt, weil er 3,00 statt 2,50 kostet. Ändert sich die Getränkekarte in menu.json, gehört diese Liste mit angepasst.",
   "_aktiv_hinweis": "Schaltet die Bestellfunktion der Website an und aus. false = die Karte ist reine Ansicht: keine Plus-Knoepfe an den Gerichten, kein Warenkorb, keine Kasse. Der gesamte Code dafuer bleibt erhalten (bestellung.js, kasse.js, shop.css und die Abschnitte in index.html) - true setzen und die Seite neu laden genuegt, dann ist alles wieder da. Bitte danach auch AGB und Datenschutz pruefen: Dort ist der Online-Bestellvorgang beschrieben.",
   "aktiv": false,
   "bestellweg": {
@@ -98,7 +97,7 @@
         "preis": "5,00",
         "gilt_fuer": "^(D[öo]ner im Fladenbrot|Gem[üu]sed[öo]ner|D[öo]ner Chili|D[öo]ner Saray|D[öo]ner Weichk[äa]se|Vegetarischer D[öo]ner|Falafel D[öo]ner|D[üu]r[üu]m)",
         "_hinweis": "Steht so schon als Banner in der Karte: \"Döner-Menü: inkl. Pommes + 0,33 l Getränk — +5 Euro zum Döner-Preis.\" Die Liste ist ausgeschrieben statt als weites Muster, damit nachlesbar bleibt, welche Gerichte es bekommen. Bewusst NICHT dabei: Döner Pomm (hat schon Pommes), Teller, Boxen, Bowl, Pide Döner und Lahmacun Dürüm. Burger haben eine eigene Menue-Preisspalte in der Karte.",
-        "_getraenke_hinweis": "Eigene Liste statt der Getränkekategorie. Die Karte fasst \"Cola, Fanta, Mezzo-Mix\" zu einer Zeile zusammen und fuehrt Sprite ohne 0,33-l-Preis — ueber die Kategorie waeren Cola und Fanta deshalb nicht einzeln waehlbar und Sprite gar nicht. Hier stehen sie einzeln. Cola Zero steht bislang nicht in der Speisekarte; falls es das dauerhaft gibt, gehoert es auch in menu.json unter getraenke."
+        "_getraenke_hinweis": "Eigene Liste statt der Getränkekategorie: Hier stehen nur die Sorten, die es in 0,33 l gibt, denn das Menü enthält ein 0,33-l-Getränk. Sprite fehlt deshalb (nur noch als Liter), Red Bull wegen des Preises. Ändert sich die Getränkekarte, gehört diese Liste mit angepasst."
       }
     },
     "nudeln": {

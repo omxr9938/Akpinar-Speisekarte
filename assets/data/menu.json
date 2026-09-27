@@ -85,7 +85,7 @@
     "gruppen": [
       {
         "titel": "Familien-Pizza",
-        "hinweis": "inkl. 1 großer gemischter Salat oder Cola/Fanta/Mezzo-Mix",
+        "hinweis": "inkl. 1 großer gemischter Salat oder Cola/Fanta/Mezzo Mix",
         "karten": [
           {
             "titel": "Ø 50 cm",
@@ -1350,14 +1350,13 @@
       ],
       "spaltenKurz": [
         "0,33 l",
-        "0,50 l",
         "1,00 l"
       ],
       "items": [
         {
           "nr": "",
-          "name": "Cola, Fanta, Mezzo-Mix",
-          "beschreibung": "je",
+          "name": "Cola",
+          "beschreibung": "",
           "zusatz": [
             "1",
             "2",
@@ -1365,8 +1364,73 @@
           ],
           "preise": [
             "2,50",
-            "3,00",
             "3,50"
+          ]
+        },
+        {
+          "nr": "",
+          "name": "Cola Zero",
+          "beschreibung": "",
+          "zusatz": [
+            "1",
+            "2",
+            "9",
+            "11",
+            "12"
+          ],
+          "preise": [
+            "2,50",
+            "3,50"
+          ]
+        },
+        {
+          "nr": "",
+          "name": "Fanta",
+          "beschreibung": "",
+          "zusatz": [
+            "1",
+            "2"
+          ],
+          "preise": [
+            "2,50",
+            "3,50"
+          ]
+        },
+        {
+          "nr": "",
+          "name": "Fanta Exotic",
+          "beschreibung": "grün",
+          "zusatz": [
+            "1",
+            "2"
+          ],
+          "preise": [
+            "2,50",
+            null
+          ]
+        },
+        {
+          "nr": "",
+          "name": "Mezzo Mix",
+          "beschreibung": "",
+          "zusatz": [
+            "1",
+            "2",
+            "9"
+          ],
+          "preise": [
+            "2,50",
+            null
+          ]
+        },
+        {
+          "nr": "",
+          "name": "Gazoz",
+          "beschreibung": "",
+          "zusatz": [],
+          "preise": [
+            "2,50",
+            null
           ]
         },
         {
@@ -1376,19 +1440,7 @@
           "zusatz": [],
           "preise": [
             null,
-            "3,00",
             "3,50"
-          ]
-        },
-        {
-          "nr": "",
-          "name": "Uludag",
-          "beschreibung": "",
-          "zusatz": [],
-          "preise": [
-            "2,50",
-            null,
-            null
           ]
         },
         {
@@ -1398,7 +1450,6 @@
           "zusatz": [],
           "preise": [
             "2,00",
-            null,
             null
           ]
         },
@@ -1409,7 +1460,6 @@
           "zusatz": [],
           "preise": [
             "2,00",
-            null,
             null
           ]
         },
@@ -1420,7 +1470,6 @@
           "zusatz": [],
           "preise": [
             "3,00",
-            null,
             null
           ]
         }
